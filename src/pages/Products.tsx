@@ -1,0 +1,374 @@
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
+
+const Products = () => {
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>([]);
+  const [store, setStore] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    stock: "0",
+    image_url: "",
+  });
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      // Load store
+      const { data: storeData, error: storeError } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (storeError) throw storeError;
+      setStore(storeData);
+
+      // Load products
+      if (storeData) {
+        const { data: productsData, error: productsError } = await supabase
+          .from("products")
+          .select("*")
+          .eq("store_id", storeData.id)
+          .order("created_at", { ascending: false });
+
+        if (productsError) throw productsError;
+        setProducts(productsData || []);
+      }
+    } catch (error: any) {
+      console.error("Error loading data:", error);
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!store) {
+      toast({
+        title: "Erro",
+        description: "Cria primeiro a tua loja",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (editingProduct) {
+        // Update
+        const { error } = await supabase
+          .from("products")
+          .update({
+            name: formData.name,
+            description: formData.description,
+            price: parseFloat(formData.price),
+            stock: parseInt(formData.stock),
+            image_url: formData.image_url,
+          })
+          .eq("id", editingProduct.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Produto atualizado!",
+        });
+      } else {
+        // Create
+        const { error } = await supabase
+          .from("products")
+          .insert({
+            store_id: store.id,
+            name: formData.name,
+            description: formData.description,
+            price: parseFloat(formData.price),
+            stock: parseInt(formData.stock),
+            image_url: formData.image_url,
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "Produto adicionado!",
+        });
+      }
+
+      setOpen(false);
+      setEditingProduct(null);
+      setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
+      loadData();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEdit = (product: any) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      description: product.description || "",
+      price: product.price.toString(),
+      stock: product.stock.toString(),
+      image_url: product.image_url || "",
+    });
+    setOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tens a certeza que queres eliminar este produto?")) return;
+
+    try {
+      const { error } = await supabase.from("products").delete().eq("id", id);
+      if (error) throw error;
+
+      toast({
+        title: "Produto eliminado!",
+      });
+      loadData();
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen gradient-hero flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!store) {
+    return (
+      <div className="min-h-screen bg-background">
+        <nav className="border-b border-border bg-card">
+          <div className="container mx-auto px-6 py-4">
+            <Link to="/dashboard">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+          </div>
+        </nav>
+        <div className="container mx-auto px-6 py-12 text-center">
+          <h2 className="text-2xl font-bold mb-4">Cria primeiro a tua loja</h2>
+          <Link to="/dashboard/store/edit">
+            <Button variant="hero">Criar Loja</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <nav className="border-b border-border bg-card">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+          </Link>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="hero"
+                size="sm"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Produto
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingProduct ? "Editar Produto" : "Adicionar Produto"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Nome do Produto</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="price">Preço (MT)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="stock">Stock</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="image_url">URL da Imagem</Label>
+                  <Input
+                    id="image_url"
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-4">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" variant="hero">
+                    {editingProduct ? "Atualizar" : "Adicionar"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </nav>
+
+      {/* Content */}
+      <div className="container mx-auto px-6 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Produtos</h1>
+          <p className="text-muted-foreground">
+            Gerir os produtos da tua loja - {products.length} produtos
+          </p>
+        </div>
+
+        {products.length === 0 ? (
+          <Card className="p-12 text-center">
+            <p className="text-muted-foreground mb-4">Ainda não tens produtos</p>
+            <Button variant="hero" onClick={() => setOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Adicionar Primeiro Produto
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Card key={product.id} className="p-6">
+                {product.image_url && (
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                )}
+                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {product.description}
+                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-2xl font-bold">{product.price} MT</span>
+                  <span className="text-sm text-muted-foreground">
+                    Stock: {product.stock}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleEdit(product)}
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Products;
