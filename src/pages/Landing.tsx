@@ -188,7 +188,7 @@ const Landing = () => {
             Junta-te a milhares de empreendedores que já criaram suas lojas online
           </p>
           <Link to="/auth">
-            <Button size="lg" className="text-lg py-6 px-[20px]">
+            <Button size="lg" className="text-lg py-6 px-[23px]">
               Criar Minha Loja Grátis <ArrowRight className="ml-2" />
             </Button>
           </Link>
