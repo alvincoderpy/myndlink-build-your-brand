@@ -13,7 +13,7 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
-              <Button variant="ghost">Entrar</Button>
+              <Button variant="ghost" className="px-[6px]">Entrar</Button>
             </Link>
             <Link to="/auth">
               <Button>Começar Grátis</Button>
