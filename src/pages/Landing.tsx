@@ -8,12 +8,12 @@ const Landing = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold">
-              <span className="gradient-primary bg-clip-text text-neutral-950">Myndlink</span>
+              <span className="gradient-primary bg-clip-text text-neutral-950 mx-0 px-0">Myndlink</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
-              <Button variant="ghost" className="px-[6px]">Entrar</Button>
+              <Button variant="ghost" className="px-0 py-0 mx-0">Entrar</Button>
             </Link>
             <Link to="/auth">
               <Button>Começar Grátis</Button>
