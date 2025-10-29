@@ -18,7 +18,7 @@ const Landing = () => {
               <Button variant="ghost">Entrar</Button>
             </Link>
             <Link to="/auth">
-              <Button variant="hero">Começar Grátis</Button>
+              <Button>Começar Grátis</Button>
             </Link>
           </div>
         </div>
@@ -40,12 +40,12 @@ const Landing = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/auth">
-                <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+                <Button size="lg" className="text-lg px-8 py-6">
                   Começa hoje. Grátis <ArrowRight className="ml-2" />
                 </Button>
               </Link>
               <Link to="/pricing">
-                <Button variant="premium" size="lg" className="text-lg px-8 py-6">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                   Ver Preços
                 </Button>
               </Link>
@@ -176,7 +176,7 @@ const Landing = () => {
 
           <div className="text-center mt-8">
             <Link to="/pricing">
-              <Button variant="hero">Ver Todos os Planos</Button>
+              <Button>Ver Todos os Planos</Button>
             </Link>
           </div>
         </div>
@@ -192,7 +192,7 @@ const Landing = () => {
             Junta-te a milhares de empreendedores que já criaram suas lojas online
           </p>
           <Link to="/auth">
-            <Button variant="hero" size="lg" className="text-lg px-12 py-6">
+            <Button size="lg" className="text-lg px-12 py-6">
               Criar Minha Loja Grátis <ArrowRight className="ml-2" />
             </Button>
           </Link>

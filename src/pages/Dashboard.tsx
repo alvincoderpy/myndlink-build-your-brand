@@ -147,7 +147,7 @@ const Dashboard = () => {
               Começa a vender online em minutos com templates prontos
             </p>
             <Link to="/dashboard/store/edit">
-              <Button variant="hero" size="lg">
+              <Button size="lg">
                 Criar Loja Agora
               </Button>
             </Link>

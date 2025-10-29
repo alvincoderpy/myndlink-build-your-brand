@@ -175,16 +175,16 @@ const Products = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     );
   }
 
   if (!store) {
     return (
-      <div className="min-h-screen bg-background">
-        <nav className="border-b border-border bg-card">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
           <div className="container mx-auto px-6 py-4">
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">
@@ -197,7 +197,7 @@ const Products = () => {
         <div className="container mx-auto px-6 py-12 text-center">
           <h2 className="text-2xl font-bold mb-4">Cria primeiro a tua loja</h2>
           <Link to="/dashboard/store/edit">
-            <Button variant="hero">Criar Loja</Button>
+            <Button>Criar Loja</Button>
           </Link>
         </div>
       </div>
@@ -205,9 +205,9 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="border-b border-border bg-card">
+      <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
@@ -218,7 +218,6 @@ const Products = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
-                variant="hero"
                 size="sm"
                 onClick={() => {
                   setEditingProduct(null);
@@ -296,7 +295,7 @@ const Products = () => {
                   <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                     Cancelar
                   </Button>
-                  <Button type="submit" variant="hero">
+                  <Button type="submit">
                     {editingProduct ? "Atualizar" : "Adicionar"}
                   </Button>
                 </div>
@@ -317,8 +316,8 @@ const Products = () => {
 
         {products.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">Ainda não tens produtos</p>
-            <Button variant="hero" onClick={() => setOpen(true)}>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Ainda não tens produtos</p>
+            <Button onClick={() => setOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Adicionar Primeiro Produto
             </Button>
@@ -335,12 +334,12 @@ const Products = () => {
                   />
                 )}
                 <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                   {product.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-bold">{product.price} MT</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     Stock: {product.stock}
                   </span>
                 </div>
@@ -355,7 +354,7 @@ const Products = () => {
                     Editar
                   </Button>
                   <Button
-                    variant="destructive"
+                    variant="outline"
                     size="sm"
                     onClick={() => handleDelete(product.id)}
                   >

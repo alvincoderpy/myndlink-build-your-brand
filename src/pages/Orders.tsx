@@ -83,16 +83,16 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     );
   }
 
   if (!store) {
     return (
-      <div className="min-h-screen bg-background">
-        <nav className="border-b border-border bg-card">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
           <div className="container mx-auto px-6 py-4">
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">
@@ -105,7 +105,7 @@ const Orders = () => {
         <div className="container mx-auto px-6 py-12 text-center">
           <h2 className="text-2xl font-bold mb-4">Cria primeiro a tua loja</h2>
           <Link to="/dashboard/store/edit">
-            <Button variant="hero">Criar Loja</Button>
+            <Button>Criar Loja</Button>
           </Link>
         </div>
       </div>
@@ -113,9 +113,9 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="border-b border-border bg-card">
+      <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="container mx-auto px-6 py-4">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
@@ -130,14 +130,14 @@ const Orders = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Pedidos</h1>
-          <p className="text-muted-foreground">
+          <p className="text-gray-600 dark:text-gray-400">
             Gerir os pedidos da tua loja - {orders.length} pedidos
           </p>
         </div>
 
         {orders.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-muted-foreground">Ainda não tens pedidos</p>
+            <p className="text-gray-600 dark:text-gray-400">Ainda não tens pedidos</p>
           </Card>
         ) : (
           <div className="space-y-4">
@@ -198,7 +198,6 @@ const Orders = () => {
                 {order.status !== "completed" && (
                   <div className="mt-4 pt-4 border-t">
                     <Button
-                      variant="hero"
                       size="sm"
                       onClick={() => handleComplete(order.id)}
                     >

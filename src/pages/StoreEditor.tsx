@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Save, Eye } from "lucide-react";
+import { DashboardSidebar } from "@/components/DashboardSidebar";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -63,7 +64,6 @@ const StoreEditor = () => {
         return;
       }
 
-      // Validate subdomain
       const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, "");
       
       if (!cleanSubdomain || cleanSubdomain.length < 3) {
@@ -76,7 +76,6 @@ const StoreEditor = () => {
       }
 
       if (store) {
-        // Update existing store
         const { error } = await supabase
           .from("stores")
           .update({
@@ -93,7 +92,6 @@ const StoreEditor = () => {
           description: "As tuas alterações foram guardadas.",
         });
       } else {
-        // Create new store
         const { error } = await supabase
           .from("stores")
           .insert({
@@ -136,17 +134,19 @@ const StoreEditor = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <DashboardSidebar />
+
+      {/* Top Bar */}
+      <header className="fixed top-0 left-64 right-0 h-16 bg-white dark:bg-gray-950 border-b-2 border-gray-200 dark:border-gray-800 z-40">
+        <div className="h-full px-6 flex items-center justify-between">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -160,98 +160,99 @@ const StoreEditor = () => {
                 Ver Loja
               </Button>
             )}
-            <Button variant="hero" size="sm" onClick={handleSave} disabled={saving}>
+            <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="w-4 h-4 mr-2" />
               {saving ? "Guardando..." : "Guardar"}
             </Button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-12 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            {store ? "Editar Loja" : "Criar Loja"}
-          </h1>
-          <p className="text-muted-foreground">
-            Configura a tua loja online
-          </p>
-        </div>
+      <div className="ml-64 mt-16 p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">
+              {store ? "Editar Loja" : "Criar Loja"}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Configura a tua loja online
+            </p>
+          </div>
 
-        <div className="space-y-8">
-          {/* Basic Info */}
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Informações Básicas</h2>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome da Loja</Label>
-                <Input
-                  id="name"
-                  placeholder="Minha Loja Incrível"
-                  value={storeName}
-                  onChange={(e) => setStoreName(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="subdomain">Subdomínio</Label>
-                <div className="flex items-center gap-2 mt-1">
+          <div className="space-y-8">
+            {/* Basic Info */}
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-6">Informações Básicas</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Nome da Loja</Label>
                   <Input
-                    id="subdomain"
-                    placeholder="minhaloja"
-                    value={subdomain}
-                    onChange={(e) => setSubdomain(e.target.value.toLowerCase())}
-                    className="flex-1"
+                    id="name"
+                    placeholder="Minha Loja Incrível"
+                    value={storeName}
+                    onChange={(e) => setStoreName(e.target.value)}
+                    className="mt-1"
                   />
-                  <span className="text-sm text-muted-foreground">.myndlink.com</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Apenas letras minúsculas, números e hífens
-                </p>
+
+                <div>
+                  <Label htmlFor="subdomain">Subdomínio</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      id="subdomain"
+                      placeholder="minhaloja"
+                      value={subdomain}
+                      onChange={(e) => setSubdomain(e.target.value.toLowerCase())}
+                      className="flex-1"
+                    />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">.myndlink.com</span>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Apenas letras minúsculas, números e hífens
+                  </p>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
 
-          {/* Template Selection */}
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Escolher Template</h2>
-            <div>
-              <Label htmlFor="template">Template</Label>
-              <Select value={template} onValueChange={setTemplate}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Escolher template" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fashion">Moda</SelectItem>
-                  <SelectItem value="electronics">Eletrônicos</SelectItem>
-                  <SelectItem value="beauty">Beleza</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Template Preview */}
-            <div className="mt-6">
-              <div className="bg-muted rounded-lg p-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Pré-visualização do template: <strong>{template}</strong>
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  (Pré-visualização disponível em breve)
-                </p>
+            {/* Template Selection */}
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-6">Escolher Template</h2>
+              <div>
+                <Label htmlFor="template">Template</Label>
+                <Select value={template} onValueChange={setTemplate}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Escolher template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fashion">Moda</SelectItem>
+                    <SelectItem value="electronics">Eletrônicos</SelectItem>
+                    <SelectItem value="beauty">Beleza</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          </Card>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4">
-            <Link to="/dashboard">
-              <Button variant="outline">Cancelar</Button>
-            </Link>
-            <Button variant="hero" onClick={handleSave} disabled={saving}>
-              {saving ? "Guardando..." : "Guardar Loja"}
-            </Button>
+              <div className="mt-6">
+                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-8 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Pré-visualização do template: <strong>{template}</strong>
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    (Pré-visualização disponível em breve)
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-4">
+              <Link to="/dashboard">
+                <Button variant="outline">Cancelar</Button>
+              </Link>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? "Guardando..." : "Guardar Loja"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
