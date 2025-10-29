@@ -1,16 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Zap, Globe, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold">
-              <span className="gradient-primary bg-clip-text text-transparent">MYND</span>
+              <span className="gradient-primary bg-clip-text text-neutral-950">Myndlink</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -69,7 +67,7 @@ const Landing = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
                 <Zap className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Rápido e Simples</h3>
@@ -79,7 +77,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
                 <Globe className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
@@ -89,7 +87,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
                 <CreditCard className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Pagamentos Integrados</h3>
@@ -106,9 +104,7 @@ const Landing = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Planos para Todos os Negócios</h2>
-            <p className="text-xl text-muted-foreground">
-              Começa grátis e evolui conforme cresces
-            </p>
+            <p className="text-xl text-muted-foreground">Começa grátis e evolui conforme cresces.</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-6">
@@ -142,8 +138,8 @@ const Landing = () => {
               </ul>
             </div>
 
-            <div className="bg-card p-6 rounded-lg border border-primary shadow-glow">
-              <div className="text-xs font-bold text-primary mb-2">MAIS POPULAR</div>
+            <div className="bg-card p-6 border border-primary shadow-glow rounded-md">
+              <div className="text-xs font-bold text-primary mb-2 mx-[16px] rounded-none">MAIS POPULAR</div>
               <h3 className="text-xl font-bold mb-2">Business</h3>
               <div className="text-3xl font-bold mb-4">399 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
@@ -196,9 +192,7 @@ const Landing = () => {
               Criar Minha Loja Grátis <ArrowRight className="ml-2" />
             </Button>
           </Link>
-          <p className="text-sm text-muted-foreground mt-6 italic">
-            "Believe First" - MYND
-          </p>
+          
         </div>
       </section>
 
@@ -208,8 +202,6 @@ const Landing = () => {
           <p>&copy; 2025 MyndLink. Todos os direitos reservados.</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
