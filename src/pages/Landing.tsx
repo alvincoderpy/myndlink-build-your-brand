@@ -138,7 +138,7 @@ const Landing = () => {
               </ul>
             </div>
 
-            <div className="bg-card p-6 border border-primary shadow-glow rounded-md">
+            <div className="bg-card p-6 border border-primary shadow-glow rounded-md px-[24px] mx-0 my-0 py-[24px]">
               <div className="text-xs font-bold text-primary mb-2 rounded-none mx-0">MAIS POPULAR</div>
               <h3 className="text-xl font-bold mb-2">Business</h3>
               <div className="text-3xl font-bold mb-4">399 MT<span className="text-sm text-muted-foreground">/mês</span></div>
