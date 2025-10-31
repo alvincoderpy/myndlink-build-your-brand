@@ -29,7 +29,7 @@ const Landing = () => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Crie sua Loja Online
               <br />
-              <span className="gradient-primary bg-clip-text text-transparent">
+              <span className="gradient-primary bg-clip-text text-slate-950">
                 em Minutos
               </span>
             </h1>
@@ -48,15 +48,13 @@ const Landing = () => {
                 </Button>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              Sem cartão de crédito. Comece grátis agora.
-            </p>
+            <p className="text-sm text-muted-foreground mt-4">Sem cartão de crédito. Comece grátis.</p>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 px-6">
+      <section className="px-6 py-[40px]">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="text-4xl font-bold mb-4">Tudo que Precisas para Vender Online</h2>
