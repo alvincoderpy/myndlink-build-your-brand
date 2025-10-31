@@ -41,13 +41,11 @@ const Pricing = () => {
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b-2 border-gray-200 dark:bg-gray-950/80 dark:border-gray-800">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/">
-            <h1 className="text-2xl font-bold text-black dark:text-white">
-              MyndLink
-            </h1>
+            <h1 className="text-2xl font-bold text-black dark:text-white">Myndlink</h1>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/auth">
-              <Button variant="ghost">Entrar</Button>
+              <Button variant="ghost" className="mx-0 py-0 my-0 px-[4px]">Entrar</Button>
             </Link>
             <Link to="/auth">
               <Button>Começar Grátis</Button>
@@ -57,7 +55,7 @@ const Pricing = () => {
       </nav>
 
       {/* Header */}
-      <div className="pt-32 pb-20 px-6 bg-gray-50 dark:bg-gray-900">
+      <div className="pt-32 pb-20 px-6 bg-gray-50 dark:bg-gray-900 py-[12px]">
         <div className="container mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-bold mb-4">
             Planos para Todos os Negócios

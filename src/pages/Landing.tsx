@@ -13,7 +13,7 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
-              <Button variant="ghost" className="px-0 py-0 mx-0">Entrar</Button>
+              <Button variant="ghost" className="py-0 mx-0 px-0">Entrar</Button>
             </Link>
             <Link to="/auth">
               <Button>Começar Grátis</Button>
@@ -81,9 +81,7 @@ const Landing = () => {
                 <Globe className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
-              <p className="text-muted-foreground">
-                Recebe tuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio quando quiseres.
-              </p>
+              <p className="text-muted-foreground">Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio quando quiseres.</p>
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
