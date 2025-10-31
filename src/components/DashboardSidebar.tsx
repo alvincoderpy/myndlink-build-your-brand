@@ -1,18 +1,14 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Store, Package, ShoppingCart, Settings } from "lucide-react";
-
 export function DashboardSidebar() {
-  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors ${
-      isActive
-        ? "bg-black text-white dark:bg-white dark:text-black"
-        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-    }`;
-
-  return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r-2 border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+  const navLinkClass = ({
+    isActive
+  }: {
+    isActive: boolean;
+  }) => `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors ${isActive ? "bg-black text-white dark:bg-white dark:text-black" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"}`;
+  return <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r-2 border-gray-200 dark:bg-gray-950 dark:border-gray-800">
       <div className="p-6 border-b-2 border-gray-200 dark:border-gray-800">
-        <h1 className="text-2xl font-bold text-black dark:text-white">MyndLink</h1>
+        <h1 className="text-2xl font-bold text-black dark:text-white">Myndlink</h1>
       </div>
 
       <nav className="p-4">
@@ -41,6 +37,5 @@ export function DashboardSidebar() {
           <span>Configurações</span>
         </NavLink>
       </nav>
-    </aside>
-  );
+    </aside>;
 }
