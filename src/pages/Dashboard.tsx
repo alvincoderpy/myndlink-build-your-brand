@@ -5,51 +5,47 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Store, Package, ShoppingCart, Settings, LogOut, Plus } from "lucide-react";
-
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
       setUser(session?.user ?? null);
       if (!session) {
         navigate("/auth");
       }
       setLoading(false);
     });
-
     const {
-      data: { subscription },
+      data: {
+        subscription
+      }
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (!session) {
         navigate("/auth");
       }
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
+    return <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">Carregando...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -82,7 +78,7 @@ const Dashboard = () => {
           <Card className="p-6 hover:shadow-glow transition-all cursor-pointer">
             <Link to="/dashboard/store/edit">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center bg-slate-950">
                   <Store className="text-primary-foreground" />
                 </div>
                 <div>
@@ -96,7 +92,7 @@ const Dashboard = () => {
           <Card className="p-6 hover:shadow-glow transition-all cursor-pointer">
             <Link to="/dashboard/products">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center bg-slate-950">
                   <Package className="text-primary-foreground" />
                 </div>
                 <div>
@@ -110,7 +106,7 @@ const Dashboard = () => {
           <Card className="p-6 hover:shadow-glow transition-all cursor-pointer">
             <Link to="/dashboard/orders">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center bg-slate-950">
                   <ShoppingCart className="text-primary-foreground" />
                 </div>
                 <div>
@@ -124,7 +120,7 @@ const Dashboard = () => {
           <Card className="p-6 hover:shadow-glow transition-all cursor-pointer">
             <Link to="/dashboard/settings">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center bg-slate-950">
                   <Settings className="text-primary-foreground" />
                 </div>
                 <div>
@@ -154,8 +150,6 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
