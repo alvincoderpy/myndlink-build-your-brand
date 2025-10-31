@@ -14,13 +14,12 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Store } from "lucide-react";
 
 const Products = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
   const [store, setStore] = useState<any>(null);
-  const [open, setOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -31,6 +30,7 @@ const Products = () => {
   });
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -128,7 +128,7 @@ const Products = () => {
         });
       }
 
-      setOpen(false);
+      setIsDialogOpen(false);
       setEditingProduct(null);
       setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
       loadData();
@@ -150,7 +150,7 @@ const Products = () => {
       stock: product.stock.toString(),
       image_url: product.image_url || "",
     });
-    setOpen(true);
+    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -173,151 +173,129 @@ const Products = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
+  return loading ? (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-muted-foreground">Carregando...</p>
       </div>
-    );
-  }
-
-  if (!store) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-          <div className="container mx-auto px-6 py-4">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Dashboard
-              </Button>
-            </Link>
-          </div>
-        </nav>
-        <div className="container mx-auto px-6 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-4">Cria primeiro a tua loja</h2>
-          <Link to="/dashboard/store/edit">
-            <Button>Criar Loja</Button>
-          </Link>
+    </div>
+  ) : !store ? (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <Card className="max-w-md w-full p-8 text-center">
+        <p className="text-muted-foreground mb-4">
+          Cria a tua primeira loja antes de adicionar produtos.
+        </p>
+        <Link to="/dashboard/store/edit">
+          <Button>Criar Loja</Button>
+        </Link>
+      </Card>
+    </div>
+  ) : (
+    <>
+      {/* Page Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Produtos</h1>
+          <p className="text-muted-foreground mt-1">
+            Gerencie o catálogo da tua loja · {products.length} produtos
+          </p>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Navigation */}
-      <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Dashboard
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              onClick={() => {
+                setEditingProduct(null);
+                setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Adicionar Produto
             </Button>
-          </Link>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
-                }}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Adicionar Produto
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingProduct ? "Editar Produto" : "Adicionar Produto"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingProduct ? "Editar Produto" : "Adicionar Produto"}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Nome do Produto</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="description">Descrição</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Nome do Produto</Label>
+                  <Label htmlFor="price">Preço (MT)</Label>
                   <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="price">Preço (MT)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="stock">Stock</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="image_url">URL da Imagem</Label>
+                  <Label htmlFor="stock">Stock</Label>
                   <Input
-                    id="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://exemplo.com/imagem.jpg"
+                    id="stock"
+                    type="number"
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    required
                   />
                 </div>
+              </div>
 
-                <div className="flex justify-end gap-4">
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit">
-                    {editingProduct ? "Atualizar" : "Adicionar"}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </nav>
+              <div>
+                <Label htmlFor="image_url">URL da Imagem</Label>
+                <Input
+                  id="image_url"
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Produtos</h1>
-          <p className="text-muted-foreground">
-            Gerir os produtos da tua loja - {products.length} produtos
-          </p>
-        </div>
+              <div className="flex justify-end gap-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  {editingProduct ? "Atualizar" : "Adicionar"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Products Grid */}
+      <div>
 
         {products.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">Ainda não tens produtos</p>
-            <Button onClick={() => setOpen(true)}>
+            <p className="text-muted-foreground mb-4">Ainda não tens produtos</p>
+            <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Adicionar Primeiro Produto
             </Button>
@@ -325,7 +303,7 @@ const Products = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <Card key={product.id} className="p-6">
+              <Card key={product.id} className="p-6 hover:shadow-lg transition-shadow">
                 {product.image_url && (
                   <img
                     src={product.image_url}
@@ -334,12 +312,12 @@ const Products = () => {
                   />
                 )}
                 <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {product.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-bold">{product.price} MT</span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-muted-foreground">
                     Stock: {product.stock}
                   </span>
                 </div>
@@ -366,7 +344,7 @@ const Products = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

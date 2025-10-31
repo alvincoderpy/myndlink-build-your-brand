@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check, Store } from "lucide-react";
 
 const Orders = () => {
   const [loading, setLoading] = useState(true);
@@ -81,68 +81,49 @@ const Orders = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
+  return loading ? (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-muted-foreground">Carregando...</p>
       </div>
-    );
-  }
-
-  if (!store) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-          <div className="container mx-auto px-6 py-4">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Dashboard
-              </Button>
-            </Link>
-          </div>
-        </nav>
-        <div className="container mx-auto px-6 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-4">Cria primeiro a tua loja</h2>
-          <Link to="/dashboard/store/edit">
-            <Button>Criar Loja</Button>
-          </Link>
+    </div>
+  ) : !store ? (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <Card className="max-w-md w-full p-8 text-center">
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Store className="w-8 h-8" />
         </div>
+        <h2 className="text-2xl font-bold mb-2">Nenhuma Loja Encontrada</h2>
+        <p className="text-muted-foreground mb-6">
+          Cria a tua primeira loja antes de ver pedidos.
+        </p>
+        <Link to="/dashboard/store/edit">
+          <Button>Criar Loja</Button>
+        </Link>
+      </Card>
+    </div>
+  ) : (
+    <>
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Pedidos</h1>
+        <p className="text-muted-foreground mt-1">
+          Gerencie os pedidos da tua loja · {orders.length} pedidos
+        </p>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Navigation */}
-      <nav className="border-b-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <div className="container mx-auto px-6 py-4">
-          <Link to="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Dashboard
-            </Button>
-          </Link>
-        </div>
-      </nav>
-
-      {/* Content */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Pedidos</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Gerir os pedidos da tua loja - {orders.length} pedidos
-          </p>
-        </div>
+      {/* Orders List */}
+      <div>
 
         {orders.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-gray-600 dark:text-gray-400">Ainda não tens pedidos</p>
+            <p className="text-muted-foreground">Ainda não tens pedidos</p>
           </Card>
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="p-6">
+              <Card key={order.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold mb-1">
@@ -211,7 +192,7 @@ const Orders = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

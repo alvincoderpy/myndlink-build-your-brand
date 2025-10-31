@@ -4,11 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Eye } from "lucide-react";
-import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { Save, Eye } from "lucide-react";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -132,53 +131,41 @@ const StoreEditor = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
+  return loading ? (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-muted-foreground">Carregando...</p>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <DashboardSidebar />
-
-      {/* Top Bar */}
-      <header className="fixed top-0 left-64 right-0 h-16 bg-white dark:bg-gray-950 border-b-2 border-gray-200 dark:border-gray-800 z-40">
-        <div className="h-full px-6 flex items-center justify-between">
-          <Link to="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Dashboard
-            </Button>
-          </Link>
-          <div className="flex items-center gap-4">
-            {store && (
-              <Button variant="outline" size="sm">
-                <Eye className="w-4 h-4 mr-2" />
-                Ver Loja
-              </Button>
-            )}
-            <Button size="sm" onClick={handleSave} disabled={saving}>
-              <Save className="w-4 h-4 mr-2" />
-              {saving ? "Guardando..." : "Guardar"}
-            </Button>
-          </div>
+    </div>
+  ) : (
+    <>
+      {/* Page Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">
+            {store ? "Minha Loja" : "Criar Loja"}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {store ? "Personaliza a tua loja online" : "Configura a tua nova loja"}
+          </p>
         </div>
-      </header>
+        <div className="flex items-center gap-3">
+          {store && (
+            <Button variant="outline" size="sm">
+              <Eye className="w-4 h-4 mr-2" />
+              Ver Loja
+            </Button>
+          )}
+          <Button onClick={handleSave} disabled={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            {saving ? "Guardando..." : "Guardar"}
+          </Button>
+        </div>
+      </div>
 
-      {/* Content */}
-      <div className="ml-64 mt-16 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">
-              {store ? "Editar Loja" : "Criar Loja"}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Configura a tua loja online
-            </p>
-          </div>
+      {/* Main Content */}
+      <div className="max-w-4xl">
 
           <div className="space-y-8">
             {/* Basic Info */}
@@ -244,19 +231,9 @@ const StoreEditor = () => {
               </div>
             </Card>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-4">
-              <Link to="/dashboard">
-                <Button variant="outline">Cancelar</Button>
-              </Link>
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? "Guardando..." : "Guardar Loja"}
-              </Button>
-            </div>
           </div>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 

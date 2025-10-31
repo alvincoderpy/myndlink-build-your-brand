@@ -31,7 +31,7 @@ const Auth = () => {
           title: "Bem-vindo de volta!",
           description: "Login realizado com sucesso."
         });
-        navigate("/dashboard");
+        navigate("/dashboard/store/edit");
       } else {
         const {
           error
@@ -39,7 +39,7 @@ const Auth = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`
+            emailRedirectTo: `${window.location.origin}/dashboard/store/edit`
           }
         });
         if (error) throw error;
@@ -47,7 +47,7 @@ const Auth = () => {
           title: "Conta criada!",
           description: "Bem-vindo à MyndLink. Vamos criar a tua loja."
         });
-        navigate("/dashboard");
+        navigate("/dashboard/store/edit");
       }
     } catch (error: any) {
       toast({
