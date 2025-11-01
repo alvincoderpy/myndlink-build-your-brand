@@ -152,12 +152,15 @@ export default function Checkout() {
 
       if (error) throw error;
 
+      // Type assertion for atomic function response
+      const result = data as { success: boolean; error?: string; order_id?: string };
+
       // Check result from atomic function
-      if (!data.success) {
-        throw new Error(data.error || 'Order creation failed');
+      if (!result.success) {
+        throw new Error(result.error || 'Order creation failed');
       }
 
-      setOrderNumber(data.order_id.substring(0, 8).toUpperCase());
+      setOrderNumber(result.order_id!.substring(0, 8).toUpperCase());
       setOrderCreated(true);
       toast.success("Pedido criado com sucesso!");
     } catch (error: any) {
