@@ -13,6 +13,8 @@ import StoreEditor from "./pages/StoreEditor";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
+import PasswordReset from "./pages/PasswordReset";
+import UpdatePassword from "./pages/UpdatePassword";
 import Storefront from "./pages/Storefront";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/password-reset" element={<PasswordReset />} />
+            <Route path="/update-password" element={<UpdatePassword />} />
             
             {/* Dashboard Routes with Layout */}
             <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />

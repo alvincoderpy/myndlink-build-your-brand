@@ -13,6 +13,8 @@ export default function Settings() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
+    first_name: "",
+    last_name: "",
     full_name: "",
     email: "",
   });
@@ -34,6 +36,8 @@ export default function Settings() {
     
     if (data) {
       setProfile({
+        first_name: data.first_name || "",
+        last_name: data.last_name || "",
         full_name: data.full_name || "",
         email: data.email || "",
       });
@@ -57,7 +61,9 @@ export default function Settings() {
     const { error } = await supabase
       .from("profiles")
       .update({
-        full_name: profile.full_name,
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        full_name: `${profile.first_name} ${profile.last_name}`.trim(),
       })
       .eq("user_id", user?.id);
 
@@ -93,12 +99,21 @@ export default function Settings() {
         <h2 className="text-2xl font-bold mb-4">Perfil do Usuário</h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="full_name">Nome Completo</Label>
+            <Label htmlFor="first_name">Nome</Label>
             <Input
-              id="full_name"
-              value={profile.full_name}
-              onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-              placeholder="Seu nome"
+              id="first_name"
+              value={profile.first_name}
+              onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
+              placeholder="Teu nome"
+            />
+          </div>
+          <div>
+            <Label htmlFor="last_name">Apelido</Label>
+            <Input
+              id="last_name"
+              value={profile.last_name}
+              onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
+              placeholder="Teu apelido"
             />
           </div>
           <div>

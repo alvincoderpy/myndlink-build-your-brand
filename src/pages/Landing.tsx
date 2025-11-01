@@ -110,11 +110,15 @@ const Landing = () => {
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  10 produtos
+                  Até 10 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  1 template
+                  Pagamento por Cartão
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  Subdomínio grátis
                 </li>
               </ul>
             </div>
@@ -125,11 +129,15 @@ const Landing = () => {
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  50 produtos
+                  Até 100 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  2 templates
+                  Todos pagamentos
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  Cupons
                 </li>
               </ul>
             </div>
@@ -141,11 +149,15 @@ const Landing = () => {
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  200 produtos
+                  Até 1.000 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
                   Domínio próprio
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  PDF recibos
                 </li>
               </ul>
             </div>
@@ -156,11 +168,15 @@ const Landing = () => {
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  Ilimitado
+                  Produtos ilimitados
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  Personalização
+                  API acesso
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  Gestor dedicado
                 </li>
               </ul>
             </div>

@@ -2,41 +2,79 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Pricing = () => {
-  const plans = [{
-    name: "Free",
-    price: "0 MT",
-    period: "/mês",
-    description: "Perfeito para começar",
-    features: ["1 template", "10 produtos", "Subdomínio grátis", "Pagamentos M-Pesa, eMola, Cartão", "Suporte por email"],
-    cta: "Começar Grátis",
-    popular: false
-  }, {
-    name: "Grow",
-    price: "199 MT",
-    period: "/mês",
-    description: "Para negócios em crescimento",
-    features: ["2 templates", "50 produtos", "Subdomínio grátis", "Cupons e promoções", "Estatísticas básicas", "Suporte prioritário"],
-    cta: "Escolher Grow",
-    popular: false
-  }, {
-    name: "Business",
-    price: "399 MT",
-    period: "/mês",
-    description: "Para negócios estabelecidos",
-    features: ["3 templates", "200 produtos", "Domínio próprio", "Cupons e promoções", "Exportar recibos PDF", "Estatísticas avançadas", "Suporte prioritário 24/7"],
-    cta: "Escolher Business",
-    popular: true
-  }, {
-    name: "Enterprise",
-    price: "799 MT",
-    period: "/mês",
-    description: "Tudo ilimitado",
-    features: ["Templates ilimitados", "Produtos ilimitados", "Domínio próprio", "Personalização profissional", "Cupons e promoções", "Exportar recibos PDF", "API personalizada", "Gestor de conta dedicado"],
-    cta: "Escolher Enterprise",
-    popular: false
-  }];
-  return <div className="min-h-screen bg-white dark:bg-gray-950">
+  const plans = [
+    {
+      name: "Free",
+      price: "0 MT",
+      period: "/mês",
+      description: "Perfeito para começar",
+      features: [
+        "Até 10 produtos",
+        "Pagamento por Cartão apenas",
+        "Subdomínio personalizado",
+        "Painel de controlo básico",
+        "Suporte por email",
+      ],
+      cta: "Começar Grátis",
+      popular: false,
+    },
+    {
+      name: "Grow",
+      price: "199 MT",
+      period: "/mês",
+      description: "Para negócios em crescimento",
+      features: [
+        "Até 100 produtos",
+        "Pagamentos M-Pesa, eMola, Cartão",
+        "Cupons e descontos",
+        "Subdomínio personalizado",
+        "Estatísticas básicas",
+        "Suporte prioritário",
+      ],
+      cta: "Escolher Grow",
+      popular: false,
+    },
+    {
+      name: "Business",
+      price: "399 MT",
+      period: "/mês",
+      description: "Para negócios estabelecidos",
+      features: [
+        "Até 1.000 produtos",
+        "Pagamentos M-Pesa, eMola, Cartão",
+        "Domínio próprio",
+        "Cupons e descontos",
+        "Exportar recibos PDF",
+        "Estatísticas avançadas",
+        "Suporte prioritário 24/7",
+      ],
+      cta: "Escolher Business",
+      popular: true,
+    },
+    {
+      name: "Enterprise",
+      price: "799 MT",
+      period: "/mês",
+      description: "Solução completa",
+      features: [
+        "Produtos ilimitados",
+        "Pagamentos M-Pesa, eMola, Cartão",
+        "Domínio próprio",
+        "Cupons e descontos",
+        "Exportar recibos PDF",
+        "Estatísticas completas",
+        "API personalizada",
+        "Gestor de conta dedicado",
+      ],
+      cta: "Escolher Enterprise",
+      popular: false,
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b-2 border-gray-200 dark:bg-gray-950/80 dark:border-gray-800">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -70,12 +108,20 @@ const Pricing = () => {
       <div className="py-20 px-6">
         <div className="container mx-auto max-w-7xl">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {plans.map(plan => <Card key={plan.name} className={`p-8 relative ${plan.popular ? "border-4 border-black dark:border-white scale-105" : ""}`}>
-                {plan.popular && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+            {plans.map((plan) => (
+              <Card
+                key={plan.name}
+                className={`p-8 relative ${
+                  plan.popular ? "border-4 border-black dark:border-white scale-105" : ""
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="bg-black text-white dark:bg-white dark:text-black px-4 py-1 rounded-full text-xs font-bold">
                       MAIS POPULAR
                     </div>
-                  </div>}
+                  </div>
+                )}
 
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
@@ -89,10 +135,12 @@ const Pricing = () => {
                 </div>
 
                 <ul className="space-y-3 mb-8">
-                  {plan.features.map(feature => <li key={feature} className="flex items-start gap-2">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
-                    </li>)}
+                    </li>
+                  ))}
                 </ul>
 
                 <Link to="/auth">
@@ -100,7 +148,8 @@ const Pricing = () => {
                     {plan.cta}
                   </Button>
                 </Link>
-              </Card>)}
+              </Card>
+            ))}
           </div>
 
           {/* Additional Info */}
@@ -138,6 +187,8 @@ const Pricing = () => {
           </p>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default Pricing;
