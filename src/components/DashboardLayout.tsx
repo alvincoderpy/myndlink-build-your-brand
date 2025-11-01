@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { OnboardingCarousel } from "./OnboardingCarousel";
 import { Button } from "./ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [storeName, setStoreName] = useState<string>("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadStoreName = async () => {
@@ -57,23 +60,32 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen w-full bg-muted/30">
       <OnboardingCarousel />
-      <DashboardSidebar />
+      <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Top Bar */}
-      <header className="fixed top-0 left-64 right-0 h-16 bg-card border-b border-border z-40">
-        <div className="h-full px-6 flex items-center justify-end gap-4">
-          <span className="text-sm text-muted-foreground">
-            {storeName || user.email}
-          </span>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+      <header className={`fixed top-0 ${isMobile ? 'left-0' : 'left-64'} right-0 h-16 bg-card border-b border-border z-40`}>
+        <div className="h-full px-6 flex items-center justify-between gap-4">
+          {/* Botão Menu (apenas mobile) */}
+          {isMobile && (
+            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
+              <Menu className="w-5 h-5" />
+            </Button>
+          )}
+          
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="text-sm text-muted-foreground">
+              {storeName || user.email}
+            </span>
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="ml-64 mt-16 p-8 animate-fade-in">
+      <main className={`${isMobile ? 'ml-0' : 'ml-64'} mt-16 p-8 animate-fade-in`}>
         {children}
       </main>
     </div>

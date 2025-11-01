@@ -1,33 +1,33 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Rocket, Package, Palette, Ticket, CheckCircle2, Check } from "lucide-react";
 
 const slides = [
   {
     title: "Bem-vindo ao MyndLink! 🎉",
     description: "Vamos mostrar-te como criar e gerir a tua loja online em minutos.",
-    icon: "🚀",
+    icon: Rocket,
   },
   {
     title: "Adiciona os Teus Produtos",
     description: "Vai a 'Produtos' e adiciona itens com fotos, preços e stock. É rápido e simples!",
-    icon: "📦",
+    icon: Package,
   },
   {
     title: "Configura a Tua Loja",
     description: "Personaliza o nome, escolhe o subdomínio e publica quando estiveres pronto.",
-    icon: "🎨",
+    icon: Palette,
   },
   {
     title: "Cria Cupons e Descontos",
     description: "Atrai clientes com promoções especiais. Acede à secção de cupons para começar.",
-    icon: "🎫",
+    icon: Ticket,
   },
   {
     title: "Recebe e Gere Pedidos",
     description: "Quando os clientes comprarem, verás os pedidos na secção 'Pedidos'. Simples assim!",
-    icon: "✅",
+    icon: CheckCircle2,
   },
 ];
 
@@ -76,7 +76,7 @@ export const OnboardingCarousel = () => {
         </button>
 
         <div className="text-center py-6">
-          <div className="text-6xl mb-4">{slide.icon}</div>
+          <slide.icon className="w-16 h-16 mb-4 mx-auto text-primary" />
           <h2 className="text-2xl font-bold mb-3">{slide.title}</h2>
           <p className="text-muted-foreground mb-6">{slide.description}</p>
 
@@ -98,21 +98,22 @@ export const OnboardingCarousel = () => {
           <div className="flex gap-3 justify-center">
             <Button
               variant="outline"
+              size="icon"
               onClick={handlePrev}
               disabled={currentSlide === 0}
-              className="w-24"
+              className="w-10 h-10"
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Voltar
+              <ChevronLeft className="w-5 h-5" />
             </Button>
-            <Button onClick={handleNext} className="w-24">
+            <Button 
+              size="icon"
+              onClick={handleNext}
+              className="w-10 h-10"
+            >
               {currentSlide === slides.length - 1 ? (
-                "Começar"
+                <Check className="w-5 h-5" />
               ) : (
-                <>
-                  Próximo
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </>
+                <ChevronRight className="w-5 h-5" />
               )}
             </Button>
           </div>
