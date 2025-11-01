@@ -11,10 +11,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Store } from "lucide-react";
+import { Plus, Edit, Trash2, Store, Upload } from "lucide-react";
 
 const Products = () => {
   const [loading, setLoading] = useState(true);
@@ -28,6 +38,8 @@ const Products = () => {
     stock: "0",
     image_url: "",
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -77,6 +89,79 @@ const Products = () => {
     }
   };
 
+  const getProductLimit = (plan: string) => {
+    const limits: any = {
+      free: 10,
+      grow: 100,
+      business: 1000,
+      enterprise: Infinity,
+    };
+    return limits[plan] || 10;
+  };
+
+  const checkProductLimit = () => {
+    const limit = getProductLimit(store.plan);
+    if (products.length >= limit) {
+      setShowUpgradeDialog(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Erro",
+        description: "Imagem muito grande. Máximo 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Erro",
+        description: "Apenas imagens são permitidas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${store.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
+      setFormData({ ...formData, image_url: publicUrl });
+      toast({ title: "Imagem carregada com sucesso!" });
+    } catch (error: any) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Erro ao carregar imagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -86,6 +171,11 @@ const Products = () => {
         description: "Cria primeiro a tua loja",
         variant: "destructive",
       });
+      return;
+    }
+
+    // Check product limit for new products
+    if (!editingProduct && !checkProductLimit()) {
       return;
     }
 
@@ -266,14 +356,65 @@ const Products = () => {
               </div>
 
               <div>
-                <Label htmlFor="image_url">URL da Imagem</Label>
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://exemplo.com/imagem.jpg"
-                />
+                <Label>Imagem do Produto</Label>
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      id="image-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className={`cursor-pointer flex flex-col items-center ${
+                        uploadingImage ? "opacity-50" : ""
+                      }`}
+                    >
+                      <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {uploadingImage ? "Carregando..." : "Clique para carregar imagem"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        PNG, JPG, WEBP até 5MB
+                      </p>
+                    </label>
+                  </div>
+                  
+                  {formData.image_url && (
+                    <div className="relative">
+                      <img
+                        src={formData.image_url}
+                        alt="Preview"
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFormData({ ...formData, image_url: "" })}
+                        className="absolute top-2 right-2"
+                      >
+                        Remover
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <Label htmlFor="image_url_manual" className="text-sm text-muted-foreground">
+                      Ou cole uma URL:
+                    </Label>
+                    <Input
+                      id="image_url_manual"
+                      type="url"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                      placeholder="https://exemplo.com/imagem.jpg"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-end gap-4">
@@ -344,6 +485,25 @@ const Products = () => {
           </div>
         )}
       </div>
+
+      {/* Upgrade Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Limite de Produtos Atingido</AlertDialogTitle>
+            <AlertDialogDescription>
+              O plano {store?.plan.toUpperCase()} permite apenas {getProductLimit(store?.plan)} produtos.
+              Faça upgrade para adicionar mais produtos!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => navigate("/pricing")}>
+              Ver Planos
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Tag } from "lucide-react";
 
 export default function Checkout() {
   const location = useLocation();
@@ -18,6 +19,9 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
   
   const [formData, setFormData] = useState({
     customer_name: "",
@@ -40,8 +44,63 @@ export default function Checkout() {
     );
   }
 
-  const getTotalPrice = () => {
+  const getSubtotal = () => {
     return cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  };
+
+  const getDiscount = () => {
+    if (!appliedCoupon) return 0;
+    return (getSubtotal() * appliedCoupon.discount_percent) / 100;
+  };
+
+  const getTotalPrice = () => {
+    return getSubtotal() - getDiscount();
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error("Digite um código de cupom");
+      return;
+    }
+
+    setCheckingCoupon(true);
+
+    try {
+      const { data, error } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("store_id", store.id)
+        .eq("code", couponCode.toUpperCase())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        toast.error("Cupom inválido ou expirado");
+        return;
+      }
+
+      // Check expiration
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        toast.error("Este cupom expirou");
+        return;
+      }
+
+      setAppliedCoupon(data);
+      toast.success(`Cupom aplicado! ${data.discount_percent}% de desconto`);
+    } catch (error: any) {
+      console.error("Error applying coupon:", error);
+      toast.error("Erro ao verificar cupom");
+    } finally {
+      setCheckingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    toast.success("Cupom removido");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,6 +126,8 @@ export default function Checkout() {
           payment_method: formData.payment_method,
           notes: formData.notes || null,
           total: getTotalPrice(),
+          coupon_code: appliedCoupon?.code || null,
+          discount_amount: getDiscount(),
           status: "pending",
         })
         .select()
@@ -293,9 +354,59 @@ export default function Checkout() {
                     </span>
                   </div>
                 ))}
+               </div>
+              
+              {/* Coupon Code */}
+              <div className="border-t border-border pt-4 mb-4">
+                <Label className="text-sm mb-2 block">Cupom de Desconto</Label>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4" />
+                      <span className="font-bold">{appliedCoupon.code}</span>
+                      <Badge variant="secondary">-{appliedCoupon.discount_percent}%</Badge>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemoveCoupon}
+                    >
+                      Remover
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="CÓDIGO"
+                      disabled={checkingCoupon}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleApplyCoupon}
+                      disabled={checkingCoupon}
+                    >
+                      {checkingCoupon ? "..." : "Aplicar"}
+                    </Button>
+                  </div>
+                )}
               </div>
-              <div className="border-t border-border pt-4">
-                <div className="flex justify-between text-2xl font-bold">
+              
+              <div className="border-t border-border pt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal:</span>
+                  <span>{getSubtotal().toFixed(2)} MT</span>
+                </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Desconto ({appliedCoupon.discount_percent}%):</span>
+                    <span>-{getDiscount().toFixed(2)} MT</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-2xl font-bold pt-2 border-t">
                   <span>Total:</span>
                   <span>{getTotalPrice().toFixed(2)} MT</span>
                 </div>
