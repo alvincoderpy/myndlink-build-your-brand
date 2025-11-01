@@ -128,57 +128,45 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      // Create order
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          store_id: store.id,
-          customer_name: formData.customer_name,
-          customer_email: formData.customer_email || null,
-          customer_phone: formData.customer_phone,
-          customer_address: formData.customer_address,
-          payment_method: formData.payment_method,
-          notes: formData.notes || null,
-          total: getTotalPrice(),
-          coupon_code: appliedCoupon?.code || null,
-          discount_amount: getDiscount(),
-          status: "pending",
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create order items
-      const orderItems = cart.map((item: any) => ({
-        order_id: order.id,
-        product_id: item.id,
+      // Prepare cart items for atomic function
+      const cartItems = cart.map((item: any) => ({
+        id: item.id,
+        name: item.name,
         quantity: item.quantity,
-        price: item.price,
+        price: item.price
       }));
 
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItems);
+      // Call atomic order function with row-level locking
+      const { data, error } = await supabase.rpc('create_order_atomic', {
+        p_store_id: store.id,
+        p_customer_name: formData.customer_name,
+        p_customer_email: formData.customer_email || null,
+        p_customer_phone: formData.customer_phone,
+        p_customer_address: formData.customer_address,
+        p_payment_method: formData.payment_method,
+        p_notes: formData.notes || null,
+        p_coupon_code: appliedCoupon?.code || null,
+        p_discount_amount: getDiscount(),
+        p_cart_items: cartItems
+      });
 
-      if (itemsError) throw itemsError;
+      if (error) throw error;
 
-      // Update product stock
-      for (const item of cart) {
-        const { error: stockError } = await supabase
-          .from("products")
-          .update({ stock: item.stock - item.quantity })
-          .eq("id", item.id);
-
-        if (stockError) console.error("Error updating stock:", stockError);
+      // Check result from atomic function
+      if (!data.success) {
+        throw new Error(data.error || 'Order creation failed');
       }
 
-      setOrderNumber(order.id.substring(0, 8).toUpperCase());
+      setOrderNumber(data.order_id.substring(0, 8).toUpperCase());
       setOrderCreated(true);
       toast.success("Pedido criado com sucesso!");
     } catch (error: any) {
       console.error("Error creating order:", error);
-      toast.error("Erro ao criar pedido. Tente novamente.");
+      if (error.message?.includes('Insufficient stock')) {
+        toast.error('Stock insuficiente para alguns produtos');
+      } else {
+        toast.error("Erro ao criar pedido. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
