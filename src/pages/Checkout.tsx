@@ -1,0 +1,309 @@
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "sonner";
+import { ArrowLeft, Check } from "lucide-react";
+
+export default function Checkout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { cart, store } = location.state || {};
+  
+  const [loading, setLoading] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
+  
+  const [formData, setFormData] = useState({
+    customer_name: "",
+    customer_email: "",
+    customer_phone: "",
+    customer_address: "",
+    payment_method: "mpesa",
+    notes: "",
+  });
+
+  if (!cart || !store) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <h1 className="text-2xl font-bold mb-2">Carrinho vazio</h1>
+          <p className="text-muted-foreground mb-4">Adicione produtos antes de finalizar</p>
+          <Button onClick={() => navigate(-1)}>Voltar à Loja</Button>
+        </Card>
+      </div>
+    );
+  }
+
+  const getTotalPrice = () => {
+    return cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.customer_name || !formData.customer_phone || !formData.customer_address) {
+      toast.error("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          store_id: store.id,
+          customer_name: formData.customer_name,
+          customer_email: formData.customer_email || null,
+          customer_phone: formData.customer_phone,
+          customer_address: formData.customer_address,
+          payment_method: formData.payment_method,
+          notes: formData.notes || null,
+          total: getTotalPrice(),
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = cart.map((item: any) => ({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // Update product stock
+      for (const item of cart) {
+        const { error: stockError } = await supabase
+          .from("products")
+          .update({ stock: item.stock - item.quantity })
+          .eq("id", item.id);
+
+        if (stockError) console.error("Error updating stock:", stockError);
+      }
+
+      setOrderNumber(order.id.substring(0, 8).toUpperCase());
+      setOrderCreated(true);
+      toast.success("Pedido criado com sucesso!");
+    } catch (error: any) {
+      console.error("Error creating order:", error);
+      toast.error("Erro ao criar pedido. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (orderCreated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="p-8 max-w-md w-full text-center animate-fade-in">
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <Check className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-3xl font-bold mb-2">Pedido Confirmado!</h1>
+          <p className="text-muted-foreground mb-6">
+            Seu pedido foi registrado com sucesso
+          </p>
+          <div className="bg-muted p-4 rounded-lg mb-6">
+            <p className="text-sm text-muted-foreground mb-1">Número do Pedido</p>
+            <p className="text-2xl font-bold">#{orderNumber}</p>
+          </div>
+          <div className="text-left mb-6 space-y-2">
+            <p className="text-sm">
+              <span className="font-bold">Total:</span> {getTotalPrice().toFixed(2)} MT
+            </p>
+            <p className="text-sm">
+              <span className="font-bold">Pagamento:</span>{" "}
+              {formData.payment_method === "mpesa" && "M-Pesa"}
+              {formData.payment_method === "emola" && "e-Mola"}
+              {formData.payment_method === "card" && "Cartão"}
+            </p>
+            <p className="text-sm text-muted-foreground mt-4">
+              Entraremos em contato em breve para confirmar o pagamento e envio.
+            </p>
+          </div>
+          <Button
+            className="w-full"
+            onClick={() => navigate(`/store/${store.subdomain}`)}
+          >
+            Voltar à Loja
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(-1)}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
+        </Button>
+
+        <h1 className="text-4xl font-bold mb-8">Finalizar Compra</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Form */}
+          <div className="lg:col-span-2">
+            <Card className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Dados de Entrega</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="customer_name">Nome Completo *</Label>
+                      <Input
+                        id="customer_name"
+                        value={formData.customer_name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customer_name: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="customer_phone">Telefone *</Label>
+                      <Input
+                        id="customer_phone"
+                        type="tel"
+                        value={formData.customer_phone}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customer_phone: e.target.value })
+                        }
+                        placeholder="+258 XX XXX XXXX"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="customer_email">Email (opcional)</Label>
+                      <Input
+                        id="customer_email"
+                        type="email"
+                        value={formData.customer_email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customer_email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="customer_address">Endereço de Entrega *</Label>
+                      <Textarea
+                        id="customer_address"
+                        value={formData.customer_address}
+                        onChange={(e) =>
+                          setFormData({ ...formData, customer_address: e.target.value })
+                        }
+                        rows={3}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="notes">Observações (opcional)</Label>
+                      <Textarea
+                        id="notes"
+                        value={formData.notes}
+                        onChange={(e) =>
+                          setFormData({ ...formData, notes: e.target.value })
+                        }
+                        rows={2}
+                        placeholder="Instruções especiais, horário preferido, etc."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Método de Pagamento</h2>
+                  <RadioGroup
+                    value={formData.payment_method}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, payment_method: value })
+                    }
+                  >
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg">
+                      <RadioGroupItem value="mpesa" id="mpesa" />
+                      <Label htmlFor="mpesa" className="flex-1 cursor-pointer">
+                        M-Pesa
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg">
+                      <RadioGroupItem value="emola" id="emola" />
+                      <Label htmlFor="emola" className="flex-1 cursor-pointer">
+                        e-Mola
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg">
+                      <RadioGroupItem value="card" id="card" />
+                      <Label htmlFor="card" className="flex-1 cursor-pointer">
+                        Cartão de Crédito/Débito
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  <p className="text-sm text-muted-foreground mt-4">
+                    Você receberá instruções de pagamento após confirmar o pedido
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? "Processando..." : "Confirmar Pedido"}
+                </Button>
+              </form>
+            </Card>
+          </div>
+
+          {/* Order Summary */}
+          <div>
+            <Card className="p-6 sticky top-4">
+              <h2 className="text-2xl font-bold mb-4">Resumo do Pedido</h2>
+              <div className="space-y-3 mb-6">
+                {cart.map((item: any) => (
+                  <div key={item.id} className="flex justify-between text-sm">
+                    <span>
+                      {item.name} x {item.quantity}
+                    </span>
+                    <span className="font-bold">
+                      {(item.price * item.quantity).toFixed(2)} MT
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border pt-4">
+                <div className="flex justify-between text-2xl font-bold">
+                  <span>Total:</span>
+                  <span>{getTotalPrice().toFixed(2)} MT</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
