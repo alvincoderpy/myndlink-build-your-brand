@@ -230,6 +230,21 @@ export type Database = {
         }
         Relationships: []
       }
+      reserved_subdomains: {
+        Row: {
+          created_at: string | null
+          subdomain: string
+        }
+        Insert: {
+          created_at?: string | null
+          subdomain: string
+        }
+        Update: {
+          created_at?: string | null
+          subdomain?: string
+        }
+        Relationships: []
+      }
       stores: {
         Row: {
           created_at: string
@@ -295,7 +310,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_order_atomic: {
+        Args: {
+          p_cart_items: Json
+          p_coupon_code: string
+          p_customer_address: string
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_discount_amount: number
+          p_notes: string
+          p_payment_method: string
+          p_store_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "user"
