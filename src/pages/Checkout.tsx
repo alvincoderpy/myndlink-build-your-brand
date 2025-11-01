@@ -10,6 +10,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Tag } from "lucide-react";
+import { z } from "zod";
+
+// Validation schema
+const checkoutSchema = z.object({
+  customer_name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome deve ter no máximo 100 caracteres"),
+  customer_email: z.string().trim().email("Email inválido").max(255, "Email muito longo").optional().or(z.literal('')),
+  customer_phone: z.string().trim().regex(/^[+]?[0-9]{9,15}$/, "Telefone inválido. Use apenas números (9-15 dígitos)"),
+  customer_address: z.string().trim().min(10, "Endereço deve ter pelo menos 10 caracteres").max(500, "Endereço deve ter no máximo 500 caracteres"),
+  notes: z.string().max(1000, "Observações devem ter no máximo 1000 caracteres").optional(),
+  payment_method: z.enum(['mpesa', 'emola', 'card'], { errorMap: () => ({ message: "Selecione um método de pagamento" }) })
+});
 
 export default function Checkout() {
   const location = useLocation();
@@ -106,8 +117,11 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.customer_name || !formData.customer_phone || !formData.customer_address) {
-      toast.error("Preencha todos os campos obrigatórios");
+    // Validate form data with zod schema
+    const validationResult = checkoutSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
