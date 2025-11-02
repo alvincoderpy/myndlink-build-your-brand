@@ -85,7 +85,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </header>
 
       {/* Main Content */}
-      <main className={`${isMobile ? 'ml-0' : 'ml-64'} mt-16 p-8 animate-fade-in`}>
+      <main className={`${isMobile ? 'ml-0' : 'ml-64'} mt-16 p-8 min-h-screen animate-fade-in`}>
         {children}
       </main>
     </div>

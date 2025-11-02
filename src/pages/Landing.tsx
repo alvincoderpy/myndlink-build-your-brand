@@ -65,7 +65,7 @@ const Landing = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
                 <Zap className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Rápido e Simples</h3>
@@ -75,7 +75,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
                 <Globe className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
@@ -83,7 +83,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-slate-950">
+              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
                 <CreditCard className="text-primary-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Pagamentos Integrados</h3>

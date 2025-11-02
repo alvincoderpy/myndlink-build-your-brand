@@ -74,12 +74,12 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b-2 border-gray-200 dark:bg-gray-950/80 dark:border-gray-800">
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/">
-            <h1 className="text-2xl font-bold text-black dark:text-white">Myndlink</h1>
+            <h1 className="text-2xl font-bold">Myndlink</h1>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/auth">
@@ -93,12 +93,12 @@ const Pricing = () => {
       </nav>
 
       {/* Header */}
-      <div className="pt-32 pb-20 px-6 bg-gray-50 dark:bg-gray-900 py-[12px]">
+      <div className="pt-32 pb-20 px-6 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-bold mb-4">
             Planos para Todos os Negócios
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-muted-foreground">
             Começa grátis e evolui conforme o teu negócio cresce
           </p>
         </div>
@@ -112,12 +112,12 @@ const Pricing = () => {
               <Card
                 key={plan.name}
                 className={`p-8 relative ${
-                  plan.popular ? "border-4 border-black dark:border-white scale-105" : ""
+                  plan.popular ? "border-4 border-primary scale-105" : ""
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-black text-white dark:bg-white dark:text-black px-4 py-1 rounded-full text-xs font-bold">
+                    <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold">
                       MAIS POPULAR
                     </div>
                   </div>
@@ -125,19 +125,19 @@ const Pricing = () => {
 
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     {plan.description}
                   </p>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-600 dark:text-gray-400">{plan.period}</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </div>
 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
@@ -154,7 +154,7 @@ const Pricing = () => {
 
           {/* Additional Info */}
           <div className="mt-16 text-center max-w-2xl mx-auto">
-            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+            <p className="text-sm text-muted-foreground italic">
               Aviso: Planos e funcionalidades podem ser ajustados ao longo do
               desenvolvimento da plataforma.
             </p>
@@ -163,12 +163,12 @@ const Pricing = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
+      <div className="py-20 px-6 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-4xl font-bold mb-4">
             Pronto para Começar?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-xl text-muted-foreground mb-8">
             Cria a tua loja online em minutos. Sem cartão de crédito.
           </p>
           <Link to="/auth">
@@ -180,9 +180,9 @@ const Pricing = () => {
       </div>
 
       {/* Footer */}
-      <footer className="border-t-2 border-gray-200 dark:border-gray-800 py-8 px-6">
+      <footer className="border-t-2 border-border py-8 px-6">
         <div className="container mx-auto text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             © 2025 MyndLink. Todos os direitos reservados.
           </p>
         </div>
