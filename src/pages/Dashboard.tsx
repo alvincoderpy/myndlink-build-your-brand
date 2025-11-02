@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
+import { TrendingUp, ShoppingCart, Package, DollarSign, Calendar } from "lucide-react";
 
 interface Stats {
   totalSales: number;
@@ -20,12 +21,13 @@ const Dashboard = () => {
     salesGrowth: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<"day" | "week" | "month" | "year">("month");
 
   useEffect(() => {
     loadStats();
   }, [user]);
 
-  const loadStats = async () => {
+  const loadStats = async (selectedPeriod: "day" | "week" | "month" | "year" = period) => {
     if (!user) return;
 
     try {
@@ -41,58 +43,76 @@ const Dashboard = () => {
         return;
       }
 
-      // Get total sales for current month
-      const currentMonth = new Date();
-      currentMonth.setDate(1);
-      currentMonth.setHours(0, 0, 0, 0);
+      // Calculate start date based on period
+      const now = new Date();
+      const startDate = new Date();
+      
+      switch (selectedPeriod) {
+        case "day":
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "week":
+          startDate.setDate(now.getDate() - 7);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "month":
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "year":
+          startDate.setMonth(0, 1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+      }
 
       const { data: orders } = await supabase
         .from("orders")
         .select("total, created_at")
-        .eq("store_id", store.id);
+        .eq("store_id", store.id)
+        .gte("created_at", startDate.toISOString());
 
-      // Calculate stats
-      const currentMonthOrders = orders?.filter(
-        (order) => new Date(order.created_at) >= currentMonth
-      ) || [];
+      const totalSales = orders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
 
-      const totalSales = currentMonthOrders.reduce(
-        (sum, order) => sum + Number(order.total),
-        0
-      );
-
-      // Get pending orders
+      // Get pending orders (without period filter)
       const { count: pendingCount } = await supabase
         .from("orders")
         .select("*", { count: "exact", head: true })
         .eq("store_id", store.id)
         .eq("status", "pending");
 
-      // Get active products
+      // Get active products (without period filter)
       const { count: productsCount } = await supabase
         .from("products")
         .select("*", { count: "exact", head: true })
         .eq("store_id", store.id)
         .eq("is_active", true);
 
-      // Calculate growth (compare with previous month)
-      const previousMonth = new Date(currentMonth);
-      previousMonth.setMonth(previousMonth.getMonth() - 1);
+      // Calculate growth comparing with previous period
+      const previousStartDate = new Date(startDate);
+      switch (selectedPeriod) {
+        case "day":
+          previousStartDate.setDate(previousStartDate.getDate() - 1);
+          break;
+        case "week":
+          previousStartDate.setDate(previousStartDate.getDate() - 7);
+          break;
+        case "month":
+          previousStartDate.setMonth(previousStartDate.getMonth() - 1);
+          break;
+        case "year":
+          previousStartDate.setFullYear(previousStartDate.getFullYear() - 1);
+          break;
+      }
 
-      const previousMonthOrders = orders?.filter((order) => {
-        const orderDate = new Date(order.created_at);
-        return orderDate >= previousMonth && orderDate < currentMonth;
-      }) || [];
+      const { data: previousOrders } = await supabase
+        .from("orders")
+        .select("total")
+        .eq("store_id", store.id)
+        .gte("created_at", previousStartDate.toISOString())
+        .lt("created_at", startDate.toISOString());
 
-      const previousMonthSales = previousMonthOrders.reduce(
-        (sum, order) => sum + Number(order.total),
-        0
-      );
-
-      const growth =
-        previousMonthSales > 0
-          ? ((totalSales - previousMonthSales) / previousMonthSales) * 100
-          : 0;
+      const previousSales = previousOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
+      const growth = previousSales > 0 ? ((totalSales - previousSales) / previousSales) * 100 : 0;
 
       setStats({
         totalSales,
@@ -129,11 +149,32 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Visão geral do teu negócio
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            Visão geral do teu negócio
+          </p>
+        </div>
+
+        {/* Filtro de Período com Tabs */}
+        <Tabs 
+          value={period} 
+          onValueChange={(value) => {
+            setPeriod(value as typeof period);
+            loadStats(value as typeof period);
+          }}
+        >
+          <TabsList>
+            <TabsTrigger value="day" className="gap-2">
+              <Calendar className="w-4 h-4" />
+              Dia
+            </TabsTrigger>
+            <TabsTrigger value="week">Semana</TabsTrigger>
+            <TabsTrigger value="month">Mês</TabsTrigger>
+            <TabsTrigger value="year">Ano</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* Stats Cards */}
@@ -141,7 +182,7 @@ const Dashboard = () => {
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Vendas do Mês
+              Vendas {period === "day" ? "do Dia" : period === "week" ? "da Semana" : period === "month" ? "do Mês" : "do Ano"}
             </p>
             <DollarSign className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -156,7 +197,7 @@ const Dashboard = () => {
             >
               <TrendingUp className="w-3 h-3" />
               {stats.salesGrowth > 0 ? "+" : ""}
-              {stats.salesGrowth.toFixed(1)}% vs mês anterior
+              {stats.salesGrowth.toFixed(1)}% vs {period === "day" ? "dia anterior" : period === "week" ? "semana anterior" : period === "month" ? "mês anterior" : "ano anterior"}
             </p>
           )}
         </Card>

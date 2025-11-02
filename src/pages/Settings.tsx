@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Key, Bell, Languages, Trash2, Moon, Sun } from "lucide-react";
+import { Key, Bell, Languages, Trash2, Moon, Sun, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export default function Settings() {
@@ -276,36 +276,51 @@ export default function Settings() {
       {/* Sessão */}
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">Sessão</h2>
-        <p className="text-muted-foreground mb-4">
-          Terminar sessão e voltar à página inicial
-        </p>
-        <Button variant="outline" onClick={handleLogout}>
-          Sair da Conta
-        </Button>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-base">Sair da Conta</Label>
+            <p className="text-sm text-muted-foreground mb-2">
+              Terminar a sessão atual
+            </p>
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={handleLogout}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair da Conta
+            </Button>
+          </div>
 
-        <div className="pt-4 border-t mt-4">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" className="w-full border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
-                <Trash2 className="w-4 h-4 mr-2" />
-                Eliminar Conta Permanentemente
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Tens a certeza?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação é irreversível. Todos os teus dados, produtos e pedidos serão eliminados permanentemente.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-500 hover:bg-red-600">
-                  Sim, eliminar conta
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <div className="pt-4 border-t">
+            <Label className="text-base text-red-600">Eliminar Conta Permanentemente</Label>
+            <p className="text-sm text-muted-foreground mb-2">
+              Esta ação não pode ser desfeita
+            </p>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="w-full border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Eliminar Conta Permanentemente
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Tens a certeza?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação é irreversível. Todos os teus dados, produtos e pedidos serão eliminados permanentemente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-500 hover:bg-red-600">
+                    Sim, eliminar conta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </Card>
     </div>

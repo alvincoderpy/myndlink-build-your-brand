@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Store, Package, ShoppingCart, Settings, X } from "lucide-react";
+import { LayoutDashboard, Store, Package, ShoppingCart, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardSidebarProps {
@@ -9,6 +10,37 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
   const isMobile = useIsMobile();
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragCurrentY, setDragCurrentY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    setDragStartY(e.touches[0].clientY);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || !isDragging) return;
+    setDragCurrentY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isMobile || !isDragging) return;
+    
+    const dragDistance = dragCurrentY - dragStartY;
+    
+    // Se arrastou mais de 100px para baixo, fecha
+    if (dragDistance > 100) {
+      onClose();
+    }
+    
+    // Reset
+    setIsDragging(false);
+    setDragStartY(0);
+    setDragCurrentY(0);
+  };
+
   const navLinkClass = ({
     isActive
   }: {
@@ -35,17 +67,18 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
             : 'left-0 top-0 h-screen w-64 border-r-2'
           }
         `}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={
+          isMobile && isDragging 
+            ? { transform: `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` }
+            : undefined
+        }
       >
-        {/* Botão X para fechar (apenas mobile) */}
+        {/* Indicador visual de drag (apenas mobile) */}
         {isMobile && (
-          <div className="flex justify-end p-4 border-b-2 border-gray-200 dark:border-gray-800">
-            <button 
-              onClick={onClose}
-              className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <div className="w-12 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto my-3" />
         )}
 
         {/* Logo (apenas desktop) */}

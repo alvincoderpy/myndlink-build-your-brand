@@ -55,7 +55,7 @@ const Pricing = () => {
     },
     {
       name: "Enterprise",
-      price: "799 MT",
+      price: "899 MT",
       period: "/mês",
       description: "Solução completa",
       features: [

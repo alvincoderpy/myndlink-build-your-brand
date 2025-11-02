@@ -64,23 +64,23 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       
       {/* Top Bar */}
       <header className={`fixed top-0 ${isMobile ? 'left-0' : 'left-64'} right-0 h-16 bg-card border-b border-border z-40`}>
-        <div className="h-full px-6 flex items-center justify-between gap-4">
-          {/* Botão Menu (apenas mobile) */}
+        <div className="h-full px-6 flex items-center justify-center">
+          {/* Botão Menu (apenas mobile) - canto esquerdo */}
           {isMobile && (
-            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setSidebarOpen(true)}
+              className="absolute left-4"
+            >
               <Menu className="w-5 h-5" />
             </Button>
           )}
           
-          <div className="flex items-center gap-4 ml-auto">
-            <span className="text-sm text-muted-foreground">
-              {storeName || user.email}
-            </span>
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
-          </div>
+          {/* Nome da loja CENTRALIZADO e em NEGRITO */}
+          <h2 className="text-lg font-bold text-center">
+            {storeName || user.email}
+          </h2>
         </div>
       </header>
 

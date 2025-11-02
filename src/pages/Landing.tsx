@@ -164,7 +164,7 @@ const Landing = () => {
 
             <div className="bg-card p-6 rounded-lg border border-border">
               <h3 className="text-xl font-bold mb-2">Enterprise</h3>
-              <div className="text-3xl font-bold mb-4">799 MT<span className="text-sm text-muted-foreground">/mês</span></div>
+              <div className="text-3xl font-bold mb-4">899 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-primary" />
