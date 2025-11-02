@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { TrendingUp, ShoppingCart, Package, DollarSign, Calendar } from "lucide-react";
+import { TrendingUp, ShoppingCart, Package, DollarSign, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { pt } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
 
 interface Stats {
   totalSales: number;
   pendingOrders: number;
-  activeProducts: number;
+  productsSold: number;
   salesGrowth: number;
+  totalOrders: number;
 }
 
 const Dashboard = () => {
@@ -17,21 +23,27 @@ const Dashboard = () => {
   const [stats, setStats] = useState<Stats>({
     totalSales: 0,
     pendingOrders: 0,
-    activeProducts: 0,
+    productsSold: 0,
     salesGrowth: 0,
+    totalOrders: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<"day" | "week" | "month" | "year">("month");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    to: new Date(),
+  });
 
   useEffect(() => {
     loadStats();
   }, [user]);
 
-  const loadStats = async (selectedPeriod: "day" | "week" | "month" | "year" = period) => {
+  const loadStats = async (selectedDateRange?: DateRange) => {
     if (!user) return;
+    
+    const range = selectedDateRange || dateRange;
+    if (!range?.from) return;
 
     try {
-      // Get user's store
       const { data: store } = await supabase
         .from("stores")
         .select("id")
@@ -43,82 +55,58 @@ const Dashboard = () => {
         return;
       }
 
-      // Calculate start date based on period
-      const now = new Date();
-      const startDate = new Date();
+      const startDate = new Date(range.from);
+      startDate.setHours(0, 0, 0, 0);
       
-      switch (selectedPeriod) {
-        case "day":
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case "week":
-          startDate.setDate(now.getDate() - 7);
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case "month":
-          startDate.setDate(1);
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case "year":
-          startDate.setMonth(0, 1);
-          startDate.setHours(0, 0, 0, 0);
-          break;
-      }
+      const endDate = range.to ? new Date(range.to) : new Date(range.from);
+      endDate.setHours(23, 59, 59, 999);
 
       const { data: orders } = await supabase
         .from("orders")
-        .select("total, created_at")
+        .select("id, total, created_at, status")
         .eq("store_id", store.id)
-        .gte("created_at", startDate.toISOString());
+        .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString());
 
       const totalSales = orders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
+      const totalOrders = orders?.length || 0;
+      const pendingCount = orders?.filter(o => o.status === "pending").length || 0;
 
-      // Get pending orders (without period filter)
-      const { count: pendingCount } = await supabase
-        .from("orders")
-        .select("*", { count: "exact", head: true })
-        .eq("store_id", store.id)
-        .eq("status", "pending");
+      const orderIds = orders?.map(o => o.id) || [];
+      let productsSold = 0;
 
-      // Get active products (without period filter)
-      const { count: productsCount } = await supabase
-        .from("products")
-        .select("*", { count: "exact", head: true })
-        .eq("store_id", store.id)
-        .eq("is_active", true);
+      if (orderIds.length > 0) {
+        const { data: orderItems } = await supabase
+          .from("order_items")
+          .select("product_id")
+          .in("order_id", orderIds);
 
-      // Calculate growth comparing with previous period
-      const previousStartDate = new Date(startDate);
-      switch (selectedPeriod) {
-        case "day":
-          previousStartDate.setDate(previousStartDate.getDate() - 1);
-          break;
-        case "week":
-          previousStartDate.setDate(previousStartDate.getDate() - 7);
-          break;
-        case "month":
-          previousStartDate.setMonth(previousStartDate.getMonth() - 1);
-          break;
-        case "year":
-          previousStartDate.setFullYear(previousStartDate.getFullYear() - 1);
-          break;
+        const uniqueProductIds = new Set(orderItems?.map(item => item.product_id) || []);
+        productsSold = uniqueProductIds.size;
       }
+
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const previousStartDate = new Date(startDate);
+      previousStartDate.setDate(previousStartDate.getDate() - daysDiff);
+      const previousEndDate = new Date(startDate);
+      previousEndDate.setMilliseconds(-1);
 
       const { data: previousOrders } = await supabase
         .from("orders")
         .select("total")
         .eq("store_id", store.id)
         .gte("created_at", previousStartDate.toISOString())
-        .lt("created_at", startDate.toISOString());
+        .lte("created_at", previousEndDate.toISOString());
 
       const previousSales = previousOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
       const growth = previousSales > 0 ? ((totalSales - previousSales) / previousSales) * 100 : 0;
 
       setStats({
         totalSales,
-        pendingOrders: pendingCount || 0,
-        activeProducts: productsCount || 0,
+        pendingOrders: pendingCount,
+        productsSold,
         salesGrowth: growth,
+        totalOrders,
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -157,24 +145,42 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Filtro de Período com Tabs */}
-        <Tabs 
-          value={period} 
-          onValueChange={(value) => {
-            setPeriod(value as typeof period);
-            loadStats(value as typeof period);
-          }}
-        >
-          <TabsList>
-            <TabsTrigger value="day" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Dia
-            </TabsTrigger>
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="month">Mês</TabsTrigger>
-            <TabsTrigger value="year">Ano</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-auto justify-start text-left font-normal">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "dd MMM", { locale: pt })} -{" "}
+                    {format(dateRange.to, "dd MMM yyyy", { locale: pt })}
+                  </>
+                ) : (
+                  format(dateRange.from, "dd MMM yyyy", { locale: pt })
+                )
+              ) : (
+                <span>Selecionar período</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              onSelect={(range) => {
+                setDateRange(range);
+                if (range?.from) {
+                  loadStats(range);
+                }
+              }}
+              numberOfMonths={1}
+              locale={pt}
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Stats Cards */}
@@ -182,7 +188,7 @@ const Dashboard = () => {
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Vendas {period === "day" ? "do Dia" : period === "week" ? "da Semana" : period === "month" ? "do Mês" : "do Ano"}
+              Vendas Totais
             </p>
             <DollarSign className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -190,14 +196,10 @@ const Dashboard = () => {
             {stats.totalSales.toFixed(2)} MT
           </p>
           {stats.salesGrowth !== 0 && (
-            <p
-              className={`text-xs mt-2 flex items-center gap-1 ${
-                stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"
-              }`}
-            >
+            <p className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}>
               <TrendingUp className="w-3 h-3" />
               {stats.salesGrowth > 0 ? "+" : ""}
-              {stats.salesGrowth.toFixed(1)}% vs {period === "day" ? "dia anterior" : period === "week" ? "semana anterior" : period === "month" ? "mês anterior" : "ano anterior"}
+              {stats.salesGrowth.toFixed(1)}% vs período anterior
             </p>
           )}
         </Card>
@@ -213,22 +215,22 @@ const Dashboard = () => {
             {stats.pendingOrders}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Para processar
+            No período selecionado
           </p>
         </Card>
 
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Produtos Ativos
+              Produtos Vendidos
             </p>
             <Package className="w-5 h-5 text-muted-foreground" />
           </div>
           <p className="text-3xl font-bold text-foreground">
-            {stats.activeProducts}
+            {stats.productsSold}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            No catálogo
+            Com vendas no período
           </p>
         </Card>
 
@@ -240,10 +242,10 @@ const Dashboard = () => {
             <ShoppingCart className="w-5 h-5 text-muted-foreground" />
           </div>
           <p className="text-3xl font-bold text-foreground">
-            {stats.pendingOrders}
+            {stats.totalOrders}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Este mês
+            No período selecionado
           </p>
         </Card>
       </div>

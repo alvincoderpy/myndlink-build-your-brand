@@ -22,6 +22,10 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isMobile || !isDragging) return;
+    
+    // Prevenir scroll da página e pull-to-refresh
+    e.preventDefault();
+    
     setDragCurrentY(e.touches[0].clientY);
   };
 
@@ -54,6 +58,7 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
         <div 
           className="fixed inset-0 bg-black/50 z-40 animate-fade-in" 
           onClick={onClose}
+          style={{ touchAction: 'none' }}
         />
       )}
 
@@ -70,11 +75,13 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={
-          isMobile && isDragging 
+        style={{
+          touchAction: isMobile ? 'none' : 'auto',
+          ...(isMobile && isDragging 
             ? { transform: `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` }
-            : undefined
-        }
+            : {}
+          )
+        }}
       >
         {/* Indicador visual de drag (apenas mobile) */}
         {isMobile && (
