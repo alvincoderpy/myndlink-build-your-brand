@@ -63,8 +63,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Top Bar */}
-      <header className={`fixed top-0 ${isMobile ? 'left-0' : 'left-64'} right-0 h-16 bg-card border-b-2 border-border z-40`}>
-        <div className="h-full px-6 flex items-center justify-center">
+      <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40`}>
+        <div className={`h-full px-6 flex items-center justify-center ${!isMobile ? 'ml-64' : ''}`}>
           {/* Botão Menu (apenas mobile) - canto esquerdo */}
           {isMobile && (
             <Button 

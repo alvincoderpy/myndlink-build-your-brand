@@ -8,7 +8,7 @@ const Landing = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold">
-              <span className="gradient-primary bg-clip-text text-neutral-950 mx-0 px-0">Myndlink</span>
+              <span className="bg-clip-text text-foreground mx-0 px-0">Myndlink</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -23,13 +23,13 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="gradient-hero pt-32 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6">
         <div className="container mx-auto max-w-5xl text-center">
           <div className="animate-fade-in">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Crie sua Loja Online
               <br />
-              <span className="gradient-primary bg-clip-text text-slate-950">
+              <span className="bg-clip-text text-foreground">
                 em Minutos
               </span>
             </h1>
@@ -65,8 +65,8 @@ const Landing = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
-                <Zap className="text-primary-foreground" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
+                <Zap className="text-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Rápido e Simples</h3>
               <p className="text-muted-foreground">
@@ -75,16 +75,16 @@ const Landing = () => {
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
-                <Globe className="text-primary-foreground" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
+                <Globe className="text-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
               <p className="text-muted-foreground">Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio quando quiseres.</p>
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
-              <div className="w-12 h-12 gradient-primary rounded-lg flex items-center justify-center mb-4 bg-primary">
-                <CreditCard className="text-primary-foreground" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
+                <CreditCard className="text-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Pagamentos Integrados</h3>
               <p className="text-muted-foreground">
@@ -109,15 +109,15 @@ const Landing = () => {
               <div className="text-3xl font-bold mb-4">0 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Até 10 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Pagamento por Cartão
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Subdomínio grátis
                 </li>
               </ul>
@@ -128,35 +128,35 @@ const Landing = () => {
               <div className="text-3xl font-bold mb-4">199 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Até 100 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Todos pagamentos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Cupons
                 </li>
               </ul>
             </div>
 
-            <div className="bg-card p-6 border border-primary shadow-glow rounded-md px-[24px] mx-0 my-0 py-[24px]">
-              <div className="text-xs font-bold text-primary mb-2 rounded-none mx-0">MAIS POPULAR</div>
+            <div className="bg-card p-6 border-2 border-border shadow-lg rounded-md px-[24px] mx-0 my-0 py-[24px]">
+              <div className="text-xs font-bold text-foreground mb-2 rounded-none mx-0">MAIS POPULAR</div>
               <h3 className="text-xl font-bold mb-2">Business</h3>
               <div className="text-3xl font-bold mb-4">399 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Até 1.000 produtos
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Domínio próprio
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   PDF recibos
                 </li>
               </ul>
@@ -167,15 +167,15 @@ const Landing = () => {
               <div className="text-3xl font-bold mb-4">899 MT<span className="text-sm text-muted-foreground">/mês</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Produtos ilimitados
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   API acesso
                 </li>
                 <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
                   Gestor dedicado
                 </li>
               </ul>

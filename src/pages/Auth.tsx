@@ -137,7 +137,7 @@ const Auth = () => {
               <div className="text-right">
                 <Link
                   to="/password-reset"
-                  className="text-sm text-primary hover:underline"
+                  className="text-sm text-muted-foreground hover:underline"
                 >
                   Esqueceste a senha?
                 </Link>
@@ -152,7 +152,7 @@ const Auth = () => {
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-muted-foreground hover:underline"
             >
               {isLogin
                 ? "Não tens conta? Criar conta"

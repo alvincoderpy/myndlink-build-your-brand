@@ -112,12 +112,12 @@ const Pricing = () => {
               <Card
                 key={plan.name}
                 className={`p-8 relative ${
-                  plan.popular ? "border-4 border-primary scale-105" : ""
+                  plan.popular ? "border-2 border-border scale-105 shadow-lg" : ""
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold">
+                    <div className="bg-muted text-foreground px-4 py-1 rounded-full text-xs font-bold">
                       MAIS POPULAR
                     </div>
                   </div>
@@ -137,7 +137,7 @@ const Pricing = () => {
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
