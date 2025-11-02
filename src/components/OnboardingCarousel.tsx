@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, X, Rocket, Package, Palette, Ticket, CheckCi
 
 const slides = [
   {
-    title: "Bem-vindo ao MyndLink! 🎉",
+    title: "Bem-vindo ao MyndLink!",
     description: "Vamos mostrar-te como criar e gerir a tua loja online em minutos.",
     icon: Rocket,
   },
