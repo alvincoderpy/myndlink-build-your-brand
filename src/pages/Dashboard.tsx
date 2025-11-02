@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { TrendingUp, ShoppingCart, Package, DollarSign, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { pt } from "date-fns/locale";
+import { pt as ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 
 interface Stats {
@@ -148,37 +148,37 @@ const Dashboard = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-auto justify-start text-left font-normal">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange?.from ? (
-                dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "dd MMM", { locale: pt })} -{" "}
-                    {format(dateRange.to, "dd MMM yyyy", { locale: pt })}
-                  </>
-                ) : (
-                  format(dateRange.from, "dd MMM yyyy", { locale: pt })
-                )
-              ) : (
-                <span>Selecionar período</span>
-              )}
+        <CalendarIcon className="mr-2 h-4 w-4" />
+        {dateRange?.from ? (
+          dateRange.to ? (
+            <>
+              {format(dateRange.from, "dd MMM", { locale: ptBR })} -{" "}
+              {format(dateRange.to, "dd MMM yyyy", { locale: ptBR })}
+            </>
+          ) : (
+            format(dateRange.from, "dd MMM yyyy", { locale: ptBR })
+          )
+        ) : (
+          <span>Selecionar período</span>
+        )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={dateRange?.from}
-              selected={dateRange}
-              onSelect={(range) => {
-                setDateRange(range);
-                if (range?.from) {
-                  loadStats(range);
-                }
-              }}
-              numberOfMonths={1}
-              locale={pt}
-              className="pointer-events-auto"
-            />
+      <Calendar
+        initialFocus
+        mode="range"
+        defaultMonth={dateRange?.from}
+        selected={dateRange}
+        onSelect={(range) => {
+          setDateRange(range);
+          if (range?.from) {
+            loadStats(range);
+          }
+        }}
+        numberOfMonths={1}
+        locale={ptBR}
+        className="pointer-events-auto"
+      />
           </PopoverContent>
         </Popover>
       </div>

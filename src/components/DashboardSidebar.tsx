@@ -49,7 +49,7 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
     isActive
   }: {
     isActive: boolean;
-  }) => `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors ${isActive ? "bg-black text-white dark:bg-white dark:text-black" : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"}`;
+  }) => `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent hover:text-accent-foreground"}`;
   
   return (
     <>
@@ -64,7 +64,7 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
 
       <aside 
         className={`
-          fixed bg-white border-gray-200 dark:bg-gray-950 dark:border-gray-800 z-50
+          fixed bg-card border-border z-50
           transition-all duration-300 ease-in-out
           ${isMobile 
             ? `left-0 right-0 h-auto rounded-t-3xl border-t-2 shadow-2xl
@@ -85,13 +85,13 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
       >
         {/* Indicador visual de drag (apenas mobile) */}
         {isMobile && (
-          <div className="w-12 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto my-3" />
+          <div className="w-12 h-1 bg-muted rounded-full mx-auto my-3" />
         )}
 
         {/* Logo (apenas desktop) */}
         {!isMobile && (
-          <div className="p-6 border-b-2 border-gray-200 dark:border-gray-800">
-            <h1 className="text-2xl font-bold text-black dark:text-white">Myndlink</h1>
+          <div className="p-6 border-b-2 border-border">
+            <h1 className="text-2xl font-bold">Myndlink</h1>
           </div>
         )}
 
