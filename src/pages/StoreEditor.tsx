@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Eye } from "lucide-react";
+import { templates } from "@/config/templates";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -220,13 +221,34 @@ const StoreEditor = () => {
               </div>
 
               <div className="mt-6">
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-8 text-center">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Pré-visualização do template: <strong>{template}</strong>
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    (Pré-visualização disponível em breve)
-                  </p>
+                <div className="border border-border rounded-lg p-6">
+                  <p className="text-sm font-medium mb-4">Pré-visualização: {templates[template as keyof typeof templates]?.name}</p>
+                  <div 
+                    className="rounded-lg overflow-hidden border-2 border-border"
+                    style={{
+                      backgroundColor: `hsl(${templates[template as keyof typeof templates]?.colors.secondary})`
+                    }}
+                  >
+                    <div className="p-8">
+                      <h3 
+                        className={`text-2xl mb-4 ${templates[template as keyof typeof templates]?.fonts.heading}`}
+                        style={{ color: `hsl(${templates[template as keyof typeof templates]?.colors.primary})` }}
+                      >
+                        Produto Exemplo
+                      </h3>
+                      <div 
+                        className={`grid ${templates[template as keyof typeof templates]?.layout === 'grid' ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}
+                      >
+                        <div 
+                          className="aspect-square rounded-lg"
+                          style={{ backgroundColor: `hsl(${templates[template as keyof typeof templates]?.colors.accent})` }}
+                        />
+                        <div className={templates[template as keyof typeof templates]?.fonts.body}>
+                          <p className="text-sm opacity-70">Este é um exemplo de como a tua loja vai aparecer com este template.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>

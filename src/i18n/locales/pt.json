@@ -1,0 +1,49 @@
+{
+  "nav": {
+    "login": "Entrar",
+    "getStarted": "Começar Grátis"
+  },
+  "hero": {
+    "title": "Crie sua Loja Online",
+    "subtitle": "em Minutos",
+    "description": "Plataforma completa para vender online. Subdomínio gratuito, templates responsivos e sem complicação.",
+    "cta": "Começa hoje. Grátis",
+    "viewPricing": "Ver Preços",
+    "noCreditCard": "Sem cartão de crédito. Comece grátis."
+  },
+  "auth": {
+    "login": "Entrar na Conta",
+    "signup": "Criar Conta",
+    "loginWelcome": "Bem-vindo de volta! Entra para continuar.",
+    "signupWelcome": "Começa a criar a tua loja online agora.",
+    "firstName": "Nome",
+    "lastName": "Apelido",
+    "email": "Email",
+    "password": "Senha",
+    "forgotPassword": "Esqueceste a senha?",
+    "noAccount": "Não tens conta? Criar conta",
+    "hasAccount": "Já tens conta? Entrar",
+    "backToHome": "Voltar ao Início"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Visão geral do teu negócio",
+    "totalSales": "Vendas Totais",
+    "pendingOrders": "Pedidos Pendentes",
+    "productsSold": "Produtos Vendidos",
+    "totalOrders": "Pedidos Totais",
+    "quickActions": "Ações Rápidas",
+    "tips": "Dicas para Crescer"
+  },
+  "settings": {
+    "title": "Configurações",
+    "profile": "Perfil do Usuário",
+    "security": "Segurança",
+    "notifications": "Notificações",
+    "preferences": "Preferências",
+    "currentPlan": "Plano Atual",
+    "session": "Sessão",
+    "logout": "Sair da Conta",
+    "deleteAccount": "Eliminar Conta Permanentemente"
+  }
+}

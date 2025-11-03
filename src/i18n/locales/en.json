@@ -1,0 +1,49 @@
+{
+  "nav": {
+    "login": "Login",
+    "getStarted": "Get Started Free"
+  },
+  "hero": {
+    "title": "Create Your Online Store",
+    "subtitle": "in Minutes",
+    "description": "Complete platform to sell online. Free subdomain, responsive templates and no hassle.",
+    "cta": "Start today. Free",
+    "viewPricing": "View Pricing",
+    "noCreditCard": "No credit card required. Start free."
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "loginWelcome": "Welcome back! Login to continue.",
+    "signupWelcome": "Start creating your online store now.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account? Sign up",
+    "hasAccount": "Already have an account? Login",
+    "backToHome": "Back to Home"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Business overview",
+    "totalSales": "Total Sales",
+    "pendingOrders": "Pending Orders",
+    "productsSold": "Products Sold",
+    "totalOrders": "Total Orders",
+    "quickActions": "Quick Actions",
+    "tips": "Growth Tips"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "User Profile",
+    "security": "Security",
+    "notifications": "Notifications",
+    "preferences": "Preferences",
+    "currentPlan": "Current Plan",
+    "session": "Session",
+    "logout": "Logout",
+    "deleteAccount": "Delete Account Permanently"
+  }
+}

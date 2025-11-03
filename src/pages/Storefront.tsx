@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Plus, Minus, X } from "lucide-react";
 import { toast } from "sonner";
+import { templates } from "@/config/templates";
 
 interface Product {
   id: string;
@@ -138,12 +139,28 @@ export default function Storefront() {
     );
   }
 
+  const templateConfig = templates[store?.template as keyof typeof templates] || templates.fashion;
+
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen"
+      style={{ backgroundColor: `hsl(${templateConfig.colors.secondary})` }}
+    >
       {/* Header */}
-      <header className="border-b border-border bg-card sticky top-0 z-40">
+      <header 
+        className="border-b sticky top-0 z-40"
+        style={{ 
+          backgroundColor: `hsl(${templateConfig.colors.secondary})`,
+          borderColor: `hsl(${templateConfig.colors.accent})`
+        }}
+      >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{store.name}</h1>
+          <h1 
+            className={`text-2xl font-bold ${templateConfig.fonts.heading}`}
+            style={{ color: `hsl(${templateConfig.colors.primary})` }}
+          >
+            {store.name}
+          </h1>
           <Button
             variant="outline"
             size="sm"
@@ -162,7 +179,7 @@ export default function Storefront() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className={`container mx-auto px-4 py-8 ${templateConfig.fonts.body}`}>
         {products.length === 0 ? (
           <Card className="p-12 text-center">
             <h2 className="text-2xl font-bold mb-2">Sem produtos disponíveis</h2>

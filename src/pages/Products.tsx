@@ -25,6 +25,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Store, Upload } from "lucide-react";
+import { getProductLimit } from "@/lib/planLimits";
 
 const Products = () => {
   const [loading, setLoading] = useState(true);
@@ -89,18 +90,9 @@ const Products = () => {
     }
   };
 
-  const getProductLimit = (plan: string) => {
-    const limits: any = {
-      free: 10,
-      grow: 100,
-      business: 1000,
-      enterprise: Infinity,
-    };
-    return limits[plan] || 10;
-  };
 
   const checkProductLimit = () => {
-    const limit = getProductLimit(store.plan);
+    const limit = getProductLimit(store?.plan || 'free');
     if (products.length >= limit) {
       setShowUpgradeDialog(true);
       return false;

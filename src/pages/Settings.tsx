@@ -29,7 +29,13 @@ export default function Settings() {
     email_orders: true,
     email_marketing: false,
   });
-  const [language, setLanguage] = useState("pt");
+  const [language, setLanguage] = useState(localStorage.getItem("language") || "pt");
+
+  const handleLanguageChange = (newLang: string) => {
+    setLanguage(newLang);
+    localStorage.setItem("language", newLang);
+    window.location.reload(); // Reload to apply language change
+  };
 
   useEffect(() => {
     if (user) {
@@ -219,7 +225,7 @@ export default function Settings() {
             <p className="text-sm text-muted-foreground mb-2">
               Escolhe o idioma da interface
             </p>
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger id="language" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -258,10 +264,10 @@ export default function Settings() {
             <div>
               <p className="text-3xl font-bold">{getPlanName(store.plan)}</p>
               <p className="text-muted-foreground mt-1">
-                {store.plan === 'free' && 'Até 10 produtos'}
-                {store.plan === 'grow' && 'Até 100 produtos'}
-                {store.plan === 'business' && 'Até 1.000 produtos'}
-                {store.plan === 'enterprise' && 'Produtos ilimitados'}
+                {store.plan === 'free' && '1 loja • Até 10 produtos'}
+                {store.plan === 'grow' && '1 loja • Até 100 produtos'}
+                {store.plan === 'business' && '3 lojas • Até 500 produtos por loja'}
+                {store.plan === 'enterprise' && '10 lojas • Até 2.000 produtos por loja'}
               </p>
             </div>
             {store.plan !== 'enterprise' && (

@@ -9,6 +9,7 @@ import { TrendingUp, ShoppingCart, Package, DollarSign, CalendarIcon } from "luc
 import { format } from "date-fns";
 import { pt as ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 
 interface Stats {
   totalSales: number;
@@ -137,6 +138,8 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      <OnboardingChecklist />
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
