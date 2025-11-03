@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Auth = () => {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ const Auth = () => {
 
         if (error) throw error;
 
-        toast.success("Bem-vindo de volta!");
+        toast.success(t('auth.welcomeBack'));
         navigate("/dashboard");
       } else {
         const redirectUrl = `${window.location.origin}/dashboard`;
@@ -49,11 +51,11 @@ const Auth = () => {
 
         if (error) throw error;
 
-        toast.success("Conta criada! Bem-vindo à MyndLink.");
+        toast.success(t('auth.accountCreated'));
         navigate("/dashboard");
       }
     } catch (error: any) {
-      toast.error(error.message || "Ocorreu um erro. Tenta novamente.");
+      toast.error(error.message || t('auth.error'));
     } finally {
       setLoading(false);
     }
@@ -71,12 +73,10 @@ const Auth = () => {
         <Card className="p-8 shadow-glow">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold mb-2">
-              {isLogin ? "Entrar na Conta" : "Criar Conta"}
+              {isLogin ? t('auth.login') : t('auth.signup')}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {isLogin
-                ? "Bem-vindo de volta! Entra para continuar."
-                : "Começa a criar a tua loja online agora."}
+              {isLogin ? t('auth.loginWelcome') : t('auth.signupWelcome')}
             </p>
           </div>
 
@@ -84,22 +84,22 @@ const Auth = () => {
             {!isLogin && (
               <>
                 <div>
-                  <Label htmlFor="firstName">Nome</Label>
+                  <Label htmlFor="firstName">{t('auth.firstName')}</Label>
                   <Input
                     id="firstName"
                     type="text"
-                    placeholder="Teu nome"
+                    placeholder={t('auth.firstName')}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Apelido</Label>
+                  <Label htmlFor="lastName">{t('auth.lastName')}</Label>
                   <Input
                     id="lastName"
                     type="text"
-                    placeholder="Teu apelido"
+                    placeholder={t('auth.lastName')}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
@@ -109,11 +109,11 @@ const Auth = () => {
             )}
             
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="teu@email.com"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -121,7 +121,7 @@ const Auth = () => {
             </div>
 
             <div>
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -139,13 +139,13 @@ const Auth = () => {
                   to="/password-reset"
                   className="text-sm text-muted-foreground hover:underline"
                 >
-                  Esqueceste a senha?
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Aguarde..." : isLogin ? "Entrar" : "Criar Conta"}
+              {loading ? t('auth.pleaseWait') : isLogin ? t('auth.login') : t('auth.signup')}
             </Button>
           </form>
 
@@ -154,9 +154,7 @@ const Auth = () => {
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm text-muted-foreground hover:underline"
             >
-              {isLogin
-                ? "Não tens conta? Criar conta"
-                : "Já tens conta? Entrar"}
+              {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
             </button>
           </div>
         </Card>
@@ -166,7 +164,7 @@ const Auth = () => {
             to="/"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            ← Voltar ao Início
+            ← {t('auth.backToHome')}
           </Link>
         </div>
       </div>

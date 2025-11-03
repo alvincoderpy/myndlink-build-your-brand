@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Zap, Globe, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 const Landing = () => {
+  const { t } = useTranslation();
   return <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -13,10 +16,10 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
-              <Button variant="ghost" className="py-0 mx-0 px-0">Entrar</Button>
+              <Button variant="ghost" className="py-0 mx-0 px-0">{t('nav.login')}</Button>
             </Link>
             <Link to="/auth">
-              <Button>Começar Grátis</Button>
+              <Button>{t('nav.getStarted')}</Button>
             </Link>
           </div>
         </div>
@@ -27,22 +30,22 @@ const Landing = () => {
         <div className="container mx-auto max-w-5xl text-center">
           <div className="animate-fade-in">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              Crie sua Loja Online
+              {t('hero.title')}
               <br />
               <span className="bg-clip-text text-foreground">
-                em Minutos
+                {t('hero.subtitle')}
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">Plataforma completa para vender online. Subdomínio gratuito, Formas de pagamento e Templates responsivos.</p>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">{t('hero.description')}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/auth">
                 <Button size="lg" className="text-lg px-8 py-6">
-                  Começa hoje. Grátis <ArrowRight className="ml-2" />
+                  {t('hero.cta')} <ArrowRight className="ml-2" />
                 </Button>
               </Link>
               <Link to="/pricing">
                 <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                  Ver Preços
+                  {t('hero.viewPricing')}
                 </Button>
               </Link>
             </div>
@@ -55,9 +58,9 @@ const Landing = () => {
       <section className="px-6 py-[40px]">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16 animate-slide-up">
-            <h2 className="text-4xl font-bold mb-4">Tudo que Precisas para Vender Online</h2>
+            <h2 className="text-4xl font-bold mb-4">{t('features.title')}</h2>
             <p className="text-xl text-muted-foreground">
-              Ferramentas profissionais para o teu negócio crescer
+              {t('features.subtitle')}
             </p>
           </div>
 
@@ -66,9 +69,9 @@ const Landing = () => {
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
                 <Zap className="text-foreground" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Rápido e Simples</h3>
+              <h3 className="text-2xl font-bold mb-3">{t('features.fast.title')}</h3>
               <p className="text-muted-foreground">
-                Cria a tua loja em minutos com templates prontos. Sem código, sem complicação.
+                {t('features.fast.description')}
               </p>
             </div>
 
@@ -76,17 +79,17 @@ const Landing = () => {
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
                 <Globe className="text-foreground" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
-              <p className="text-muted-foreground">Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio em breve.</p>
+              <h3 className="text-2xl font-bold mb-3">{t('features.subdomain.title')}</h3>
+              <p className="text-muted-foreground">{t('features.subdomain.description')}</p>
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
               <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-muted">
                 <CreditCard className="text-foreground" />
               </div>
-              <h3 className="text-2xl font-bold mb-3">Pagamentos Integrados</h3>
+              <h3 className="text-2xl font-bold mb-3">{t('features.payment.title')}</h3>
               <p className="text-muted-foreground">
-                Aceita M-Pesa, eMola e Cartão. Pagamentos seguros e fáceis para os teus clientes.
+                {t('features.payment.description')}
               </p>
             </div>
           </div>
@@ -97,84 +100,84 @@ const Landing = () => {
       <section className="py-20 px-6 bg-card/50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Planos para Todos os Negócios</h2>
-            <p className="text-xl text-muted-foreground">Começa grátis e evolui conforme cresces.</p>
+            <h2 className="text-4xl font-bold mb-4">{t('pricing.title')}</h2>
+            <p className="text-xl text-muted-foreground">{t('pricing.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-6">
             <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">Free</h3>
-              <div className="text-3xl font-bold mb-4">0 MT<span className="text-sm text-muted-foreground">/mês</span></div>
+              <h3 className="text-xl font-bold mb-2">{t('pricing.free.name')}</h3>
+              <div className="text-3xl font-bold mb-4">{t('pricing.free.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  1 loja
+                  {t('pricing.free.feature1')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  Até 10 produtos
+                  {t('pricing.free.feature2')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  Subdomínio grátis
+                  {t('pricing.free.feature3')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">Grow</h3>
-              <div className="text-3xl font-bold mb-4">199 MT<span className="text-sm text-muted-foreground">/mês</span></div>
+              <h3 className="text-xl font-bold mb-2">{t('pricing.grow.name')}</h3>
+              <div className="text-3xl font-bold mb-4">{t('pricing.grow.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  1 loja
+                  {t('pricing.grow.feature1')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  Até 100 produtos
+                  {t('pricing.grow.feature2')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  Todos pagamentos
+                  {t('pricing.grow.feature3')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-card p-6 border-2 border-border shadow-lg rounded-md px-[24px] mx-0 my-0 py-[24px]">
-              <div className="text-xs font-bold text-foreground mb-2 rounded-none mx-0">MAIS POPULAR</div>
-              <h3 className="text-xl font-bold mb-2">Business</h3>
-              <div className="text-3xl font-bold mb-4">399 MT<span className="text-sm text-muted-foreground">/mês</span></div>
+              <div className="text-xs font-bold text-foreground mb-2 rounded-none mx-0">{t('pricing.business.popular')}</div>
+              <h3 className="text-xl font-bold mb-2">{t('pricing.business.name')}</h3>
+              <div className="text-3xl font-bold mb-4">{t('pricing.business.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  3 lojas
+                  {t('pricing.business.feature1')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  500 produtos/loja
+                  {t('pricing.business.feature2')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  PDF recibos
+                  {t('pricing.business.feature3')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">Enterprise</h3>
-              <div className="text-3xl font-bold mb-4">899 MT<span className="text-sm text-muted-foreground">/mês</span></div>
+              <h3 className="text-xl font-bold mb-2">{t('pricing.enterprise.name')}</h3>
+              <div className="text-3xl font-bold mb-4">{t('pricing.enterprise.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  10 lojas
+                  {t('pricing.enterprise.feature1')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  2.000 produtos/loja
+                  {t('pricing.enterprise.feature2')}
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  Acesso antecipado
+                  {t('pricing.enterprise.feature3')}
                 </li>
               </ul>
             </div>
@@ -182,7 +185,7 @@ const Landing = () => {
 
           <div className="text-center mt-8">
             <Link to="/pricing">
-              <Button>Ver Todos os Planos</Button>
+              <Button>{t('pricing.viewAll')}</Button>
             </Link>
           </div>
         </div>
@@ -192,14 +195,14 @@ const Landing = () => {
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Pronto para Começar?
+            {t('cta.title')}
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Junta-te a milhares de empreendedores que já criaram suas lojas online
+            {t('cta.subtitle')}
           </p>
           <Link to="/auth">
             <Button size="lg" className="text-lg py-6 px-[24px]">
-              Criar Minha Loja Grátis <ArrowRight className="ml-2" />
+              {t('cta.button')} <ArrowRight className="ml-2" />
             </Button>
           </Link>
           
@@ -209,7 +212,7 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
         <div className="container mx-auto text-center text-muted-foreground text-sm">
-          <p>&copy; 2025 MyndLink. Todos os direitos reservados.</p>
+          <p>&copy; 2025 MyndLink. {t('footer.copyright')}</p>
         </div>
       </footer>
     </div>;

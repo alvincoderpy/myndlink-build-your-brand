@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useNavigate } from "react-router-dom";
@@ -213,7 +214,12 @@ const StoreEditor = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => window.open(`/store/${subdomain}`, '_blank')}
+              onClick={() => {
+                if (store?.subdomain) {
+                  window.open(`/store/${store.subdomain}`, '_blank');
+                }
+              }}
+              disabled={!store?.subdomain}
             >
               <Eye className="w-4 h-4 mr-2" />
               Ver Loja
@@ -391,6 +397,44 @@ const StoreEditor = () => {
                 </RadioGroup>
               </div>
             </Card>
+
+            {/* Publish Store */}
+            {store && (
+              <Card className="p-6">
+                <div className="flex items-center gap-4">
+                  <Switch
+                    checked={store?.is_published}
+                    onCheckedChange={async (checked) => {
+                      try {
+                        const { error } = await supabase
+                          .from('stores')
+                          .update({ is_published: checked })
+                          .eq('id', store.id);
+                        
+                        if (error) throw error;
+                        
+                        toast({
+                          title: checked ? "Loja publicada!" : "Loja despublicada!",
+                        });
+                        await loadStore();
+                      } catch (error: any) {
+                        toast({
+                          title: "Erro",
+                          description: error.message,
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  />
+                  <div>
+                    <Label className="text-base font-bold">Publicar Loja</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Torna a tua loja visível ao público
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
 
             {/* Preview */}
             <Card className="p-6">

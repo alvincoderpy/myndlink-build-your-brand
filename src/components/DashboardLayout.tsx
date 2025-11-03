@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { OnboardingCarousel } from "./OnboardingCarousel";
 import { Button } from "./ui/button";
 import { LogOut, Menu } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -59,7 +58,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen w-full bg-muted/30">
-      <OnboardingCarousel />
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Top Bar */}
