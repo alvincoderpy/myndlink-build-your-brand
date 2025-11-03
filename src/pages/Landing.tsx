@@ -33,9 +33,7 @@ const Landing = () => {
                 em Minutos
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Plataforma completa para vender online. Subdomínio gratuito, templates responsivos e sem complicação.
-            </p>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">Plataforma completa para vender online. Subdomínio gratuito, Formas de pagamento e Templates responsivos.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/auth">
                 <Button size="lg" className="text-lg px-8 py-6">
@@ -48,7 +46,7 @@ const Landing = () => {
                 </Button>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">Sem cartão de crédito. Comece grátis.</p>
+            
           </div>
         </div>
       </section>
