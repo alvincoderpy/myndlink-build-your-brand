@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Store, Package, ShoppingCart, Settings } from "lucide-react";
+import { LayoutDashboard, Store, Package, ShoppingCart, Settings, Tag } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 interface DashboardSidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,6 +11,7 @@ export function DashboardSidebar({
   isOpen,
   onClose
 }: DashboardSidebarProps) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [dragStartY, setDragStartY] = useState(0);
   const [dragCurrentY, setDragCurrentY] = useState(0);
@@ -73,27 +75,32 @@ export function DashboardSidebar({
         <nav className="p-4">
           <NavLink to="/dashboard" end className={navLinkClass} onClick={() => isMobile && onClose()}>
             <LayoutDashboard className="w-5 h-5" />
-            <span>Dashboard</span>
+            <span>{t('nav.dashboard')}</span>
           </NavLink>
 
           <NavLink to="/dashboard/store/edit" className={navLinkClass} onClick={() => isMobile && onClose()}>
             <Store className="w-5 h-5" />
-            <span>Minha Loja</span>
+            <span>{t('nav.myStore')}</span>
           </NavLink>
 
           <NavLink to="/dashboard/products" className={navLinkClass} onClick={() => isMobile && onClose()}>
             <Package className="w-5 h-5" />
-            <span>Produtos</span>
+            <span>{t('nav.products')}</span>
           </NavLink>
 
           <NavLink to="/dashboard/orders" className={navLinkClass} onClick={() => isMobile && onClose()}>
             <ShoppingCart className="w-5 h-5" />
-            <span>Pedidos</span>
+            <span>{t('nav.orders')}</span>
+          </NavLink>
+
+          <NavLink to="/dashboard/coupons" className={navLinkClass} onClick={() => isMobile && onClose()}>
+            <Tag className="w-5 h-5" />
+            <span>{t('nav.coupons')}</span>
           </NavLink>
 
           <NavLink to="/dashboard/settings" className={navLinkClass} onClick={() => isMobile && onClose()}>
             <Settings className="w-5 h-5" />
-            <span>Configurações</span>
+            <span>{t('nav.settings')}</span>
           </NavLink>
         </nav>
       </aside>
