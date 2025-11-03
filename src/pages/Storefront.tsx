@@ -39,7 +39,7 @@ export default function Storefront() {
     setLoading(true);
     const { data: storeData } = await supabase
       .from("stores")
-      .select("*")
+      .select("*, template_config")
       .eq("subdomain", subdomain)
       .eq("is_published", true)
       .single();
@@ -139,7 +139,11 @@ export default function Storefront() {
     );
   }
 
-  const templateConfig = templates[store?.template as keyof typeof templates] || templates.fashion;
+  const baseTemplate = templates[store?.template as keyof typeof templates] || templates.fashion;
+  
+  const templateConfig = store?.template_config && typeof store.template_config === 'object'
+    ? { ...baseTemplate, ...(store.template_config as any) } 
+    : baseTemplate;
 
   return (
     <div 
@@ -186,7 +190,13 @@ export default function Storefront() {
             <p className="text-muted-foreground">Esta loja ainda não tem produtos</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className={`grid gap-6 ${
+            templateConfig.layout === 'list' 
+              ? 'grid-cols-1' 
+              : templateConfig.layout === 'masonry'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-auto'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          }`}>
             {products.map((product) => (
               <Card key={product.id} className="overflow-hidden group">
                 <div className="aspect-square bg-muted relative overflow-hidden">

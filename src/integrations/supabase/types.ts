@@ -261,6 +261,7 @@ export type Database = {
           plan: string
           subdomain: string
           template: string
+          template_config: Json | null
           updated_at: string
           user_id: string
         }
@@ -273,6 +274,7 @@ export type Database = {
           plan?: string
           subdomain: string
           template?: string
+          template_config?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -285,6 +287,7 @@ export type Database = {
           plan?: string
           subdomain?: string
           template?: string
+          template_config?: Json | null
           updated_at?: string
           user_id?: string
         }

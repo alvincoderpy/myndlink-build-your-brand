@@ -4,11 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Eye } from "lucide-react";
+import { Save, Eye, RotateCcw } from "lucide-react";
 import { templates } from "@/config/templates";
+import { hslToHex, hexToHsl } from "@/lib/colorUtils";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,12 @@ const StoreEditor = () => {
   const [storeName, setStoreName] = useState("");
   const [subdomain, setSubdomain] = useState("");
   const [template, setTemplate] = useState("fashion");
+  const [customColors, setCustomColors] = useState({
+    primary: templates.fashion.colors.primary,
+    secondary: templates.fashion.colors.secondary,
+    accent: templates.fashion.colors.accent,
+  });
+  const [customLayout, setCustomLayout] = useState<"grid" | "list" | "masonry">("grid");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,6 +55,22 @@ const StoreEditor = () => {
         setStoreName(data.name);
         setSubdomain(data.subdomain);
         setTemplate(data.template);
+        
+        // Load custom configuration if exists
+        if (data.template_config && typeof data.template_config === 'object') {
+          const config = data.template_config as any;
+          if (config.colors) {
+            setCustomColors(config.colors);
+          }
+          if (config.layout) {
+            setCustomLayout(config.layout);
+          }
+        } else {
+          // Use default template colors and layout
+          const defaultTemplate = templates[data.template as keyof typeof templates];
+          setCustomColors(defaultTemplate.colors);
+          setCustomLayout(defaultTemplate.layout);
+        }
       }
     } catch (error: any) {
       console.error("Error loading store:", error);
@@ -75,6 +99,14 @@ const StoreEditor = () => {
         return;
       }
 
+      const templateConfig = {
+        base: template,
+        colors: customColors,
+        layout: customLayout,
+        fonts: templates[template as keyof typeof templates].fonts,
+        cardStyle: templates[template as keyof typeof templates].cardStyle,
+      };
+
       if (store) {
         const { error } = await supabase
           .from("stores")
@@ -82,6 +114,7 @@ const StoreEditor = () => {
             name: storeName,
             subdomain: cleanSubdomain,
             template,
+            template_config: templateConfig,
           })
           .eq("id", store.id);
 
@@ -99,6 +132,7 @@ const StoreEditor = () => {
             name: storeName,
             subdomain: cleanSubdomain,
             template,
+            template_config: templateConfig,
             plan: "free",
           });
 
@@ -132,6 +166,29 @@ const StoreEditor = () => {
     }
   };
 
+  const resetToDefaults = () => {
+    const defaultTemplate = templates[template as keyof typeof templates];
+    setCustomColors(defaultTemplate.colors);
+    setCustomLayout(defaultTemplate.layout);
+    toast({
+      title: "Restaurado",
+      description: "Configurações restauradas para o padrão do template.",
+    });
+  };
+
+  const handleTemplateChange = (newTemplate: string) => {
+    setTemplate(newTemplate);
+    const defaultTemplate = templates[newTemplate as keyof typeof templates];
+    setCustomColors(defaultTemplate.colors);
+    setCustomLayout(defaultTemplate.layout);
+  };
+
+  const previewConfig = {
+    ...templates[template as keyof typeof templates],
+    colors: customColors,
+    layout: customLayout,
+  };
+
   return loading ? (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="text-center">
@@ -153,7 +210,11 @@ const StoreEditor = () => {
         </div>
         <div className="flex items-center gap-3">
           {store && (
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open(`/store/${subdomain}`, '_blank')}
+            >
               <Eye className="w-4 h-4 mr-2" />
               Ver Loja
             </Button>
@@ -207,8 +268,8 @@ const StoreEditor = () => {
             <Card className="p-6">
               <h2 className="text-2xl font-bold mb-6">Escolher Template</h2>
               <div>
-                <Label htmlFor="template">Template</Label>
-                <Select value={template} onValueChange={setTemplate}>
+                <Label htmlFor="template">Template Base</Label>
+                <Select value={template} onValueChange={handleTemplateChange}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Escolher template" />
                   </SelectTrigger>
@@ -218,35 +279,160 @@ const StoreEditor = () => {
                     <SelectItem value="beauty">Beleza</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Escolhe um template base e personaliza as cores e layout abaixo
+                </p>
+              </div>
+            </Card>
+
+            {/* Customization Section */}
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Personalizar Template</h2>
+                <Button variant="outline" size="sm" onClick={resetToDefaults}>
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Restaurar Padrão
+                </Button>
               </div>
 
-              <div className="mt-6">
-                <div className="border border-border rounded-lg p-6">
-                  <p className="text-sm font-medium mb-4">Pré-visualização: {templates[template as keyof typeof templates]?.name}</p>
-                  <div 
-                    className="rounded-lg overflow-hidden border-2 border-border"
-                    style={{
-                      backgroundColor: `hsl(${templates[template as keyof typeof templates]?.colors.secondary})`
-                    }}
-                  >
-                    <div className="p-8">
-                      <h3 
-                        className={`text-2xl mb-4 ${templates[template as keyof typeof templates]?.fonts.heading}`}
-                        style={{ color: `hsl(${templates[template as keyof typeof templates]?.colors.primary})` }}
-                      >
-                        Produto Exemplo
-                      </h3>
-                      <div 
-                        className={`grid ${templates[template as keyof typeof templates]?.layout === 'grid' ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}
-                      >
-                        <div 
-                          className="aspect-square rounded-lg"
-                          style={{ backgroundColor: `hsl(${templates[template as keyof typeof templates]?.colors.accent})` }}
-                        />
-                        <div className={templates[template as keyof typeof templates]?.fonts.body}>
-                          <p className="text-sm opacity-70">Este é um exemplo de como a tua loja vai aparecer com este template.</p>
+              {/* Color Pickers */}
+              <div className="space-y-4 mb-6">
+                <h3 className="font-semibold text-lg">Cores</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="primary-color">Cor Primária</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        id="primary-color"
+                        type="color"
+                        value={hslToHex(customColors.primary)}
+                        onChange={(e) =>
+                          setCustomColors({ ...customColors, primary: hexToHsl(e.target.value) })
+                        }
+                        className="w-20 h-10 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={hslToHex(customColors.primary)}
+                        readOnly
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="secondary-color">Cor Secundária (Fundo)</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        id="secondary-color"
+                        type="color"
+                        value={hslToHex(customColors.secondary)}
+                        onChange={(e) =>
+                          setCustomColors({ ...customColors, secondary: hexToHsl(e.target.value) })
+                        }
+                        className="w-20 h-10 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={hslToHex(customColors.secondary)}
+                        readOnly
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="accent-color">Cor de Destaque</Label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        id="accent-color"
+                        type="color"
+                        value={hslToHex(customColors.accent)}
+                        onChange={(e) =>
+                          setCustomColors({ ...customColors, accent: hexToHsl(e.target.value) })
+                        }
+                        className="w-20 h-10 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={hslToHex(customColors.accent)}
+                        readOnly
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Layout Selection */}
+              <div>
+                <h3 className="font-semibold text-lg mb-3">Layout dos Produtos</h3>
+                <RadioGroup value={customLayout} onValueChange={(value: any) => setCustomLayout(value)}>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="grid" id="layout-grid" />
+                      <Label htmlFor="layout-grid" className="font-normal cursor-pointer">
+                        Grade (3-4 colunas) - Layout tradicional em grade
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="list" id="layout-list" />
+                      <Label htmlFor="layout-list" className="font-normal cursor-pointer">
+                        Lista (1 coluna) - Produtos em lista vertical
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="masonry" id="layout-masonry" />
+                      <Label htmlFor="layout-masonry" className="font-normal cursor-pointer">
+                        Mosaico (tamanhos variados) - Layout dinâmico tipo Pinterest
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+            </Card>
+
+            {/* Preview */}
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Pré-visualização</h2>
+              <div className="border border-border rounded-lg p-6">
+                <div 
+                  className="rounded-lg overflow-hidden border-2 border-border"
+                  style={{
+                    backgroundColor: `hsl(${previewConfig.colors.secondary})`
+                  }}
+                >
+                  <div className="p-8">
+                    <h3 
+                      className={`text-2xl mb-6 ${previewConfig.fonts.heading}`}
+                      style={{ color: `hsl(${previewConfig.colors.primary})` }}
+                    >
+                      {storeName || "Minha Loja"}
+                    </h3>
+                    <div 
+                      className={`grid gap-4 ${
+                        previewConfig.layout === 'list' 
+                          ? 'grid-cols-1' 
+                          : previewConfig.layout === 'masonry'
+                          ? 'grid-cols-2'
+                          : 'grid-cols-2 md:grid-cols-3'
+                      }`}
+                    >
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="rounded-lg overflow-hidden border border-border bg-card">
+                          <div 
+                            className={`${previewConfig.layout === 'list' ? 'aspect-video' : 'aspect-square'}`}
+                            style={{ backgroundColor: `hsl(${previewConfig.colors.accent})` }}
+                          />
+                          <div className={`p-4 ${previewConfig.fonts.body}`}>
+                            <p className="font-bold mb-1">Produto {i}</p>
+                            <p className="text-sm opacity-70 mb-2">Descrição do produto</p>
+                            <p className="font-bold" style={{ color: `hsl(${previewConfig.colors.primary})` }}>
+                              99.99 MT
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
