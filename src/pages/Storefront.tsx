@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { templates } from "@/config/templates";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   id: string;
@@ -27,6 +28,7 @@ interface CartItem extends Product {
 export default function Storefront() {
   const { subdomain } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -47,7 +49,7 @@ export default function Storefront() {
       .single();
 
     if (!storeData) {
-      toast.error("Loja não encontrada");
+      toast.error(t('storefront.storeNotFound'));
       setLoading(false);
       return;
     }
@@ -70,7 +72,7 @@ export default function Storefront() {
     
     if (existingItem) {
       if (existingItem.quantity >= product.stock) {
-        toast.error("Quantidade máxima atingida");
+        toast.error(t('storefront.maxQuantity'));
         return;
       }
       setCart(
@@ -83,7 +85,7 @@ export default function Storefront() {
     } else {
       setCart([...cart, { ...product, quantity: 1 }]);
     }
-    toast.success("Produto adicionado ao carrinho");
+    toast.success(t('storefront.addedToCart'));
   };
 
   const updateQuantity = (productId: string, delta: number) => {
@@ -94,7 +96,7 @@ export default function Storefront() {
             const newQuantity = item.quantity + delta;
             if (newQuantity <= 0) return null;
             if (newQuantity > item.stock) {
-              toast.error("Quantidade máxima atingida");
+              toast.error(t('storefront.maxQuantity'));
               return item;
             }
             return { ...item, quantity: newQuantity };
@@ -107,7 +109,7 @@ export default function Storefront() {
 
   const removeFromCart = (productId: string) => {
     setCart(cart.filter((item) => item.id !== productId));
-    toast.success("Produto removido do carrinho");
+    toast.success(t('storefront.removedFromCart'));
   };
 
   const getTotalPrice = () => {
@@ -116,7 +118,7 @@ export default function Storefront() {
 
   const handleCheckout = () => {
     if (cart.length === 0) {
-      toast.error("Carrinho vazio");
+      toast.error(t('storefront.emptyCart'));
       return;
     }
     navigate(`/store/${subdomain}/checkout`, { state: { cart, store } });
@@ -193,7 +195,7 @@ export default function Storefront() {
             className="relative"
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
-            Carrinho
+            {t('storefront.cart')}
             {cart.length > 0 && (
               <Badge className="ml-2 absolute -top-2 -right-2">
                 {cart.length}
@@ -212,8 +214,8 @@ export default function Storefront() {
           >
             <Card className="p-12 text-center">
               <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-2xl font-bold mb-2">Sem produtos disponíveis</h2>
-              <p className="text-muted-foreground">Esta loja ainda não tem produtos</p>
+              <h2 className="text-2xl font-bold mb-2">{t('storefront.noProducts')}</h2>
+              <p className="text-muted-foreground">{t('storefront.noProductsDescription')}</p>
             </Card>
           </motion.div>
         ) : (
@@ -401,7 +403,7 @@ export default function Storefront() {
                   size="lg"
                   onClick={handleCheckout}
                 >
-                  Finalizar Compra
+                  {t('storefront.finalizeOrder')}
                 </Button>
               </>
             )}

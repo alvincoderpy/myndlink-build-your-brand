@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useStore } from "@/contexts/StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,11 +13,14 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Key, Bell, Languages, Trash2, Moon, Sun, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
   const { user, signOut } = useAuth();
+  const { currentStore } = useStore();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     first_name: "",
@@ -24,7 +28,6 @@ export default function Settings() {
     full_name: "",
     email: "",
   });
-  const [store, setStore] = useState<any>(null);
   const [notifications, setNotifications] = useState({
     email_orders: true,
     email_marketing: false,
@@ -40,7 +43,6 @@ export default function Settings() {
   useEffect(() => {
     if (user) {
       loadProfile();
-      loadStore();
     }
   }, [user]);
 
@@ -61,18 +63,6 @@ export default function Settings() {
     }
   };
 
-  const loadStore = async () => {
-    const { data } = await supabase
-      .from("stores")
-      .select("*")
-      .eq("user_id", user?.id)
-      .single();
-    
-    if (data) {
-      setStore(data);
-    }
-  };
-
   const handleUpdateProfile = async () => {
     setLoading(true);
     const { error } = await supabase
@@ -85,9 +75,9 @@ export default function Settings() {
       .eq("user_id", user?.id);
 
     if (error) {
-      toast.error("Erro ao atualizar perfil");
+      toast.error(t('settings.errorUpdateProfile'));
     } else {
-      toast.success("Perfil atualizado com sucesso");
+      toast.success(t('settings.profileUpdated'));
     }
     setLoading(false);
   };
@@ -116,45 +106,45 @@ export default function Settings() {
     });
     
     if (error) {
-      toast.error("Erro ao enviar email");
+      toast.error(t('settings.errorSendEmail'));
     } else {
-      toast.success("Email de redefinição enviado! Verifica a tua caixa de entrada.");
+      toast.success(t('settings.resetEmailSent'));
     }
     setLoading(false);
   };
 
   const handleDeleteAccount = async () => {
-    toast.error("Funcionalidade em desenvolvimento");
+    toast.error(t('settings.inDevelopment'));
   };
 
   return (
     <div className="max-w-4xl animate-fade-in">
-      <h1 className="text-4xl font-bold mb-8 text-foreground">Configurações</h1>
+      <h1 className="text-4xl font-bold mb-8 text-foreground">{t('settings.title')}</h1>
 
       {/* Perfil do Usuário */}
       <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4">Perfil do Usuário</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('settings.userProfile')}</h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="first_name">Nome</Label>
+            <Label htmlFor="first_name">{t('settings.firstName')}</Label>
             <Input
               id="first_name"
               value={profile.first_name}
               onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
-              placeholder="Teu nome"
+              placeholder={t('settings.firstNamePlaceholder')}
             />
           </div>
           <div>
-            <Label htmlFor="last_name">Apelido</Label>
+            <Label htmlFor="last_name">{t('settings.lastName')}</Label>
             <Input
               id="last_name"
               value={profile.last_name}
               onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
-              placeholder="Teu apelido"
+              placeholder={t('settings.lastNamePlaceholder')}
             />
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('settings.email')}</Label>
             <Input
               id="email"
               value={profile.email}
@@ -162,11 +152,11 @@ export default function Settings() {
               className="bg-muted"
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Email não pode ser alterado
+              {t('settings.emailReadonly')}
             </p>
           </div>
           <Button onClick={handleUpdateProfile} disabled={loading}>
-            {loading ? "Salvando..." : "Salvar Alterações"}
+            {loading ? t('settings.saving') : t('settings.saveChanges')}
           </Button>
         </div>
       </Card>
@@ -175,15 +165,15 @@ export default function Settings() {
       <Card className="p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Key className="w-6 h-6" />
-          Segurança
+          {t('settings.security')}
         </h2>
         <div className="space-y-4">
           <div>
             <p className="text-sm text-muted-foreground mb-3">
-              Altera a tua senha para manter a conta segura
+              {t('settings.securityDesc')}
             </p>
             <Button variant="outline" onClick={handleChangePassword} disabled={loading}>
-              Alterar Senha
+              {t('settings.changePassword')}
             </Button>
           </div>
         </div>
@@ -193,14 +183,14 @@ export default function Settings() {
       <Card className="p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Bell className="w-6 h-6" />
-          Notificações
+          {t('settings.notifications')}
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <Label className="text-base">Avisos de novos pedidos</Label>
+              <Label className="text-base">{t('settings.orderNotifications')}</Label>
               <p className="text-sm text-muted-foreground">
-                Recebe emails quando houver novos pedidos
+                {t('settings.orderNotificationsDesc')}
               </p>
             </div>
             <Switch 
@@ -217,13 +207,13 @@ export default function Settings() {
       <Card className="p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Languages className="w-6 h-6" />
-          Preferências
+          {t('settings.preferences')}
         </h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="language" className="text-base">Idioma</Label>
+            <Label htmlFor="language" className="text-base">{t('settings.language')}</Label>
             <p className="text-sm text-muted-foreground mb-2">
-              Escolhe o idioma da interface
+              {t('settings.languageDesc')}
             </p>
             <Select value={language} onValueChange={handleLanguageChange}>
               <SelectTrigger id="language" className="w-full">
@@ -239,9 +229,9 @@ export default function Settings() {
 
           <div className="flex items-center justify-between pt-4 border-t">
             <div>
-              <Label className="text-base">Modo Escuro</Label>
+              <Label className="text-base">{t('settings.darkMode')}</Label>
               <p className="text-sm text-muted-foreground">
-                Ativa o tema escuro
+                {t('settings.darkModeDesc')}
               </p>
             </div>
             <Button
@@ -257,22 +247,22 @@ export default function Settings() {
       </Card>
 
       {/* Plano Atual */}
-      {store && (
+      {currentStore && (
         <Card className="p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">Plano Atual</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('settings.currentPlan')}</h2>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">{getPlanName(store.plan)}</p>
+              <p className="text-3xl font-bold">{getPlanName(currentStore.plan)}</p>
               <p className="text-muted-foreground mt-1">
-                {store.plan === 'free' && '1 loja • Até 10 produtos'}
-                {store.plan === 'grow' && '1 loja • Até 100 produtos'}
-                {store.plan === 'business' && '3 lojas • Até 500 produtos por loja'}
-                {store.plan === 'enterprise' && '10 lojas • Até 2.000 produtos por loja'}
+                {currentStore.plan === 'free' && t('settings.freePlanDesc')}
+                {currentStore.plan === 'grow' && t('settings.growPlanDesc')}
+                {currentStore.plan === 'business' && t('settings.businessPlanDesc')}
+                {currentStore.plan === 'enterprise' && t('settings.enterprisePlanDesc')}
               </p>
             </div>
-            {store.plan !== 'enterprise' && (
+            {currentStore.plan !== 'enterprise' && (
               <Button onClick={() => navigate("/pricing")}>
-                Fazer Upgrade
+                {t('settings.upgrade')}
               </Button>
             )}
           </div>
@@ -281,12 +271,12 @@ export default function Settings() {
 
       {/* Sessão */}
       <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Sessão</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('settings.session')}</h2>
         <div className="space-y-4">
           <div>
-            <Label className="text-base">Sair da Conta</Label>
+            <Label className="text-base">{t('settings.logout')}</Label>
             <p className="text-sm text-muted-foreground mb-2">
-              Terminar a sessão atual
+              {t('settings.logoutDesc')}
             </p>
             <Button 
               variant="outline" 
@@ -294,34 +284,34 @@ export default function Settings() {
               onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sair da Conta
+              {t('settings.logout')}
             </Button>
           </div>
 
           <div className="pt-4 border-t">
-            <Label className="text-base text-red-600">Eliminar Conta Permanentemente</Label>
+            <Label className="text-base text-red-600">{t('settings.deleteAccountPermanent')}</Label>
             <p className="text-sm text-muted-foreground mb-2">
-              Esta ação não pode ser desfeita
+              {t('settings.deleteAccountWarning')}
             </p>
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" className="w-full border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Eliminar Conta Permanentemente
+                  {t('settings.deleteAccountPermanent')}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Tens a certeza?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('settings.confirmDelete')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta ação é irreversível. Todos os teus dados, produtos e pedidos serão eliminados permanentemente.
+                    {t('settings.confirmDeleteDesc')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{t('settings.cancel')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-500 hover:bg-red-600">
-                    Sim, eliminar conta
+                    {t('settings.confirmDeleteBtn')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

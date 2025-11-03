@@ -5,11 +5,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useStore } from "@/contexts/StoreContext";
 import { TrendingUp, ShoppingCart, Package, DollarSign, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { pt as ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import { useTranslation } from "react-i18next";
 
 interface Stats {
   totalSales: number;
@@ -21,6 +23,8 @@ interface Stats {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { currentStore } = useStore();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats>({
     totalSales: 0,
     pendingOrders: 0,
@@ -36,25 +40,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadStats();
-  }, [user]);
+  }, [user, currentStore]);
 
   const loadStats = async (selectedDateRange?: DateRange) => {
-    if (!user) return;
+    if (!user || !currentStore) return;
     
     const range = selectedDateRange || dateRange;
     if (!range?.from) return;
 
     try {
-      const { data: store } = await supabase
-        .from("stores")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (!store) {
-        setLoading(false);
-        return;
-      }
 
       const startDate = new Date(range.from);
       startDate.setHours(0, 0, 0, 0);
@@ -65,7 +59,7 @@ const Dashboard = () => {
       const { data: orders } = await supabase
         .from("orders")
         .select("id, total, created_at, status")
-        .eq("store_id", store.id)
+        .eq("store_id", currentStore.id)
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString());
 
@@ -95,7 +89,7 @@ const Dashboard = () => {
       const { data: previousOrders } = await supabase
         .from("orders")
         .select("total")
-        .eq("store_id", store.id)
+        .eq("store_id", currentStore.id)
         .gte("created_at", previousStartDate.toISOString())
         .lte("created_at", previousEndDate.toISOString());
 
@@ -120,9 +114,9 @@ const Dashboard = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Visão geral do teu negócio
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -142,9 +136,9 @@ const Dashboard = () => {
       
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Visão geral do teu negócio
+            {t('dashboard.subtitle')}
           </p>
         </div>
 
@@ -162,7 +156,7 @@ const Dashboard = () => {
             format(dateRange.from, "dd MMM yyyy", { locale: ptBR })
           )
         ) : (
-          <span>Selecionar período</span>
+          <span>{t('dashboard.selectPeriod')}</span>
         )}
             </Button>
           </PopoverTrigger>
@@ -191,7 +185,7 @@ const Dashboard = () => {
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Vendas Totais
+              {t('dashboard.totalSales')}
             </p>
             <DollarSign className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -202,7 +196,7 @@ const Dashboard = () => {
             <p className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}>
               <TrendingUp className="w-3 h-3" />
               {stats.salesGrowth > 0 ? "+" : ""}
-              {stats.salesGrowth.toFixed(1)}% vs período anterior
+              {stats.salesGrowth.toFixed(1)}% {t('dashboard.vsPreviousPeriod')}
             </p>
           )}
         </Card>
@@ -210,7 +204,7 @@ const Dashboard = () => {
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Pedidos Pendentes
+              {t('dashboard.pendingOrders')}
             </p>
             <ShoppingCart className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -218,14 +212,14 @@ const Dashboard = () => {
             {stats.pendingOrders}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            No período selecionado
+            {t('dashboard.inSelectedPeriod')}
           </p>
         </Card>
 
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Produtos Vendidos
+              {t('dashboard.productsSold')}
             </p>
             <Package className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -233,14 +227,14 @@ const Dashboard = () => {
             {stats.productsSold}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Com vendas no período
+            {t('dashboard.withSales')}
           </p>
         </Card>
 
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">
-              Pedidos Totais
+              {t('dashboard.totalOrders')}
             </p>
             <ShoppingCart className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -248,7 +242,7 @@ const Dashboard = () => {
             {stats.totalOrders}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            No período selecionado
+            {t('dashboard.inSelectedPeriod')}
           </p>
         </Card>
       </div>
@@ -256,45 +250,45 @@ const Dashboard = () => {
       {/* Quick Actions / Recent Activity */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Ações Rápidas</h3>
+          <h3 className="font-semibold mb-4">{t('dashboard.quickActions')}</h3>
           <div className="space-y-2">
             <a
               href="/dashboard/products"
               className="block p-3 rounded-lg hover:bg-muted transition-colors"
             >
-              <p className="font-medium text-sm">Adicionar Produto</p>
+              <p className="font-medium text-sm">{t('dashboard.addProduct')}</p>
               <p className="text-xs text-muted-foreground">
-                Expande o teu catálogo
+                {t('dashboard.expandCatalog')}
               </p>
             </a>
             <a
               href="/dashboard/orders"
               className="block p-3 rounded-lg hover:bg-muted transition-colors"
             >
-              <p className="font-medium text-sm">Ver Pedidos</p>
+              <p className="font-medium text-sm">{t('dashboard.viewOrders')}</p>
               <p className="text-xs text-muted-foreground">
-                Gerir pedidos pendentes
+                {t('dashboard.managePending')}
               </p>
             </a>
             <a
               href="/dashboard/store/edit"
               className="block p-3 rounded-lg hover:bg-muted transition-colors"
             >
-              <p className="font-medium text-sm">Editar Loja</p>
+              <p className="font-medium text-sm">{t('dashboard.editStore')}</p>
               <p className="text-xs text-muted-foreground">
-                Personalizar a tua loja
+                {t('dashboard.customizeStore')}
               </p>
             </a>
           </div>
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Dicas para Crescer</h3>
+          <h3 className="font-semibold mb-4">{t('dashboard.growthTips')}</h3>
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>✓ Adiciona imagens de qualidade aos produtos</p>
-            <p>✓ Mantém o stock atualizado</p>
-            <p>✓ Responde rapidamente aos pedidos</p>
-            <p>✓ Partilha a tua loja nas redes sociais</p>
+            <p>✓ {t('dashboard.tip1')}</p>
+            <p>✓ {t('dashboard.tip2')}</p>
+            <p>✓ {t('dashboard.tip3')}</p>
+            <p>✓ {t('dashboard.tip4')}</p>
           </div>
         </Card>
       </div>

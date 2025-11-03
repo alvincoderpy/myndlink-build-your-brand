@@ -46,26 +46,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       
       {/* Top Bar */}
       <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40`}>
-        <div className={`h-full px-6 flex items-center gap-4 ${!isMobile ? 'ml-64' : ''}`}>
+        <div className={`h-full px-6 flex items-center justify-center gap-4 ${!isMobile ? 'ml-64' : ''}`}>
           {isMobile && (
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={() => setSidebarOpen(true)}
+              className="absolute left-4"
             >
               <Menu className="w-5 h-5" />
             </Button>
           )}
           
-          {!isMobile && (
-            <div className="w-64">
-              <StoreSelector />
-            </div>
-          )}
-          
-          <h2 className="text-lg font-bold">
-            {currentStore?.name || user.email}
-          </h2>
+          <div className="w-full max-w-xs">
+            <StoreSelector />
+          </div>
         </div>
       </header>
 

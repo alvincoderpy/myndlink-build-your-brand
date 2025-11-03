@@ -11,21 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Tag } from "lucide-react";
 import { z } from "zod";
-
-// Validation schema
-const checkoutSchema = z.object({
-  customer_name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome deve ter no máximo 100 caracteres"),
-  customer_email: z.string().trim().email("Email inválido").max(255, "Email muito longo").optional().or(z.literal('')),
-  customer_phone: z.string().trim().regex(/^[+]?[0-9]{9,15}$/, "Telefone inválido. Use apenas números (9-15 dígitos)"),
-  customer_address: z.string().trim().min(10, "Endereço deve ter pelo menos 10 caracteres").max(500, "Endereço deve ter no máximo 500 caracteres"),
-  notes: z.string().max(1000, "Observações devem ter no máximo 1000 caracteres").optional(),
-  payment_method: z.enum(['mpesa', 'emola', 'card'], { errorMap: () => ({ message: "Selecione um método de pagamento" }) })
-});
+import { useTranslation } from "react-i18next";
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { cart, store } = location.state || {};
+  const { t } = useTranslation();
   
   const [loading, setLoading] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
@@ -41,6 +33,15 @@ export default function Checkout() {
     customer_address: "",
     payment_method: "mpesa",
     notes: "",
+  });
+
+  const checkoutSchema = z.object({
+    customer_name: z.string().trim().min(2, t('checkout.validation.nameMin')).max(100, t('checkout.validation.nameMax')),
+    customer_email: z.string().trim().email(t('checkout.validation.emailInvalid')).max(255, t('checkout.validation.emailMax')).optional().or(z.literal('')),
+    customer_phone: z.string().trim().regex(/^[+]?[0-9]{9,15}$/, t('checkout.validation.phoneInvalid')),
+    customer_address: z.string().trim().min(10, t('checkout.validation.addressMin')).max(500, t('checkout.validation.addressMax')),
+    notes: z.string().max(1000, t('checkout.validation.notesMax')).optional(),
+    payment_method: z.enum(['mpesa', 'emola', 'card'], { errorMap: () => ({ message: t('checkout.validation.paymentRequired') }) })
   });
 
   if (!cart || !store) {
@@ -70,7 +71,7 @@ export default function Checkout() {
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
-      toast.error("Digite um código de cupom");
+      toast.error(t('checkout.enterCoupon'));
       return;
     }
 
@@ -88,21 +89,21 @@ export default function Checkout() {
       if (error) throw error;
 
       if (!data) {
-        toast.error("Cupom inválido ou expirado");
+        toast.error(t('checkout.couponInvalid'));
         return;
       }
 
       // Check expiration
       if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        toast.error("Este cupom expirou");
+        toast.error(t('checkout.couponExpired'));
         return;
       }
 
       setAppliedCoupon(data);
-      toast.success(`Cupom aplicado! ${data.discount_percent}% de desconto`);
+      toast.success(t('checkout.couponApplied', { percent: data.discount_percent }));
     } catch (error: any) {
       console.error("Error applying coupon:", error);
-      toast.error("Erro ao verificar cupom");
+      toast.error(t('checkout.errorVerifyCoupon'));
     } finally {
       setCheckingCoupon(false);
     }
@@ -111,7 +112,7 @@ export default function Checkout() {
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponCode("");
-    toast.success("Cupom removido");
+    toast.success(t('checkout.couponRemoved'));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,13 +163,13 @@ export default function Checkout() {
 
       setOrderNumber(result.order_id!.substring(0, 8).toUpperCase());
       setOrderCreated(true);
-      toast.success("Pedido criado com sucesso!");
+      toast.success(t('checkout.orderCreated'));
     } catch (error: any) {
       console.error("Error creating order:", error);
       if (error.message?.includes('Insufficient stock')) {
-        toast.error('Stock insuficiente para alguns produtos');
+        toast.error(t('checkout.insufficientStock'));
       } else {
-        toast.error("Erro ao criar pedido. Tente novamente.");
+        toast.error(t('checkout.errorOrder'));
       }
     } finally {
       setLoading(false);
