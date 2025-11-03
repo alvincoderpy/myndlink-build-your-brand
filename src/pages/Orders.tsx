@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Check, Store, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Orders = () => {
   const [loading, setLoading] = useState(true);
@@ -189,10 +190,37 @@ const Orders = () => {
   };
 
   return loading ? (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p className="mt-4 text-muted-foreground">Carregando...</p>
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-9 w-32 mb-2" />
+        <Skeleton className="h-4 w-48" />
+      </div>
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <Skeleton className="h-6 w-40 mb-2" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+              <Skeleton className="h-6 w-20" />
+            </div>
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Skeleton className="h-5 w-20 mb-2" />
+                <Skeleton className="h-4 w-full mb-1" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+              <div>
+                <Skeleton className="h-5 w-20 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+            <div className="border-t pt-4">
+              <Skeleton className="h-8 w-32" />
+            </div>
+          </Card>
+        ))}
       </div>
     </div>
   ) : !store ? (
@@ -225,7 +253,9 @@ const Orders = () => {
 
         {orders.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-muted-foreground">Ainda não tens pedidos</p>
+            <Store className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <h2 className="text-xl font-bold mb-2">Nenhum pedido ainda</h2>
+            <p className="text-muted-foreground">Os pedidos dos clientes aparecerão aqui</p>
           </Card>
         ) : (
           <div className="space-y-4">

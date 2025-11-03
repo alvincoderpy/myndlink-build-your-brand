@@ -4,6 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
@@ -24,26 +28,40 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Store, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, Store, Upload, Package } from "lucide-react";
 import { getProductLimit } from "@/lib/planLimits";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const productSchema = z.object({
+  name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome muito longo"),
+  description: z.string().max(500, "Descrição muito longa").optional(),
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Preço deve ser maior que 0"),
+  stock: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "Stock deve ser 0 ou maior"),
+  image_url: z.string().url("URL inválida").optional().or(z.literal("")),
+});
 
 const Products = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
   const [store, setStore] = useState<any>(null);
   const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    stock: "0",
-    image_url: "",
-  });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const form = useForm<z.infer<typeof productSchema>>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      stock: "0",
+      image_url: "",
+    },
+  });
 
   useEffect(() => {
     loadData();
@@ -140,7 +158,7 @@ const Products = () => {
         .from("product-images")
         .getPublicUrl(fileName);
 
-      setFormData({ ...formData, image_url: publicUrl });
+      form.setValue("image_url", publicUrl);
       toast({ title: "Imagem carregada com sucesso!" });
     } catch (error: any) {
       console.error("Error uploading image:", error);
@@ -154,9 +172,7 @@ const Products = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async (values: z.infer<typeof productSchema>) => {
     if (!store) {
       toast({
         title: "Erro",
@@ -177,11 +193,11 @@ const Products = () => {
         const { error } = await supabase
           .from("products")
           .update({
-            name: formData.name,
-            description: formData.description,
-            price: parseFloat(formData.price),
-            stock: parseInt(formData.stock),
-            image_url: formData.image_url,
+            name: values.name,
+            description: values.description || null,
+            price: parseFloat(values.price),
+            stock: parseInt(values.stock),
+            image_url: values.image_url || null,
           })
           .eq("id", editingProduct.id);
 
@@ -196,11 +212,11 @@ const Products = () => {
           .from("products")
           .insert({
             store_id: store.id,
-            name: formData.name,
-            description: formData.description,
-            price: parseFloat(formData.price),
-            stock: parseInt(formData.stock),
-            image_url: formData.image_url,
+            name: values.name,
+            description: values.description || null,
+            price: parseFloat(values.price),
+            stock: parseInt(values.stock),
+            image_url: values.image_url || null,
           });
 
         if (error) throw error;
@@ -212,7 +228,7 @@ const Products = () => {
 
       setIsDialogOpen(false);
       setEditingProduct(null);
-      setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
+      form.reset();
       loadData();
     } catch (error: any) {
       toast({
@@ -225,7 +241,7 @@ const Products = () => {
 
   const handleEdit = (product: any) => {
     setEditingProduct(product);
-    setFormData({
+    form.reset({
       name: product.name,
       description: product.description || "",
       price: product.price.toString(),
@@ -236,10 +252,14 @@ const Products = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tens a certeza que queres eliminar este produto?")) return;
+    setProductToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
 
     try {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      const { error } = await supabase.from("products").delete().eq("id", productToDelete);
       if (error) throw error;
 
       toast({
@@ -252,14 +272,29 @@ const Products = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setProductToDelete(null);
     }
   };
 
   return loading ? (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p className="mt-4 text-muted-foreground">Carregando...</p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-9 w-32 mb-2" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+        <Skeleton className="h-10 w-40" />
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="p-6">
+            <Skeleton className="w-full h-48 mb-4" />
+            <Skeleton className="h-6 w-3/4 mb-2" />
+            <Skeleton className="h-4 w-full mb-4" />
+            <Skeleton className="h-8 w-24" />
+          </Card>
+        ))}
       </div>
     </div>
   ) : !store ? (
@@ -288,7 +323,7 @@ const Products = () => {
             <Button
               onClick={() => {
                 setEditingProduct(null);
-                setFormData({ name: "", description: "", price: "", stock: "0", image_url: "" });
+                form.reset();
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -301,123 +336,146 @@ const Products = () => {
                 {editingProduct ? "Editar Produto" : "Adicionar Produto"}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome do Produto</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="price">Preço (MT)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="stock">Stock</Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    value={formData.stock}
-                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label>Imagem do Produto</Label>
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      id="image-upload"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploadingImage}
-                    />
-                    <label
-                      htmlFor="image-upload"
-                      className={`cursor-pointer flex flex-col items-center ${
-                        uploadingImage ? "opacity-50" : ""
-                      }`}
-                    >
-                      <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground mb-1">
-                        {uploadingImage ? "Carregando..." : "Clique para carregar imagem"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        PNG, JPG, WEBP até 5MB
-                      </p>
-                    </label>
-                  </div>
-                  
-                  {formData.image_url && (
-                    <div className="relative">
-                      <img
-                        src={formData.image_url}
-                        alt="Preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setFormData({ ...formData, image_url: "" })}
-                        className="absolute top-2 right-2"
-                      >
-                        Remover
-                      </Button>
-                    </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome do Produto</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                  
-                  <div>
-                    <Label htmlFor="image_url_manual" className="text-sm text-muted-foreground">
-                      Ou cole uma URL:
-                    </Label>
-                    <Input
-                      id="image_url_manual"
-                      type="url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="https://exemplo.com/imagem.jpg"
-                    />
-                  </div>
-                </div>
-              </div>
+                />
 
-              <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  {editingProduct ? "Atualizar" : "Adicionar"}
-                </Button>
-              </div>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} rows={3} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço (MT)</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" step="0.01" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stock</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="number" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="image_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Imagem do Produto</FormLabel>
+                      <div className="space-y-4">
+                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                          <input
+                            type="file"
+                            id="image-upload"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                          />
+                          <label
+                            htmlFor="image-upload"
+                            className={`cursor-pointer flex flex-col items-center ${
+                              uploadingImage ? "opacity-50" : ""
+                            }`}
+                          >
+                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground mb-1">
+                              {uploadingImage ? "Carregando..." : "Clique para carregar imagem"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              PNG, JPG, WEBP até 5MB
+                            </p>
+                          </label>
+                        </div>
+                        
+                        {field.value && (
+                          <div className="relative">
+                            <img
+                              src={field.value}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => form.setValue("image_url", "")}
+                              className="absolute top-2 right-2"
+                            >
+                              Remover
+                            </Button>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <Label htmlFor="image_url_manual" className="text-sm text-muted-foreground">
+                            Ou cole uma URL:
+                          </Label>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              id="image_url_manual"
+                              type="url"
+                              placeholder="https://exemplo.com/imagem.jpg"
+                            />
+                          </FormControl>
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-end gap-4">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit">
+                    {editingProduct ? "Atualizar" : "Adicionar"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
@@ -427,7 +485,9 @@ const Products = () => {
 
         {products.length === 0 ? (
           <Card className="p-12 text-center">
-            <p className="text-muted-foreground mb-4">Ainda não tens produtos</p>
+            <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <h2 className="text-xl font-bold mb-2">Nenhum produto ainda</h2>
+            <p className="text-muted-foreground mb-4">Comece a adicionar produtos ao seu catálogo</p>
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Adicionar Primeiro Produto
@@ -477,6 +537,24 @@ const Products = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!productToDelete} onOpenChange={() => setProductToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminar Produto</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tens a certeza que queres eliminar este produto? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Upgrade Dialog */}
       <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>

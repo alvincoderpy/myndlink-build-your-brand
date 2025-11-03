@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Plus, Minus, X } from "lucide-react";
 import { toast } from "sonner";
 import { templates } from "@/config/templates";
+import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -122,8 +124,27 @@ export default function Storefront() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background">
+        <header className="border-b">
+          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-10 w-28" />
+          </div>
+        </header>
+        <main className="container mx-auto px-4 py-8">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="aspect-square w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
@@ -185,66 +206,116 @@ export default function Storefront() {
       {/* Main Content */}
       <main className={`container mx-auto px-4 py-8 ${templateConfig.fonts.body}`}>
         {products.length === 0 ? (
-          <Card className="p-12 text-center">
-            <h2 className="text-2xl font-bold mb-2">Sem produtos disponíveis</h2>
-            <p className="text-muted-foreground">Esta loja ainda não tem produtos</p>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="p-12 text-center">
+              <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+              <h2 className="text-2xl font-bold mb-2">Sem produtos disponíveis</h2>
+              <p className="text-muted-foreground">Esta loja ainda não tem produtos</p>
+            </Card>
+          </motion.div>
         ) : (
-          <div className={`grid gap-6 ${
-            templateConfig.layout === 'list' 
-              ? 'grid-cols-1' 
-              : templateConfig.layout === 'masonry'
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-auto'
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-          }`}>
-            {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden group">
-                <div className="aspect-square bg-muted relative overflow-hidden">
-                  {product.image_url ? (
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      Sem imagem
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-1">{product.name}</h3>
-                  {product.description && (
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <p className="text-2xl font-bold">{product.price.toFixed(2)} MT</p>
-                    <Button size="sm" onClick={() => addToCart(product)}>
-                      Adicionar
-                    </Button>
+          <motion.div 
+            className={`grid gap-6 ${
+              templateConfig.layout === 'list' 
+                ? 'grid-cols-1' 
+                : templateConfig.layout === 'masonry'
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-auto'
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+          >
+            {products.map((product, index) => (
+              <motion.div
+                key={product.id}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className={`overflow-hidden group h-full ${
+                  templateConfig.cardStyle === 'elegant' ? 'shadow-sm hover:shadow-xl' :
+                  templateConfig.cardStyle === 'modern' ? 'border-2 hover:border-primary' :
+                  'rounded-2xl hover:shadow-lg'
+                }`}>
+                  <div className={`${
+                    templateConfig.layout === 'masonry' 
+                      ? (index % 3 === 0 ? 'aspect-[4/5]' : index % 3 === 1 ? 'aspect-square' : 'aspect-[5/4]')
+                      : templateConfig.layout === 'list'
+                      ? 'aspect-video'
+                      : 'aspect-square'
+                  } bg-muted relative overflow-hidden`}>
+                    {product.image_url ? (
+                      <motion.img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        Sem imagem
+                      </div>
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {product.stock} em estoque
-                  </p>
-                </div>
-              </Card>
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg mb-1">{product.name}</h3>
+                    {product.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <p className="text-2xl font-bold">{product.price.toFixed(2)} MT</p>
+                      <Button size="sm" onClick={() => addToCart(product)}>
+                        Adicionar
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {product.stock} em estoque
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </main>
 
       {/* Cart Sidebar */}
-      {showCart && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50"
-          onClick={() => setShowCart(false)}
-        >
-          <div
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border p-6 overflow-y-auto animate-slide-in-right"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {showCart && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50"
+            onClick={() => setShowCart(false)}
           >
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25 }}
+              className="fixed right-0 top-0 h-full w-full max-w-md bg-card border-l border-border p-6 overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Carrinho</h2>
               <Button
@@ -334,9 +405,10 @@ export default function Storefront() {
                 </Button>
               </>
             )}
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

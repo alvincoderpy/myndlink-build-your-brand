@@ -9,9 +9,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Eye, RotateCcw } from "lucide-react";
+import { Save, Eye, RotateCcw, Maximize2 } from "lucide-react";
 import { templates } from "@/config/templates";
 import { hslToHex, hexToHsl } from "@/lib/colorUtils";
+import { StorePreviewModal } from "@/components/StorePreviewModal";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ const StoreEditor = () => {
     accent: templates.fashion.colors.accent,
   });
   const [customLayout, setCustomLayout] = useState<"grid" | "list" | "masonry">("grid");
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -438,7 +440,13 @@ const StoreEditor = () => {
 
             {/* Preview */}
             <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Pré-visualização</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold">Pré-visualização</h2>
+                <Button variant="outline" size="sm" onClick={() => setShowPreviewModal(true)}>
+                  <Maximize2 className="w-4 h-4 mr-2" />
+                  Tela Cheia
+                </Button>
+              </div>
               <div className="border border-border rounded-lg p-6">
                 <div 
                   className="rounded-lg overflow-hidden border-2 border-border"
@@ -485,6 +493,13 @@ const StoreEditor = () => {
 
           </div>
       </div>
+
+      <StorePreviewModal
+        open={showPreviewModal}
+        onOpenChange={setShowPreviewModal}
+        storeName={storeName}
+        currentConfig={previewConfig}
+      />
     </>
   );
 };
