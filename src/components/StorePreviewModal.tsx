@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { templates, TemplateConfig } from "@/config/templates";
 
 interface StorePreviewModalProps {
@@ -9,12 +10,34 @@ interface StorePreviewModalProps {
   currentConfig: TemplateConfig;
 }
 
+const getTemplateDescription = (templateKey: string): string => {
+  const descriptions: Record<string, string> = {
+    prestige: "Ideal para joias, relógios, moda de luxo. Tipografia elegante e espaçamento generoso.",
+    empire: "Perfeito para marcas fashion com fotografia forte. Layout bold e minimalista.",
+    atelier: "Sofisticado para arte, design, produtos artesanais. Tons naturais e suaves.",
+    dawn: "Versátil e moderno. Ótimo para qualquer nicho. Alta performance.",
+    minimal: "Ultra-clean. Ideal para produtos tecnológicos ou design minimalista.",
+    impulse: "Fashion-forward. Cores vibrantes, ideal para roupas e acessórios jovens.",
+    vogue: "Editorial luxury. Para marcas premium que valorizam storytelling.",
+    vertex: "Futurista e tech. Perfeito para gadgets, eletrônicos, software.",
+    fashion: "Template clássico - Moda elegante",
+    electronics: "Template clássico - Tech básico",
+    beauty: "Template clássico - Beleza suave"
+  };
+  return descriptions[templateKey] || "Template personalizado";
+};
+
 export function StorePreviewModal({ open, onOpenChange, storeName, currentConfig }: StorePreviewModalProps) {
-  const renderPreview = (config: TemplateConfig, isComparison = false) => (
+  const renderPreview = (config: TemplateConfig, templateKey?: string) => (
     <div 
       className="rounded-lg overflow-hidden border-2 border-border h-full"
       style={{ backgroundColor: `hsl(${config.colors.secondary})` }}
     >
+      {templateKey && (
+        <div className="p-4 border-b border-border bg-muted/30">
+          <p className="text-xs text-muted-foreground">{getTemplateDescription(templateKey)}</p>
+        </div>
+      )}
       <div className="p-6">
         <h3 
           className={`text-xl mb-4 ${config.fonts.heading}`}
@@ -51,63 +74,55 @@ export function StorePreviewModal({ open, onOpenChange, storeName, currentConfig
     </div>
   );
 
+  const templateKeys = Object.keys(templates);
+  const eliteTemplates = templateKeys.filter(k => !['fashion', 'electronics', 'beauty'].includes(k));
+  const classicTemplates = ['fashion', 'electronics', 'beauty'];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Pré-visualização da Loja</DialogTitle>
         </DialogHeader>
         
-        <Tabs defaultValue="current" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="current">Atual</TabsTrigger>
-            <TabsTrigger value="fashion">Moda</TabsTrigger>
-            <TabsTrigger value="electronics">Eletrônicos</TabsTrigger>
-            <TabsTrigger value="beauty">Beleza</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="current" className="w-full flex-1 flex flex-col overflow-hidden">
+          <ScrollArea className="w-full">
+            <TabsList className="inline-flex w-auto">
+              <TabsTrigger value="current">Atual</TabsTrigger>
+              <TabsTrigger value="prestige">Prestige</TabsTrigger>
+              <TabsTrigger value="empire">Empire</TabsTrigger>
+              <TabsTrigger value="atelier">Atelier</TabsTrigger>
+              <TabsTrigger value="dawn">Dawn</TabsTrigger>
+              <TabsTrigger value="minimal">Minimal</TabsTrigger>
+              <TabsTrigger value="impulse">Impulse</TabsTrigger>
+              <TabsTrigger value="vogue">Vogue</TabsTrigger>
+              <TabsTrigger value="vertex">Vertex</TabsTrigger>
+              <TabsTrigger value="fashion">Moda</TabsTrigger>
+              <TabsTrigger value="electronics">Eletrônicos</TabsTrigger>
+              <TabsTrigger value="beauty">Beleza</TabsTrigger>
+            </TabsList>
+          </ScrollArea>
           
-          <TabsContent value="current" className="h-[600px]">
-            {renderPreview(currentConfig)}
-          </TabsContent>
-          
-          <TabsContent value="fashion" className="h-[600px]">
-            <div className="grid grid-cols-2 gap-4 h-full">
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Template Moda</h4>
-                {renderPreview(templates.fashion, true)}
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Sua Configuração</h4>
-                {renderPreview(currentConfig, true)}
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="electronics" className="h-[600px]">
-            <div className="grid grid-cols-2 gap-4 h-full">
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Template Eletrônicos</h4>
-                {renderPreview(templates.electronics, true)}
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Sua Configuração</h4>
-                {renderPreview(currentConfig, true)}
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="beauty" className="h-[600px]">
-            <div className="grid grid-cols-2 gap-4 h-full">
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Template Beleza</h4>
-                {renderPreview(templates.beauty, true)}
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold mb-2">Sua Configuração</h4>
-                {renderPreview(currentConfig, true)}
-              </div>
-            </div>
-          </TabsContent>
+          <ScrollArea className="flex-1 mt-4">
+            <TabsContent value="current" className="h-[600px] m-0">
+              {renderPreview(currentConfig)}
+            </TabsContent>
+            
+            {templateKeys.map((key) => (
+              <TabsContent key={key} value={key} className="h-[600px] m-0">
+                <div className="grid grid-cols-2 gap-4 h-full">
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2">Template {templates[key].name}</h4>
+                    {renderPreview(templates[key], key)}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold mb-2">Sua Configuração</h4>
+                    {renderPreview(currentConfig)}
+                  </div>
+                </div>
+              </TabsContent>
+            ))}
+          </ScrollArea>
         </Tabs>
       </DialogContent>
     </Dialog>

@@ -282,9 +282,17 @@ const StoreEditor = () => {
                     <SelectValue placeholder="Escolher template" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fashion">Moda</SelectItem>
-                    <SelectItem value="electronics">Eletrônicos</SelectItem>
-                    <SelectItem value="beauty">Beleza</SelectItem>
+                    <SelectItem value="prestige">🏆 Prestige (Luxo)</SelectItem>
+                    <SelectItem value="empire">👑 Empire (Editorial)</SelectItem>
+                    <SelectItem value="atelier">🎨 Atelier (Sofisticado)</SelectItem>
+                    <SelectItem value="dawn">☀️ Dawn (Moderno)</SelectItem>
+                    <SelectItem value="minimal">⚪ Minimal (Minimalista)</SelectItem>
+                    <SelectItem value="impulse">💃 Impulse (Fashion)</SelectItem>
+                    <SelectItem value="vogue">📰 Vogue (Editorial)</SelectItem>
+                    <SelectItem value="vertex">⚡ Vertex (Tech)</SelectItem>
+                    <SelectItem value="fashion">Moda (Clássico)</SelectItem>
+                    <SelectItem value="electronics">Eletrônicos (Clássico)</SelectItem>
+                    <SelectItem value="beauty">Beleza (Clássico)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">

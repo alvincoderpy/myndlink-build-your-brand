@@ -31,7 +31,7 @@ export function StoreSelector() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full max-w-[240px] sm:max-w-none justify-between"
         >
           <div className="flex items-center gap-2 truncate">
             <StoreIcon className="h-4 w-4 flex-shrink-0" />
@@ -42,10 +42,10 @@ export function StoreSelector() {
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[240px] sm:w-[280px] p-0">
         <div className="p-2">
           <div className="text-xs font-medium text-muted-foreground px-2 py-1.5">
-            Minhas Lojas
+            Lojas
           </div>
           {stores.length === 0 ? (
             <div className="text-sm text-muted-foreground text-center py-4">
