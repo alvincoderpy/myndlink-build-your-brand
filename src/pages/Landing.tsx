@@ -77,7 +77,7 @@ const Landing = () => {
                 <Globe className="text-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Subdomínio Grátis</h3>
-              <p className="text-muted-foreground">Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio quando quiseres.</p>
+              <p className="text-muted-foreground">Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio em breve.</p>
             </div>
 
             <div className="bg-card p-8 rounded-lg shadow-card border border-border hover:shadow-glow transition-all duration-300">
