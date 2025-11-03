@@ -3,7 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import pt from './locales/pt.json';
 import en from './locales/en.json';
 
-const savedLanguage = localStorage.getItem('language') || 'pt';
+const savedLanguage = typeof window !== 'undefined' 
+  ? localStorage.getItem('language') || 'pt'
+  : 'pt';
 
 i18n
   .use(initReactI18next)
@@ -16,6 +18,9 @@ i18n
     fallbackLng: 'pt',
     interpolation: {
       escapeValue: false
+    },
+    react: {
+      useSuspense: false
     }
   });
 
