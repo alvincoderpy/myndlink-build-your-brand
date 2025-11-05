@@ -119,18 +119,8 @@ const Dashboard = () => {
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-auto justify-start text-left font-normal px-px mx-0">
-        <CalendarIcon className="mr-2 h-4 w-4" />
-        {dateRange?.from ? dateRange.to ? <>
-              {format(dateRange.from, "dd MMM", {
-                locale: ptBR
-              })} -{" "}
-              {format(dateRange.to, "dd MMM yyyy", {
-                locale: ptBR
-              })}
-            </> : format(dateRange.from, "dd MMM yyyy", {
-              locale: ptBR
-            }) : <span>{t('dashboard.selectPeriod')}</span>}
+            <Button variant="outline" size="icon">
+              <CalendarIcon className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
