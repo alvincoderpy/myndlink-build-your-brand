@@ -1,7 +1,13 @@
 {
   "nav": {
     "login": "Login",
-    "getStarted": "Get Started Free"
+    "getStarted": "Get Started Free",
+    "dashboard": "Dashboard",
+    "myStore": "My Store",
+    "products": "Products",
+    "orders": "Orders",
+    "coupons": "Coupons",
+    "settings": "Settings"
   },
   "hero": {
     "title": "Create Your Online Store",

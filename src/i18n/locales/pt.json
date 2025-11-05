@@ -1,7 +1,13 @@
 {
   "nav": {
     "login": "Entrar",
-    "getStarted": "Começar Grátis"
+    "getStarted": "Começar Grátis",
+    "dashboard": "Dashboard",
+    "myStore": "Minha Loja",
+    "products": "Produtos",
+    "orders": "Pedidos",
+    "coupons": "Cupons",
+    "settings": "Configurações"
   },
   "hero": {
     "title": "Crie sua Loja Online",
