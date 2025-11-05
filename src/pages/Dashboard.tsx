@@ -12,7 +12,6 @@ import { pt as ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useTranslation } from "react-i18next";
-
 interface Stats {
   totalSales: number;
   pendingOrders: number;
@@ -20,88 +19,71 @@ interface Stats {
   salesGrowth: number;
   totalOrders: number;
 }
-
 const Dashboard = () => {
-  const { user } = useAuth();
-  const { currentStore } = useStore();
-  const { t } = useTranslation();
+  const {
+    user
+  } = useAuth();
+  const {
+    currentStore
+  } = useStore();
+  const {
+    t
+  } = useTranslation();
   const [stats, setStats] = useState<Stats>({
     totalSales: 0,
     pendingOrders: 0,
     productsSold: 0,
     salesGrowth: 0,
-    totalOrders: 0,
+    totalOrders: 0
   });
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    to: new Date(),
+    to: new Date()
   });
-
   useEffect(() => {
     loadStats();
   }, [user, currentStore]);
-
   const loadStats = async (selectedDateRange?: DateRange) => {
     if (!user || !currentStore) return;
-    
     const range = selectedDateRange || dateRange;
     if (!range?.from) return;
-
     try {
-
       const startDate = new Date(range.from);
       startDate.setHours(0, 0, 0, 0);
-      
       const endDate = range.to ? new Date(range.to) : new Date(range.from);
       endDate.setHours(23, 59, 59, 999);
-
-      const { data: orders } = await supabase
-        .from("orders")
-        .select("id, total, created_at, status")
-        .eq("store_id", currentStore.id)
-        .gte("created_at", startDate.toISOString())
-        .lte("created_at", endDate.toISOString());
-
+      const {
+        data: orders
+      } = await supabase.from("orders").select("id, total, created_at, status").eq("store_id", currentStore.id).gte("created_at", startDate.toISOString()).lte("created_at", endDate.toISOString());
       const totalSales = orders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
       const totalOrders = orders?.length || 0;
       const pendingCount = orders?.filter(o => o.status === "pending").length || 0;
-
       const orderIds = orders?.map(o => o.id) || [];
       let productsSold = 0;
-
       if (orderIds.length > 0) {
-        const { data: orderItems } = await supabase
-          .from("order_items")
-          .select("product_id")
-          .in("order_id", orderIds);
-
+        const {
+          data: orderItems
+        } = await supabase.from("order_items").select("product_id").in("order_id", orderIds);
         const uniqueProductIds = new Set(orderItems?.map(item => item.product_id) || []);
         productsSold = uniqueProductIds.size;
       }
-
       const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
       const previousStartDate = new Date(startDate);
       previousStartDate.setDate(previousStartDate.getDate() - daysDiff);
       const previousEndDate = new Date(startDate);
       previousEndDate.setMilliseconds(-1);
-
-      const { data: previousOrders } = await supabase
-        .from("orders")
-        .select("total")
-        .eq("store_id", currentStore.id)
-        .gte("created_at", previousStartDate.toISOString())
-        .lte("created_at", previousEndDate.toISOString());
-
+      const {
+        data: previousOrders
+      } = await supabase.from("orders").select("total").eq("store_id", currentStore.id).gte("created_at", previousStartDate.toISOString()).lte("created_at", previousEndDate.toISOString());
       const previousSales = previousOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
-      const growth = previousSales > 0 ? ((totalSales - previousSales) / previousSales) * 100 : 0;
-
+      const growth = previousSales > 0 ? (totalSales - previousSales) / previousSales * 100 : 0;
       setStats({
         totalSales,
         pendingOrders: pendingCount,
         productsSold,
         salesGrowth: growth,
-        totalOrders,
+        totalOrders
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -109,10 +91,8 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   if (loading) {
-    return (
-      <div className="space-y-6">
+    return <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
           <p className="text-muted-foreground mt-1">
@@ -120,18 +100,13 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="p-6 animate-pulse">
+          {[1, 2, 3, 4].map(i => <Card key={i} className="p-6 animate-pulse">
               <div className="h-12 bg-muted rounded"></div>
-            </Card>
-          ))}
+            </Card>)}
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <OnboardingChecklist />
       
       <div className="flex items-center justify-between">
@@ -144,38 +119,27 @@ const Dashboard = () => {
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-auto justify-start text-left font-normal">
+            <Button variant="outline" className="w-auto justify-start text-left font-normal px-px mx-0">
         <CalendarIcon className="mr-2 h-4 w-4" />
-        {dateRange?.from ? (
-          dateRange.to ? (
-            <>
-              {format(dateRange.from, "dd MMM", { locale: ptBR })} -{" "}
-              {format(dateRange.to, "dd MMM yyyy", { locale: ptBR })}
-            </>
-          ) : (
-            format(dateRange.from, "dd MMM yyyy", { locale: ptBR })
-          )
-        ) : (
-          <span>{t('dashboard.selectPeriod')}</span>
-        )}
+        {dateRange?.from ? dateRange.to ? <>
+              {format(dateRange.from, "dd MMM", {
+                locale: ptBR
+              })} -{" "}
+              {format(dateRange.to, "dd MMM yyyy", {
+                locale: ptBR
+              })}
+            </> : format(dateRange.from, "dd MMM yyyy", {
+              locale: ptBR
+            }) : <span>{t('dashboard.selectPeriod')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
-      <Calendar
-        initialFocus
-        mode="range"
-        defaultMonth={dateRange?.from}
-        selected={dateRange}
-        onSelect={(range) => {
-          setDateRange(range);
-          if (range?.from) {
-            loadStats(range);
-          }
-        }}
-        numberOfMonths={1}
-        locale={ptBR}
-        className="pointer-events-auto"
-      />
+      <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={range => {
+            setDateRange(range);
+            if (range?.from) {
+              loadStats(range);
+            }
+          }} numberOfMonths={1} locale={ptBR} className="pointer-events-auto" />
           </PopoverContent>
         </Popover>
       </div>
@@ -192,13 +156,11 @@ const Dashboard = () => {
           <p className="text-3xl font-bold text-foreground">
             {stats.totalSales.toFixed(2)} MT
           </p>
-          {stats.salesGrowth !== 0 && (
-            <p className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}>
+          {stats.salesGrowth !== 0 && <p className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}>
               <TrendingUp className="w-3 h-3" />
               {stats.salesGrowth > 0 ? "+" : ""}
               {stats.salesGrowth.toFixed(1)}% {t('dashboard.vsPreviousPeriod')}
-            </p>
-          )}
+            </p>}
         </Card>
 
         <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
@@ -252,28 +214,19 @@ const Dashboard = () => {
         <Card className="p-6">
           <h3 className="font-semibold mb-4">{t('dashboard.quickActions')}</h3>
           <div className="space-y-2">
-            <a
-              href="/dashboard/products"
-              className="block p-3 rounded-lg hover:bg-muted transition-colors"
-            >
+            <a href="/dashboard/products" className="block p-3 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t('dashboard.addProduct')}</p>
               <p className="text-xs text-muted-foreground">
                 {t('dashboard.expandCatalog')}
               </p>
             </a>
-            <a
-              href="/dashboard/orders"
-              className="block p-3 rounded-lg hover:bg-muted transition-colors"
-            >
+            <a href="/dashboard/orders" className="block p-3 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t('dashboard.viewOrders')}</p>
               <p className="text-xs text-muted-foreground">
                 {t('dashboard.managePending')}
               </p>
             </a>
-            <a
-              href="/dashboard/store/edit"
-              className="block p-3 rounded-lg hover:bg-muted transition-colors"
-            >
+            <a href="/dashboard/store/edit" className="block p-3 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t('dashboard.editStore')}</p>
               <p className="text-xs text-muted-foreground">
                 {t('dashboard.customizeStore')}
@@ -292,7 +245,6 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
 export default Dashboard;
