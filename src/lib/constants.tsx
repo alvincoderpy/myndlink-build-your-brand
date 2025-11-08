@@ -1,41 +1,50 @@
-import React from "react"
-import { CreditCard } from "@medusajs/icons"
+// Lovable store templates configuration
+export const templates = {
+  fashion: {
+    name: "Fashion Elite",
+    colors: {
+      primary: "222 47% 11%",
+      secondary: "0 0% 98%",
+      accent: "47 100% 52%"
+    },
+    fonts: {
+      heading: "font-bold",
+      body: "font-sans"
+    },
+    layout: "grid" as const,
+    cardStyle: "elegant" as const
+  },
+  tech: {
+    name: "Tech Modern",
+    colors: {
+      primary: "213 94% 22%",
+      secondary: "210 40% 96%",
+      accent: "217 91% 60%"
+    },
+    fonts: {
+      heading: "font-bold",
+      body: "font-sans"
+    },
+    layout: "grid" as const,
+    cardStyle: "modern" as const
+  },
+  minimal: {
+    name: "Minimal Clean",
+    colors: {
+      primary: "0 0% 9%",
+      secondary: "0 0% 96%",
+      accent: "0 0% 45%"
+    },
+    fonts: {
+      heading: "font-light",
+      body: "font-sans"
+    },
+    layout: "list" as const,
+    cardStyle: "soft" as const
+  }
+};
 
-import Ideal from "@modules/common/icons/ideal"
-import Bancontact from "@modules/common/icons/bancontact"
-import PayPal from "@modules/common/icons/paypal"
-
-/* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
-export const paymentInfoMap: Record<
-  string,
-  { title: string; icon: React.JSX.Element }
-> = {
-  pp_stripe_stripe: {
-    title: "Credit card",
-    icon: <CreditCard />,
-  },
-  "pp_medusa-payments_default": {
-    title: "Credit card",
-    icon: <CreditCard />,
-  },
-  "pp_stripe-ideal_stripe": {
-    title: "iDeal",
-    icon: <Ideal />,
-  },
-  "pp_stripe-bancontact_stripe": {
-    title: "Bancontact",
-    icon: <Bancontact />,
-  },
-  pp_paypal_paypal: {
-    title: "PayPal",
-    icon: <PayPal />,
-  },
-  pp_system_default: {
-    title: "Manual Payment",
-    icon: <CreditCard />,
-  },
-  // Add more payment providers here
-}
+export type TemplateConfig = typeof templates.fashion;
 
 // This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers
 export const isStripeLike = (providerId?: string) => {
