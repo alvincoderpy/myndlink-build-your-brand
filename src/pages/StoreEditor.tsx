@@ -4,15 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Eye, RotateCcw, Maximize2 } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Save, Eye } from "lucide-react";
 import { templates } from "@/config/templates";
-import { hslToHex, hexToHsl } from "@/lib/colorUtils";
-import { StorePreviewModal } from "@/components/StorePreviewModal";
+import { StorefrontPreview } from "@/components/store-editor/StorefrontPreview";
+import { TopBarConfig } from "@/components/store-editor/TopBarConfig";
+import { HeroConfig } from "@/components/store-editor/HeroConfig";
+import { CategoriesConfig } from "@/components/store-editor/CategoriesConfig";
+import { BrandingConfig } from "@/components/store-editor/BrandingConfig";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -20,17 +23,34 @@ const StoreEditor = () => {
   const [store, setStore] = useState<any>(null);
   const [storeName, setStoreName] = useState("");
   const [subdomain, setSubdomain] = useState("");
-  const [template, setTemplate] = useState("minimog");
-  const [customColors, setCustomColors] = useState({
-    primary: templates.minimog.colors.primary,
-    secondary: templates.minimog.colors.secondary,
-    accent: templates.minimog.colors.accent,
-    background: templates.minimog.colors.background,
-    muted: templates.minimog.colors.muted,
+  const [config, setConfig] = useState<any>({
+    ...templates.minimog,
+    topBar: {
+      showAnnouncement: true,
+      announcement: "Frete grátis em compras acima de 500 MT",
+    },
+    hero: {
+      showHero: true,
+      title: "",
+      subtitle: "",
+      backgroundImage: "",
+    },
+    categories: [],
+    branding: {
+      logo: "",
+    },
   });
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Auto-save with debounce
+  const debouncedConfig = useDebounce(config, 2000);
+  
+  useEffect(() => {
+    if (store && !loading) {
+      handleAutoSave();
+    }
+  }, [debouncedConfig]);
 
   useEffect(() => {
     loadStore();
@@ -58,28 +78,42 @@ const StoreEditor = () => {
         setStore(data);
         setStoreName(data.name);
         setSubdomain(data.subdomain);
-        setTemplate(data.template);
         
         // Load custom configuration if exists
         if (data.template_config && typeof data.template_config === 'object') {
-          const config = data.template_config as any;
-          if (config.colors) {
-            setCustomColors({
-              ...config.colors,
-              background: config.colors.background || templates.minimog.colors.background,
-              muted: config.colors.muted || templates.minimog.colors.muted,
-            });
-          }
-        } else {
-          // Use default template colors
-          const defaultTemplate = templates[data.template as keyof typeof templates] || templates.minimog;
-          setCustomColors(defaultTemplate.colors);
+          const loadedConfig = data.template_config as any;
+          setConfig({
+            ...templates.minimog,
+            ...loadedConfig,
+            topBar: loadedConfig.topBar || config.topBar,
+            hero: loadedConfig.hero || config.hero,
+            categories: loadedConfig.categories || [],
+            branding: loadedConfig.branding || { logo: "" },
+          });
         }
       }
     } catch (error: any) {
       console.error("Error loading store:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAutoSave = async () => {
+    if (!store) return;
+    
+    try {
+      const { error } = await supabase
+        .from("stores")
+        .update({
+          name: storeName,
+          template_config: config,
+        })
+        .eq("id", store.id);
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Auto-save error:", error);
     }
   };
 
@@ -100,14 +134,9 @@ const StoreEditor = () => {
           description: "Subdomínio deve ter pelo menos 3 caracteres",
           variant: "destructive",
         });
+        setSaving(false);
         return;
       }
-
-      const currentTemplate = templates[template as keyof typeof templates] || templates.minimog;
-      const templateConfig = {
-        ...currentTemplate,
-        colors: customColors,
-      };
 
       if (store) {
         const { error } = await supabase
@@ -115,8 +144,8 @@ const StoreEditor = () => {
           .update({
             name: storeName,
             subdomain: cleanSubdomain,
-            template,
-            template_config: templateConfig,
+            template: "minimog",
+            template_config: config,
           })
           .eq("id", store.id);
 
@@ -133,8 +162,8 @@ const StoreEditor = () => {
             user_id: user.id,
             name: storeName,
             subdomain: cleanSubdomain,
-            template,
-            template_config: templateConfig,
+            template: "minimog",
+            template_config: config,
             plan: "free",
           });
 
@@ -145,6 +174,7 @@ const StoreEditor = () => {
               description: "Este subdomínio já está em uso. Escolhe outro.",
               variant: "destructive",
             });
+            setSaving(false);
             return;
           }
           throw error;
@@ -168,25 +198,6 @@ const StoreEditor = () => {
     }
   };
 
-  const resetToDefaults = () => {
-    const defaultTemplate = templates[template as keyof typeof templates] || templates.minimog;
-    setCustomColors(defaultTemplate.colors);
-    toast({
-      title: "Restaurado",
-      description: "Configurações restauradas para o padrão do template.",
-    });
-  };
-
-  const handleTemplateChange = (newTemplate: string) => {
-    setTemplate(newTemplate);
-    const defaultTemplate = templates[newTemplate as keyof typeof templates] || templates.minimog;
-    setCustomColors(defaultTemplate.colors);
-  };
-
-  const previewConfig = {
-    ...templates[template as keyof typeof templates] || templates.minimog,
-    colors: customColors,
-  };
 
   return loading ? (
     <div className="flex items-center justify-center min-h-[400px]">
@@ -230,245 +241,154 @@ const StoreEditor = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl">
+      {/* Main Content - Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Configuration */}
+        <div className="space-y-8">
+          {/* Basic Info */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-bold mb-6">Informações Básicas</h2>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Nome da Loja</Label>
+                <Input
+                  id="name"
+                  placeholder="Minha Loja Incrível"
+                  value={storeName}
+                  onChange={(e) => {
+                    setStoreName(e.target.value);
+                    if (!config.hero?.title) {
+                      setConfig({
+                        ...config,
+                        hero: {
+                          ...config.hero,
+                          title: `Bem-vindo a ${e.target.value}`,
+                        },
+                      });
+                    }
+                  }}
+                  className="mt-1"
+                />
+              </div>
 
-          <div className="space-y-8">
-            {/* Basic Info */}
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-6">Informações Básicas</h2>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nome da Loja</Label>
+              <div>
+                <Label htmlFor="subdomain">Subdomínio</Label>
+                <div className="flex items-center gap-2 mt-1">
                   <Input
-                    id="name"
-                    placeholder="Minha Loja Incrível"
-                    value={storeName}
-                    onChange={(e) => setStoreName(e.target.value)}
-                    className="mt-1"
+                    id="subdomain"
+                    placeholder="minhaloja"
+                    value={subdomain}
+                    onChange={(e) => setSubdomain(e.target.value.toLowerCase())}
+                    className="flex-1"
                   />
+                  <span className="text-sm text-muted-foreground">.myndlink.com</span>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Apenas letras minúsculas, números e hífens
+                </p>
+              </div>
+            </div>
+          </Card>
 
+          {/* Configuration Tabs */}
+          <Card className="p-6">
+            <Tabs defaultValue="branding" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="branding">Marca</TabsTrigger>
+                <TabsTrigger value="topbar">Top Bar</TabsTrigger>
+                <TabsTrigger value="hero">Hero</TabsTrigger>
+                <TabsTrigger value="categories">Categorias</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="branding" className="mt-6">
+                <BrandingConfig
+                  config={config}
+                  onChange={setConfig}
+                  storeId={store?.id}
+                />
+              </TabsContent>
+
+              <TabsContent value="topbar" className="mt-6">
+                <TopBarConfig
+                  config={config}
+                  onChange={setConfig}
+                />
+              </TabsContent>
+
+              <TabsContent value="hero" className="mt-6">
+                <HeroConfig
+                  config={config}
+                  onChange={setConfig}
+                  storeId={store?.id}
+                />
+              </TabsContent>
+
+              <TabsContent value="categories" className="mt-6">
+                <CategoriesConfig
+                  config={config}
+                  onChange={setConfig}
+                  storeId={store?.id}
+                />
+              </TabsContent>
+            </Tabs>
+          </Card>
+
+          {/* Publish Store */}
+          {store && (
+            <Card className="p-6">
+              <div className="flex items-center gap-4">
+                <Switch
+                  checked={store?.is_published}
+                  onCheckedChange={async (checked) => {
+                    try {
+                      const { error } = await supabase
+                        .from('stores')
+                        .update({ is_published: checked })
+                        .eq('id', store.id);
+                      
+                      if (error) throw error;
+                      
+                      toast({
+                        title: checked ? "Loja publicada!" : "Loja despublicada!",
+                      });
+                      await loadStore();
+                    } catch (error: any) {
+                      toast({
+                        title: "Erro",
+                        description: error.message,
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                />
                 <div>
-                  <Label htmlFor="subdomain">Subdomínio</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      id="subdomain"
-                      placeholder="minhaloja"
-                      value={subdomain}
-                      onChange={(e) => setSubdomain(e.target.value.toLowerCase())}
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">.myndlink.com</span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Apenas letras minúsculas, números e hífens
+                  <Label className="text-base font-bold">Publicar Loja</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Torna a tua loja visível ao público
                   </p>
                 </div>
               </div>
             </Card>
+          )}
+        </div>
 
-            {/* Template Selection */}
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-6">Escolher Template</h2>
-              <div>
-                <Label htmlFor="template">Template Base</Label>
-                <Select value={template} onValueChange={handleTemplateChange}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Escolher template" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="prestige">🏆 Prestige (Luxo)</SelectItem>
-                    <SelectItem value="empire">👑 Empire (Editorial)</SelectItem>
-                    <SelectItem value="atelier">🎨 Atelier (Sofisticado)</SelectItem>
-                    <SelectItem value="dawn">☀️ Dawn (Moderno)</SelectItem>
-                    <SelectItem value="minimal">⚪ Minimal (Minimalista)</SelectItem>
-                    <SelectItem value="impulse">💃 Impulse (Fashion)</SelectItem>
-                    <SelectItem value="vogue">📰 Vogue (Editorial)</SelectItem>
-                    <SelectItem value="vertex">⚡ Vertex (Tech)</SelectItem>
-                    <SelectItem value="fashion">Moda (Clássico)</SelectItem>
-                    <SelectItem value="electronics">Eletrônicos (Clássico)</SelectItem>
-                    <SelectItem value="beauty">Beleza (Clássico)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Escolhe um template base e personaliza as cores e layout abaixo
-                </p>
-              </div>
-            </Card>
-
-            {/* Customization Section */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Personalizar Template</h2>
-                <Button variant="outline" size="sm" onClick={resetToDefaults}>
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Restaurar Padrão
-                </Button>
-              </div>
-
-              {/* Color Pickers */}
-              <div className="space-y-4 mb-6">
-                <h3 className="font-semibold text-lg">Cores</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="primary-color">Cor Primária</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="primary-color"
-                        type="color"
-                        value={hslToHex(customColors.primary)}
-                        onChange={(e) =>
-                          setCustomColors({ ...customColors, primary: hexToHsl(e.target.value) })
-                        }
-                        className="w-20 h-10 cursor-pointer"
-                      />
-                      <Input
-                        type="text"
-                        value={hslToHex(customColors.primary)}
-                        readOnly
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="secondary-color">Cor Secundária (Fundo)</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="secondary-color"
-                        type="color"
-                        value={hslToHex(customColors.secondary)}
-                        onChange={(e) =>
-                          setCustomColors({ ...customColors, secondary: hexToHsl(e.target.value) })
-                        }
-                        className="w-20 h-10 cursor-pointer"
-                      />
-                      <Input
-                        type="text"
-                        value={hslToHex(customColors.secondary)}
-                        readOnly
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="accent-color">Cor de Destaque</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="accent-color"
-                        type="color"
-                        value={hslToHex(customColors.accent)}
-                        onChange={(e) =>
-                          setCustomColors({ ...customColors, accent: hexToHsl(e.target.value) })
-                        }
-                        className="w-20 h-10 cursor-pointer"
-                      />
-                      <Input
-                        type="text"
-                        value={hslToHex(customColors.accent)}
-                        readOnly
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Publish Store */}
-            {store && (
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <Switch
-                    checked={store?.is_published}
-                    onCheckedChange={async (checked) => {
-                      try {
-                        const { error } = await supabase
-                          .from('stores')
-                          .update({ is_published: checked })
-                          .eq('id', store.id);
-                        
-                        if (error) throw error;
-                        
-                        toast({
-                          title: checked ? "Loja publicada!" : "Loja despublicada!",
-                        });
-                        await loadStore();
-                      } catch (error: any) {
-                        toast({
-                          title: "Erro",
-                          description: error.message,
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                  />
-                  <div>
-                    <Label className="text-base font-bold">Publicar Loja</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Torna a tua loja visível ao público
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Preview */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold">Pré-visualização</h2>
-                <Button variant="outline" size="sm" onClick={() => setShowPreviewModal(true)}>
-                  <Maximize2 className="w-4 h-4 mr-2" />
-                  Tela Cheia
-                </Button>
-              </div>
-              <div className="border border-border rounded-lg p-6">
-                <div 
-                  className="rounded-lg overflow-hidden border-2 border-border"
-                  style={{
-                    backgroundColor: `hsl(${previewConfig.colors.secondary})`
-                  }}
-                >
-                  <div className="p-8">
-                    <h3 
-                      className={`text-2xl mb-6 ${previewConfig.fonts.heading}`}
-                      style={{ color: `hsl(${previewConfig.colors.primary})` }}
-                    >
-                      {storeName || "Minha Loja"}
-                    </h3>
-                    <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="rounded-lg overflow-hidden border border-border bg-card">
-                          <div 
-                            className="aspect-square"
-                            style={{ backgroundColor: `hsl(${previewConfig.colors.accent})` }}
-                          />
-                          <div className={`p-4 ${previewConfig.fonts.body}`}>
-                            <p className="font-bold mb-1">Produto {i}</p>
-                            <p className="text-sm opacity-70 mb-2">Descrição do produto</p>
-                            <p className="font-bold" style={{ color: `hsl(${previewConfig.colors.primary})` }}>
-                              99.99 MT
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
+        {/* Right Column - Live Preview */}
+        <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-6rem)]">
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold">Pré-visualização em Tempo Real</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              As alterações são guardadas automaticamente
+            </p>
           </div>
+          <div className="h-[calc(100%-4rem)] border border-border rounded-lg overflow-hidden">
+            <StorefrontPreview
+              config={config}
+              storeName={storeName || "Minha Loja"}
+              storeId={store?.id}
+            />
+          </div>
+        </div>
       </div>
-
-      <StorePreviewModal
-        open={showPreviewModal}
-        onOpenChange={setShowPreviewModal}
-        storeName={storeName}
-        currentConfig={previewConfig}
-      />
     </>
   );
 };
