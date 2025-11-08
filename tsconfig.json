@@ -16,9 +16,9 @@
     "incremental": true,
     "baseUrl": "./src",
     "paths": {
-      "@lib/*": ["lib/*"],
-      "@modules/*": ["modules/*"],
-      "@pages/*": ["pages/*"]
+      "@lib/*": ["./lib/*"],
+      "@modules/*": ["./modules/*"],
+      "@pages/*": ["./pages/*"]
     },
     "plugins": [
       {
@@ -27,11 +27,5 @@
     ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    ".next",
-    ".nyc_output",
-    "coverage",
-    "jest-coverage"
-  ]
+  "exclude": ["node_modules", ".next", ".nyc_output", "coverage", "jest-coverage"]
 }
