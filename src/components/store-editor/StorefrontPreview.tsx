@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { TopBar } from "@/components/storefront/TopBar";
 import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
@@ -5,15 +6,41 @@ import { HeroSection } from "@/components/storefront/HeroSection";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
 import { ProductTabs } from "@/components/storefront/ProductTabs";
 import { StorefrontFooter } from "@/components/storefront/StorefrontFooter";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface StorefrontPreviewProps {
   config: any;
   storeName: string;
   storeId?: string;
   viewMode: "desktop" | "tablet" | "mobile";
+  activeSection: string;
 }
 
-export function StorefrontPreview({ config, storeName, storeId, viewMode }: StorefrontPreviewProps) {
+export function StorefrontPreview({ config, storeName, storeId, viewMode, activeSection }: StorefrontPreviewProps) {
+  const topBarRef = useRef<HTMLDivElement>(null);
+  const brandingRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const productsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const refs: Record<string, React.RefObject<HTMLDivElement>> = {
+      topbar: topBarRef,
+      branding: brandingRef,
+      hero: heroRef,
+      categories: categoriesRef,
+      products: productsRef,
+    };
+
+    const targetRef = refs[activeSection];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  }, [activeSection]);
   const mockProducts = [
     {
       id: "1",
@@ -169,7 +196,11 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode }: Stor
 
   return (
     <div className="w-full h-full flex justify-center bg-muted/20 overflow-auto">
-      <div
+      <motion.div
+        key={viewMode}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
         className="transition-all duration-300 ease-in-out h-full shadow-xl"
         style={{
           width: containerWidth[viewMode],
@@ -184,27 +215,72 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode }: Stor
               color: `hsl(${config.colors.primary})`,
             }}
           >
-            <TopBar config={topBarConfig} />
-            <StorefrontHeader
-              storeName={storeName}
-              logoUrl={config.branding?.logo}
-              cartCount={0}
-              onCartClick={() => {}}
-            />
-            <HeroSection
-              config={heroConfig}
-              featuredProducts={mockProducts.filter((p) => p.is_featured)}
-            />
-            <CategoryGrid config={categoryConfig} />
-            <ProductTabs
-              config={productTabsConfig}
-              products={mockProducts}
-              onAddToCart={() => {}}
-            />
+            <div 
+              ref={topBarRef}
+              className={cn(
+                "transition-all duration-500",
+                activeSection === "topbar" && "ring-4 ring-primary ring-offset-4 animate-pulse"
+              )}
+            >
+              <TopBar config={topBarConfig} />
+            </div>
+
+            <div 
+              ref={brandingRef}
+              className={cn(
+                "transition-all duration-500",
+                activeSection === "branding" && "ring-4 ring-primary ring-offset-4"
+              )}
+            >
+              <StorefrontHeader
+                storeName={storeName}
+                logoUrl={config.branding?.logo}
+                cartCount={0}
+                onCartClick={() => {}}
+              />
+            </div>
+
+            <div 
+              ref={heroRef}
+              className={cn(
+                "transition-all duration-500",
+                activeSection === "hero" && "ring-4 ring-primary ring-offset-4"
+              )}
+            >
+              <HeroSection
+                config={heroConfig}
+                featuredProducts={mockProducts.filter((p) => p.is_featured)}
+              />
+            </div>
+
+            <div 
+              ref={categoriesRef}
+              className={cn(
+                "transition-all duration-500",
+                activeSection === "categories" && "ring-4 ring-primary ring-offset-4"
+              )}
+            >
+              <CategoryGrid config={categoryConfig} />
+            </div>
+
+            <div 
+              ref={productsRef}
+              className={cn(
+                "transition-all duration-500",
+                activeSection === "products" && "ring-4 ring-primary ring-offset-4"
+              )}
+            >
+              <ProductTabs
+                config={productTabsConfig}
+                products={mockProducts}
+                onAddToCart={() => {}}
+              />
+            </div>
+
             <StorefrontFooter storeName={storeName} />
           </div>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }

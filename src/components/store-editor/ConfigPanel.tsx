@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ConfigPanelProps {
   activeSection: string;
@@ -66,37 +67,69 @@ export function ConfigPanel({
 
   return (
     <div className="w-96 border-r bg-background overflow-y-auto h-full">
-      <div className="p-6">
-        {activeSection === "branding" && (
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Marca</h3>
-            <BrandingConfig config={config} onChange={onChange} storeId={storeId} />
-          </div>
-        )}
+      <div className="p-6 space-y-6">
+        <AnimatePresence mode="wait">
+          {activeSection === "branding" && (
+            <motion.div
+              key="branding"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3 className="font-semibold text-lg mb-4">Marca</h3>
+              <BrandingConfig config={config} onChange={onChange} storeId={storeId} />
+            </motion.div>
+          )}
 
-        {activeSection === "topbar" && (
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Barra Superior</h3>
-            <TopBarConfig config={config} onChange={onChange} />
-          </div>
-        )}
+          {activeSection === "topbar" && (
+            <motion.div
+              key="topbar"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3 className="font-semibold text-lg mb-4">Barra Superior</h3>
+              <TopBarConfig config={config} onChange={onChange} />
+            </motion.div>
+          )}
 
-        {activeSection === "hero" && (
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Banner Principal</h3>
-            <HeroConfig config={config} onChange={onChange} storeId={storeId} />
-          </div>
-        )}
+          {activeSection === "hero" && (
+            <motion.div
+              key="hero"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3 className="font-semibold text-lg mb-4">Banner Principal</h3>
+              <HeroConfig config={config} onChange={onChange} storeId={storeId} />
+            </motion.div>
+          )}
 
-        {activeSection === "categories" && (
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Categorias</h3>
-            <CategoriesConfig config={config} onChange={onChange} storeId={storeId} />
-          </div>
-        )}
+          {activeSection === "categories" && (
+            <motion.div
+              key="categories"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3 className="font-semibold text-lg mb-4">Categorias</h3>
+              <CategoriesConfig config={config} onChange={onChange} storeId={storeId} />
+            </motion.div>
+          )}
 
-        {activeSection === "settings" && (
-          <div className="space-y-6">
+          {activeSection === "settings" && (
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
             <div>
               <h3 className="font-semibold text-lg mb-4">Configurações da Loja</h3>
             </div>
@@ -147,8 +180,9 @@ export function ConfigPanel({
                 </div>
               </Card>
             )}
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

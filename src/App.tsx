@@ -43,8 +43,8 @@ const App = () => (
                 
                 {/* Dashboard Routes with Layout */}
                 <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
-                <Route path="/dashboard/store" element={<DashboardLayout><MyStore /></DashboardLayout>} />
-                <Route path="/dashboard/store/edit" element={<DashboardLayout><StoreEditor /></DashboardLayout>} />
+          <Route path="/dashboard/store" element={<DashboardLayout><MyStore /></DashboardLayout>} />
+          <Route path="/dashboard/store/edit" element={<StoreEditor />} />
                 <Route path="/dashboard/products" element={<DashboardLayout><Products /></DashboardLayout>} />
                 <Route path="/dashboard/orders" element={<DashboardLayout><Orders /></DashboardLayout>} />
                 <Route path="/dashboard/coupons" element={<DashboardLayout><Coupons /></DashboardLayout>} />

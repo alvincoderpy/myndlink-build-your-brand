@@ -8,6 +8,12 @@ import {
   Grid3x3,
   Settings,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Section {
   id: string;
@@ -68,27 +74,38 @@ export function EditorSidebar({ activeSection, onSectionChange }: EditorSidebarP
       {/* Sections List */}
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1">
-          {sections.map((section) => (
-            <Button
-              key={section.id}
-              variant={activeSection === section.id ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start h-auto py-3 px-3",
-                activeSection === section.id && "bg-secondary"
-              )}
-              onClick={() => onSectionChange(section.id)}
-            >
-              <div className="flex items-start gap-3 w-full">
-                <div className="mt-0.5">{section.icon}</div>
-                <div className="flex-1 text-left">
-                  <div className="font-medium text-sm">{section.label}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {section.description}
-                  </div>
-                </div>
-              </div>
-            </Button>
-          ))}
+          <TooltipProvider>
+            {sections.map((section) => (
+              <Tooltip key={section.id} delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={activeSection === section.id ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start h-auto py-3 px-3 transition-all duration-200",
+                      activeSection === section.id 
+                        ? "bg-accent scale-105 shadow-md" 
+                        : "hover:scale-[1.02] hover:bg-accent/50"
+                    )}
+                    onClick={() => onSectionChange(section.id)}
+                  >
+                    <div className="flex items-start gap-3 w-full">
+                      <div className="mt-0.5">{section.icon}</div>
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-sm">{section.label}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-1">
+                          {section.description}
+                        </div>
+                      </div>
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-xs">
+                  <p className="font-medium mb-1">{section.label}</p>
+                  <p className="text-xs text-muted-foreground">{section.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
         </div>
       </ScrollArea>
     </div>
