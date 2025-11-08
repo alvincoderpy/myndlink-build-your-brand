@@ -38,6 +38,10 @@ const productSchema = z.object({
   price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Preço deve ser maior que 0"),
   stock: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "Stock deve ser 0 ou maior"),
   image_url: z.string().url("URL inválida").optional().or(z.literal("")),
+  category: z.string().optional(),
+  is_featured: z.boolean().optional(),
+  is_new: z.boolean().optional(),
+  discount_percentage: z.number().min(0).max(100).optional(),
 });
 
 const Products = () => {
@@ -60,6 +64,10 @@ const Products = () => {
       price: "",
       stock: "0",
       image_url: "",
+      category: "",
+      is_featured: false,
+      is_new: false,
+      discount_percentage: 0,
     },
   });
 
@@ -198,6 +206,10 @@ const Products = () => {
             price: parseFloat(values.price),
             stock: parseInt(values.stock),
             image_url: values.image_url || null,
+            category: values.category || null,
+            is_featured: values.is_featured || false,
+            is_new: values.is_new || false,
+            discount_percentage: values.discount_percentage || 0,
           })
           .eq("id", editingProduct.id);
 
@@ -217,6 +229,10 @@ const Products = () => {
             price: parseFloat(values.price),
             stock: parseInt(values.stock),
             image_url: values.image_url || null,
+            category: values.category || null,
+            is_featured: values.is_featured || false,
+            is_new: values.is_new || false,
+            discount_percentage: values.discount_percentage || 0,
           });
 
         if (error) throw error;
@@ -247,6 +263,10 @@ const Products = () => {
       price: product.price.toString(),
       stock: product.stock.toString(),
       image_url: product.image_url || "",
+      category: product.category || "",
+      is_featured: product.is_featured || false,
+      is_new: product.is_new || false,
+      discount_percentage: product.discount_percentage || 0,
     });
     setIsDialogOpen(true);
   };

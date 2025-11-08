@@ -20,13 +20,14 @@ const StoreEditor = () => {
   const [store, setStore] = useState<any>(null);
   const [storeName, setStoreName] = useState("");
   const [subdomain, setSubdomain] = useState("");
-  const [template, setTemplate] = useState("fashion");
+  const [template, setTemplate] = useState("minimog");
   const [customColors, setCustomColors] = useState({
-    primary: templates.fashion.colors.primary,
-    secondary: templates.fashion.colors.secondary,
-    accent: templates.fashion.colors.accent,
+    primary: templates.minimog.colors.primary,
+    secondary: templates.minimog.colors.secondary,
+    accent: templates.minimog.colors.accent,
+    background: templates.minimog.colors.background,
+    muted: templates.minimog.colors.muted,
   });
-  const [customLayout, setCustomLayout] = useState<"grid" | "list" | "masonry">("grid");
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -63,16 +64,16 @@ const StoreEditor = () => {
         if (data.template_config && typeof data.template_config === 'object') {
           const config = data.template_config as any;
           if (config.colors) {
-            setCustomColors(config.colors);
-          }
-          if (config.layout) {
-            setCustomLayout(config.layout);
+            setCustomColors({
+              ...config.colors,
+              background: config.colors.background || templates.minimog.colors.background,
+              muted: config.colors.muted || templates.minimog.colors.muted,
+            });
           }
         } else {
-          // Use default template colors and layout
-          const defaultTemplate = templates[data.template as keyof typeof templates];
+          // Use default template colors
+          const defaultTemplate = templates[data.template as keyof typeof templates] || templates.minimog;
           setCustomColors(defaultTemplate.colors);
-          setCustomLayout(defaultTemplate.layout);
         }
       }
     } catch (error: any) {
@@ -102,12 +103,10 @@ const StoreEditor = () => {
         return;
       }
 
+      const currentTemplate = templates[template as keyof typeof templates] || templates.minimog;
       const templateConfig = {
-        base: template,
+        ...currentTemplate,
         colors: customColors,
-        layout: customLayout,
-        fonts: templates[template as keyof typeof templates].fonts,
-        cardStyle: templates[template as keyof typeof templates].cardStyle,
       };
 
       if (store) {
@@ -170,9 +169,8 @@ const StoreEditor = () => {
   };
 
   const resetToDefaults = () => {
-    const defaultTemplate = templates[template as keyof typeof templates];
+    const defaultTemplate = templates[template as keyof typeof templates] || templates.minimog;
     setCustomColors(defaultTemplate.colors);
-    setCustomLayout(defaultTemplate.layout);
     toast({
       title: "Restaurado",
       description: "Configurações restauradas para o padrão do template.",
@@ -181,15 +179,13 @@ const StoreEditor = () => {
 
   const handleTemplateChange = (newTemplate: string) => {
     setTemplate(newTemplate);
-    const defaultTemplate = templates[newTemplate as keyof typeof templates];
+    const defaultTemplate = templates[newTemplate as keyof typeof templates] || templates.minimog;
     setCustomColors(defaultTemplate.colors);
-    setCustomLayout(defaultTemplate.layout);
   };
 
   const previewConfig = {
-    ...templates[template as keyof typeof templates],
+    ...templates[template as keyof typeof templates] || templates.minimog,
     colors: customColors,
-    layout: customLayout,
   };
 
   return loading ? (
@@ -379,33 +375,6 @@ const StoreEditor = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Layout Selection */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3">Layout dos Produtos</h3>
-                <RadioGroup value={customLayout} onValueChange={(value: any) => setCustomLayout(value)}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="grid" id="layout-grid" />
-                      <Label htmlFor="layout-grid" className="font-normal cursor-pointer">
-                        Grade (3-4 colunas) - Layout tradicional em grade
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="list" id="layout-list" />
-                      <Label htmlFor="layout-list" className="font-normal cursor-pointer">
-                        Lista (1 coluna) - Produtos em lista vertical
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="masonry" id="layout-masonry" />
-                      <Label htmlFor="layout-masonry" className="font-normal cursor-pointer">
-                        Mosaico (tamanhos variados) - Layout dinâmico tipo Pinterest
-                      </Label>
-                    </div>
-                  </div>
-                </RadioGroup>
-              </div>
             </Card>
 
             {/* Publish Store */}
@@ -469,19 +438,11 @@ const StoreEditor = () => {
                     >
                       {storeName || "Minha Loja"}
                     </h3>
-                    <div 
-                      className={`grid gap-4 ${
-                        previewConfig.layout === 'list' 
-                          ? 'grid-cols-1' 
-                          : previewConfig.layout === 'masonry'
-                          ? 'grid-cols-2'
-                          : 'grid-cols-2 md:grid-cols-3'
-                      }`}
-                    >
+                    <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
                       {[1, 2, 3].map((i) => (
                         <div key={i} className="rounded-lg overflow-hidden border border-border bg-card">
                           <div 
-                            className={`${previewConfig.layout === 'list' ? 'aspect-video' : 'aspect-square'}`}
+                            className="aspect-square"
                             style={{ backgroundColor: `hsl(${previewConfig.colors.accent})` }}
                           />
                           <div className={`p-4 ${previewConfig.fonts.body}`}>

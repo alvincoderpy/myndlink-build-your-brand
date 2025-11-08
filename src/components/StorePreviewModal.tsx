@@ -45,19 +45,11 @@ export function StorePreviewModal({ open, onOpenChange, storeName, currentConfig
         >
           {storeName || "Minha Loja"}
         </h3>
-        <div 
-          className={`grid gap-3 ${
-            config.layout === 'list' 
-              ? 'grid-cols-1' 
-              : config.layout === 'masonry'
-              ? 'grid-cols-2'
-              : 'grid-cols-2 md:grid-cols-3'
-          }`}
-        >
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="rounded-lg overflow-hidden border border-border bg-card">
               <div 
-                className={`${config.layout === 'list' ? 'aspect-video' : 'aspect-square'}`}
+                className="aspect-square"
                 style={{ backgroundColor: `hsl(${config.colors.accent})` }}
               />
               <div className={`p-3 ${config.fonts.body}`}>
@@ -75,8 +67,6 @@ export function StorePreviewModal({ open, onOpenChange, storeName, currentConfig
   );
 
   const templateKeys = Object.keys(templates);
-  const eliteTemplates = templateKeys.filter(k => !['fashion', 'electronics', 'beauty'].includes(k));
-  const classicTemplates = ['fashion', 'electronics', 'beauty'];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -89,17 +79,7 @@ export function StorePreviewModal({ open, onOpenChange, storeName, currentConfig
           <ScrollArea className="w-full">
             <TabsList className="inline-flex w-auto">
               <TabsTrigger value="current">Atual</TabsTrigger>
-              <TabsTrigger value="prestige">Prestige</TabsTrigger>
-              <TabsTrigger value="empire">Empire</TabsTrigger>
-              <TabsTrigger value="atelier">Atelier</TabsTrigger>
-              <TabsTrigger value="dawn">Dawn</TabsTrigger>
-              <TabsTrigger value="minimal">Minimal</TabsTrigger>
-              <TabsTrigger value="impulse">Impulse</TabsTrigger>
-              <TabsTrigger value="vogue">Vogue</TabsTrigger>
-              <TabsTrigger value="vertex">Vertex</TabsTrigger>
-              <TabsTrigger value="fashion">Moda</TabsTrigger>
-              <TabsTrigger value="electronics">Eletrônicos</TabsTrigger>
-              <TabsTrigger value="beauty">Beleza</TabsTrigger>
+              <TabsTrigger value="minimog">Minimog Fashion</TabsTrigger>
             </TabsList>
           </ScrollArea>
           

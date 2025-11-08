@@ -158,11 +158,15 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string | null
           created_at: string
           description: string | null
+          discount_percentage: number | null
           id: string
           image_url: string | null
           is_active: boolean
+          is_featured: boolean | null
+          is_new: boolean | null
           name: string
           price: number
           stock: number
@@ -170,11 +174,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_featured?: boolean | null
+          is_new?: boolean | null
           name: string
           price: number
           stock?: number
@@ -182,11 +190,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_featured?: boolean | null
+          is_new?: boolean | null
           name?: string
           price?: number
           stock?: number
@@ -255,10 +267,14 @@ export type Database = {
         Row: {
           created_at: string
           custom_domain: string | null
+          favicon_url: string | null
           id: string
           is_published: boolean
+          logo_url: string | null
+          meta_description: string | null
           name: string
           plan: string
+          social_links: Json | null
           subdomain: string
           template: string
           template_config: Json | null
@@ -268,10 +284,14 @@ export type Database = {
         Insert: {
           created_at?: string
           custom_domain?: string | null
+          favicon_url?: string | null
           id?: string
           is_published?: boolean
+          logo_url?: string | null
+          meta_description?: string | null
           name: string
           plan?: string
+          social_links?: Json | null
           subdomain: string
           template?: string
           template_config?: Json | null
@@ -281,10 +301,14 @@ export type Database = {
         Update: {
           created_at?: string
           custom_domain?: string | null
+          favicon_url?: string | null
           id?: string
           is_published?: boolean
+          logo_url?: string | null
+          meta_description?: string | null
           name?: string
           plan?: string
+          social_links?: Json | null
           subdomain?: string
           template?: string
           template_config?: Json | null
