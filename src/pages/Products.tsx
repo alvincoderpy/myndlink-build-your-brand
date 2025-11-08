@@ -31,6 +31,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Store, Upload, Package } from "lucide-react";
 import { getProductLimit } from "@/lib/planLimits";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const productSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome muito longo"),
@@ -485,6 +487,88 @@ const Products = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Categoria</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma categoria" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="acessorios">Acessórios</SelectItem>
+                          <SelectItem value="calcados">Calçados</SelectItem>
+                          <SelectItem value="bolsas">Bolsas</SelectItem>
+                          <SelectItem value="roupas">Roupas</SelectItem>
+                          <SelectItem value="joias">Joias</SelectItem>
+                          <SelectItem value="outros">Outros</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="discount_percentage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Desconto (%)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            min="0" 
+                            max="100"
+                            {...field}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="is_featured"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between space-y-0">
+                          <FormLabel>Produto em Destaque</FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="is_new"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between space-y-0">
+                          <FormLabel>Novidade</FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
                 <div className="flex justify-end gap-4">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
