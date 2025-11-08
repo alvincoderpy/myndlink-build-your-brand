@@ -78,7 +78,7 @@ export function DashboardSidebar({
             <span>{t('nav.dashboard')}</span>
           </NavLink>
 
-          <NavLink to="/dashboard/store/edit" className={navLinkClass} onClick={() => isMobile && onClose()}>
+          <NavLink to="/dashboard/store" className={navLinkClass} onClick={() => isMobile && onClose()}>
             <Store className="w-5 h-5" />
             <span>{t('nav.myStore')}</span>
           </NavLink>

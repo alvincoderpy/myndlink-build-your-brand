@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import StoreEditor from "./pages/StoreEditor";
+import MyStore from "./pages/MyStore";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
@@ -42,6 +43,7 @@ const App = () => (
                 
                 {/* Dashboard Routes with Layout */}
                 <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+                <Route path="/dashboard/store" element={<DashboardLayout><MyStore /></DashboardLayout>} />
                 <Route path="/dashboard/store/edit" element={<DashboardLayout><StoreEditor /></DashboardLayout>} />
                 <Route path="/dashboard/products" element={<DashboardLayout><Products /></DashboardLayout>} />
                 <Route path="/dashboard/orders" element={<DashboardLayout><Orders /></DashboardLayout>} />

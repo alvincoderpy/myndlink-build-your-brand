@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Save, Eye } from "lucide-react";
 import { templates } from "@/config/templates";
 import { StorefrontPreview } from "@/components/store-editor/StorefrontPreview";
-import { TopBarConfig } from "@/components/store-editor/TopBarConfig";
-import { HeroConfig } from "@/components/store-editor/HeroConfig";
-import { CategoriesConfig } from "@/components/store-editor/CategoriesConfig";
-import { BrandingConfig } from "@/components/store-editor/BrandingConfig";
+import { EditorSidebar } from "@/components/store-editor/EditorSidebar";
+import { ConfigPanel } from "@/components/store-editor/ConfigPanel";
+import { PreviewToolbar } from "@/components/store-editor/PreviewToolbar";
+import { toast } from "sonner";
 
 const StoreEditor = () => {
   const [loading, setLoading] = useState(true);
@@ -41,7 +35,9 @@ const StoreEditor = () => {
     },
   });
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [viewMode, setViewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [activeSection, setActiveSection] = useState("branding");
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   
   // Auto-save with debounce
   const debouncedConfig = useDebounce(config, 2000);
@@ -112,6 +108,7 @@ const StoreEditor = () => {
         .eq("id", store.id);
 
       if (error) throw error;
+      setLastSaved(new Date());
     } catch (error: any) {
       console.error("Auto-save error:", error);
     }
@@ -129,11 +126,7 @@ const StoreEditor = () => {
       const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, "");
       
       if (!cleanSubdomain || cleanSubdomain.length < 3) {
-        toast({
-          title: "Erro",
-          description: "Subdomínio deve ter pelo menos 3 caracteres",
-          variant: "destructive",
-        });
+        toast.error("Subdomínio deve ter pelo menos 3 caracteres");
         setSaving(false);
         return;
       }
@@ -151,8 +144,7 @@ const StoreEditor = () => {
 
         if (error) throw error;
 
-        toast({
-          title: "Loja atualizada!",
+        toast.success("Loja atualizada!", {
           description: "As tuas alterações foram guardadas.",
         });
       } else {
@@ -169,30 +161,21 @@ const StoreEditor = () => {
 
         if (error) {
           if (error.code === "23505") {
-            toast({
-              title: "Erro",
-              description: "Este subdomínio já está em uso. Escolhe outro.",
-              variant: "destructive",
-            });
+            toast.error("Este subdomínio já está em uso. Escolhe outro.");
             setSaving(false);
             return;
           }
           throw error;
         }
 
-        toast({
-          title: "Loja criada!",
+        toast.success("Loja criada!", {
           description: "A tua loja foi criada com sucesso.",
         });
       }
 
       await loadStore();
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Ocorreu um erro ao guardar a loja.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Ocorreu um erro ao guardar a loja.");
     } finally {
       setSaving(false);
     }
@@ -207,25 +190,29 @@ const StoreEditor = () => {
       </div>
     </div>
   ) : (
-    <>
-      {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">
-            {store ? "Minha Loja" : "Criar Loja"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {store ? "Personaliza a tua loja online" : "Configura a tua nova loja"}
-          </p>
+    <div className="flex flex-col h-screen">
+      {/* Top Bar Fixo */}
+      <div className="border-b bg-background px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">Editor da Loja</h1>
+          <span className="text-sm text-muted-foreground">
+            {storeName || "Sem nome"}
+          </span>
+          {lastSaved && (
+            <span className="text-xs text-muted-foreground">
+              • Guardado agora mesmo
+            </span>
+          )}
         </div>
+
         <div className="flex items-center gap-3">
           {store && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => {
                 if (store?.subdomain) {
-                  window.open(`/store/${store.subdomain}`, '_blank');
+                  window.open(`/store/${store.subdomain}`, "_blank");
                 }
               }}
               disabled={!store?.subdomain}
@@ -241,155 +228,39 @@ const StoreEditor = () => {
         </div>
       </div>
 
-      {/* Main Content - Split Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column - Configuration */}
-        <div className="space-y-8">
-          {/* Basic Info */}
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Informações Básicas</h2>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome da Loja</Label>
-                <Input
-                  id="name"
-                  placeholder="Minha Loja Incrível"
-                  value={storeName}
-                  onChange={(e) => {
-                    setStoreName(e.target.value);
-                    if (!config.hero?.title) {
-                      setConfig({
-                        ...config,
-                        hero: {
-                          ...config.hero,
-                          title: `Bem-vindo a ${e.target.value}`,
-                        },
-                      });
-                    }
-                  }}
-                  className="mt-1"
-                />
-              </div>
+      {/* Main Content - 3 Colunas */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Coluna 1: Sidebar de Seções */}
+        <EditorSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-              <div>
-                <Label htmlFor="subdomain">Subdomínio</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input
-                    id="subdomain"
-                    placeholder="minhaloja"
-                    value={subdomain}
-                    onChange={(e) => setSubdomain(e.target.value.toLowerCase())}
-                    className="flex-1"
-                  />
-                  <span className="text-sm text-muted-foreground">.myndlink.com</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Apenas letras minúsculas, números e hífens
-                </p>
-              </div>
-            </div>
-          </Card>
+        {/* Coluna 2: Painel de Configuração */}
+        <ConfigPanel
+          activeSection={activeSection}
+          config={config}
+          onChange={setConfig}
+          storeId={store?.id}
+          storeName={storeName}
+          subdomain={subdomain}
+          onStoreNameChange={setStoreName}
+          onSubdomainChange={setSubdomain}
+          store={store}
+          onStoreUpdate={loadStore}
+        />
 
-          {/* Configuration Tabs */}
-          <Card className="p-6">
-            <Tabs defaultValue="branding" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="branding">Marca</TabsTrigger>
-                <TabsTrigger value="topbar">Top Bar</TabsTrigger>
-                <TabsTrigger value="hero">Hero</TabsTrigger>
-                <TabsTrigger value="categories">Categorias</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="branding" className="mt-6">
-                <BrandingConfig
-                  config={config}
-                  onChange={setConfig}
-                  storeId={store?.id}
-                />
-              </TabsContent>
-
-              <TabsContent value="topbar" className="mt-6">
-                <TopBarConfig
-                  config={config}
-                  onChange={setConfig}
-                />
-              </TabsContent>
-
-              <TabsContent value="hero" className="mt-6">
-                <HeroConfig
-                  config={config}
-                  onChange={setConfig}
-                  storeId={store?.id}
-                />
-              </TabsContent>
-
-              <TabsContent value="categories" className="mt-6">
-                <CategoriesConfig
-                  config={config}
-                  onChange={setConfig}
-                  storeId={store?.id}
-                />
-              </TabsContent>
-            </Tabs>
-          </Card>
-
-          {/* Publish Store */}
-          {store && (
-            <Card className="p-6">
-              <div className="flex items-center gap-4">
-                <Switch
-                  checked={store?.is_published}
-                  onCheckedChange={async (checked) => {
-                    try {
-                      const { error } = await supabase
-                        .from('stores')
-                        .update({ is_published: checked })
-                        .eq('id', store.id);
-                      
-                      if (error) throw error;
-                      
-                      toast({
-                        title: checked ? "Loja publicada!" : "Loja despublicada!",
-                      });
-                      await loadStore();
-                    } catch (error: any) {
-                      toast({
-                        title: "Erro",
-                        description: error.message,
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                />
-                <div>
-                  <Label className="text-base font-bold">Publicar Loja</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Torna a tua loja visível ao público
-                  </p>
-                </div>
-              </div>
-            </Card>
-          )}
-        </div>
-
-        {/* Right Column - Live Preview */}
-        <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-6rem)]">
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold">Pré-visualização em Tempo Real</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              As alterações são guardadas automaticamente
-            </p>
-          </div>
-          <div className="h-[calc(100%-4rem)] border border-border rounded-lg overflow-hidden">
+        {/* Coluna 3: Preview */}
+        <div className="flex-1 flex flex-col">
+          <PreviewToolbar viewMode={viewMode} onViewModeChange={setViewMode} />
+          <div className="flex-1 overflow-hidden">
             <StorefrontPreview
               config={config}
               storeName={storeName || "Minha Loja"}
               storeId={store?.id}
+              viewMode={viewMode}
             />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
