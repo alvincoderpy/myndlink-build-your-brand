@@ -1,29 +1,63 @@
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useDebounce } from "@/hooks/useDebounce";
-import { Save, ExternalLink, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { 
+  ArrowLeft, Save, Monitor, Tablet, Smartphone, 
+  Undo, Redo, Eye
+} from "lucide-react";
+import { motion } from "framer-motion";
 import { templates } from "@/config/templates";
-import { StorefrontPreview } from "@/components/store-editor/StorefrontPreview";
 import { EditorSidebar } from "@/components/store-editor/EditorSidebar";
 import { ConfigPanel } from "@/components/store-editor/ConfigPanel";
-import { PreviewToolbar } from "@/components/store-editor/PreviewToolbar";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { StorefrontPreview } from "@/components/store-editor/StorefrontPreview";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useHistory } from "@/hooks/useHistory";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type ViewMode = "desktop" | "tablet" | "mobile";
 
 const StoreEditor = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [store, setStore] = useState<any>(null);
   const [storeName, setStoreName] = useState("");
   const [subdomain, setSubdomain] = useState("");
-  const [config, setConfig] = useState<any>({
+  const [viewMode, setViewMode] = useState<ViewMode>("desktop");
+  const [activeSection, setActiveSection] = useState("branding");
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const { 
+    state: config, 
+    setState: setConfig, 
+    undo, 
+    redo, 
+    canUndo, 
+    canRedo 
+  } = useHistory<any>({
     ...templates.minimog,
     topBar: {
       showAnnouncement: true,
       announcement: "🎉 Frete grátis em compras acima de 500 MT | Entrega em 24h",
       showSocial: true,
+      socialLinks: {
+        instagram: "https://instagram.com/minhaloja",
+        facebook: "https://facebook.com/minhaloja",
+        whatsapp: "https://wa.me/258840000000",
+      },
     },
     hero: {
       showHero: true,
@@ -31,6 +65,7 @@ const StoreEditor = () => {
       subtitle: "Produtos exclusivos com qualidade premium e entrega rápida",
       backgroundImage: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04",
       ctaText: "Ver Coleção",
+      ctaLink: "#produtos",
       showPromo: true,
       promoText: "Entrega rápida • Pagamento seguro • Garantia de 30 dias",
     },
@@ -65,26 +100,25 @@ const StoreEditor = () => {
       },
     ],
     branding: {
-      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=80&fit=crop",
+      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9",
+      primaryColor: "#000000",
+      secondaryColor: "#FFFFFF",
+      accentColor: "#FFD700",
+      fontFamily: "Inter",
     },
   });
-  const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
-  const [activeSection, setActiveSection] = useState("branding");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  
-  // Auto-save with debounce
+
   const debouncedConfig = useDebounce(config, 2000);
-  
-  useEffect(() => {
-    if (store && !loading) {
-      handleAutoSave();
-    }
-  }, [debouncedConfig]);
 
   useEffect(() => {
     loadStore();
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (store?.id && debouncedConfig) {
+      handleAutoSave();
+    }
+  }, [debouncedConfig]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -92,60 +126,55 @@ const StoreEditor = () => {
         e.preventDefault();
         handleSave();
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        redo();
+      }
     };
-    
+
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [storeName, subdomain, config, store]);
+  }, [undo, redo]);
 
   const loadStore = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
+    if (!user) return;
 
-      const { data, error } = await supabase
+    try {
+      const { data: stores, error } = await supabase
         .from("stores")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .order("created_at", { ascending: false });
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
-      }
+      if (error) throw error;
 
-      if (data) {
-        setStore(data);
-        setStoreName(data.name);
-        setSubdomain(data.subdomain);
-        
-        // Load custom configuration if exists
-        if (data.template_config && typeof data.template_config === 'object') {
-          const loadedConfig = data.template_config as any;
-          setConfig({
-            ...templates.minimog,
-            ...loadedConfig,
-            topBar: loadedConfig.topBar || config.topBar,
-            hero: loadedConfig.hero || config.hero,
-            categories: loadedConfig.categories || [],
-            branding: loadedConfig.branding || { logo: "" },
-          });
+      if (stores && stores.length > 0) {
+        const currentStore = stores[0];
+        setStore(currentStore);
+        setStoreName(currentStore.name);
+        setSubdomain(currentStore.subdomain);
+
+        if (currentStore.template_config) {
+          setConfig(currentStore.template_config);
         }
       }
     } catch (error: any) {
       console.error("Error loading store:", error);
+      toast.error("Erro ao carregar loja");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAutoSave = async () => {
-    if (!store) return;
-    
+    if (!store?.id) return;
+
     try {
-      const { error } = await supabase
+      await supabase
         .from("stores")
         .update({
           name: storeName,
@@ -153,184 +182,246 @@ const StoreEditor = () => {
         })
         .eq("id", store.id);
 
-      if (error) throw error;
       setLastSaved(new Date());
-    } catch (error: any) {
+    } catch (error) {
       console.error("Auto-save error:", error);
     }
   };
 
   const handleSave = async () => {
+    if (!user) return;
+
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
-
-      const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, "");
-      
-      if (!cleanSubdomain || cleanSubdomain.length < 3) {
-        toast.error("Subdomínio deve ter pelo menos 3 caracteres");
-        setSaving(false);
-        return;
-      }
-
-      if (store) {
+      if (store?.id) {
         const { error } = await supabase
           .from("stores")
           .update({
             name: storeName,
-            subdomain: cleanSubdomain,
-            template: "minimog",
+            subdomain: subdomain,
             template_config: config,
           })
           .eq("id", store.id);
 
         if (error) throw error;
-
-        toast.success("Loja atualizada!", {
-          description: "As tuas alterações foram guardadas.",
-        });
+        toast.success("Loja atualizada com sucesso!");
       } else {
-        const { error } = await supabase
+        const subdomainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
+        if (!subdomainRegex.test(subdomain)) {
+          toast.error("Subdomínio inválido. Use apenas letras minúsculas, números e hífens.");
+          return;
+        }
+
+        const { data: newStore, error } = await supabase
           .from("stores")
           .insert({
             user_id: user.id,
             name: storeName,
-            subdomain: cleanSubdomain,
+            subdomain: subdomain,
             template: "minimog",
             template_config: config,
-            plan: "free",
-          });
+          })
+          .select()
+          .single();
 
-        if (error) {
-          if (error.code === "23505") {
-            toast.error("Este subdomínio já está em uso. Escolhe outro.");
-            setSaving(false);
-            return;
-          }
-          throw error;
-        }
-
-        toast.success("Loja criada!", {
-          description: "A tua loja foi criada com sucesso.",
-        });
+        if (error) throw error;
+        setStore(newStore);
+        toast.success("Loja criada com sucesso!");
       }
 
+      setLastSaved(new Date());
       await loadStore();
     } catch (error: any) {
-      toast.error(error.message || "Ocorreu um erro ao guardar a loja.");
+      console.error("Save error:", error);
+      toast.error(error.message || "Erro ao guardar loja");
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
 
-  return loading ? (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <motion.div
-        animate={{ 
-          rotate: 360,
-          opacity: [0.5, 1, 0.5]
-        }}
-        transition={{ 
-          rotate: { repeat: Infinity, duration: 1, ease: "linear" },
-          opacity: { repeat: Infinity, duration: 1.5 }
-        }}
-        className="h-12 w-12 border-b-2 border-primary rounded-full"
-      />
-    </div>
-  ) : (
-    <div className="flex flex-col h-screen bg-background">
+  return (
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Top Bar */}
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="border-b bg-card px-6 py-3 flex items-center justify-between"
+        className="border-b bg-background px-4 py-2 flex items-center justify-between h-14 flex-shrink-0"
       >
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
+        {/* Left: Back + Section Selector */}
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
             onClick={() => navigate("/dashboard/store")}
-            className="hover:bg-accent"
+            className="h-9"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar
+            <span className="hidden md:inline">Voltar</span>
           </Button>
           
-          <div className="border-l pl-4">
-            <h1 className="text-xl font-bold">{storeName || "Editor da Loja"}</h1>
-            <p className="text-sm text-muted-foreground">
-              {subdomain ? `${subdomain}.myndlink.com` : "Configure sua loja"}
-            </p>
-          </div>
+          <Select value={activeSection} onValueChange={setActiveSection}>
+            <SelectTrigger className="w-[180px] h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="branding">🎨 Marca</SelectItem>
+              <SelectItem value="topbar">📢 Barra Superior</SelectItem>
+              <SelectItem value="hero">🖼️ Banner Principal</SelectItem>
+              <SelectItem value="categories">📂 Categorias</SelectItem>
+              <SelectItem value="settings">⚙️ Configurações</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
+        {/* Center: View Mode + Undo/Redo */}
+        <div className="hidden md:flex items-center gap-1">
+          <div className="flex items-center gap-0.5 border rounded-md p-0.5">
+            <Button
+              variant={viewMode === "desktop" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setViewMode("desktop")}
+            >
+              <Monitor className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "tablet" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setViewMode("tablet")}
+            >
+              <Tablet className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "mobile" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setViewMode("mobile")}
+            >
+              <Smartphone className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 ml-2"
+            onClick={undo}
+            disabled={!canUndo}
+          >
+            <Undo className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            onClick={redo}
+            disabled={!canRedo}
+          >
+            <Redo className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Mobile: Preview Button */}
+        <div className="md:hidden">
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setShowPreview(!showPreview)}
+            className="h-9"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Right: Save */}
         <div className="flex items-center gap-3">
           {lastSaved && (
             <motion.span
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-xs text-muted-foreground flex items-center gap-1"
+              className="hidden md:block text-xs text-muted-foreground"
             >
-              <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              Guardado agora
+              ✓ Guardado
             </motion.span>
           )}
-
-          <Button variant="outline" size="sm" onClick={handleSave} disabled={saving}>
+          <Button 
+            size="sm" 
+            onClick={handleSave} 
+            disabled={saving} 
+            className="h-9"
+          >
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Guardando..." : "Guardar"}
           </Button>
-
-          {subdomain && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => window.open(`/storefront/${subdomain}`, "_blank")}
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Ver Loja
-            </Button>
-          )}
         </div>
       </motion.div>
 
-      {/* Main Content - 3 Colunas */}
+      {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Coluna 1: Sidebar de Seções */}
-        <EditorSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-
-        {/* Coluna 2: Painel de Configuração */}
-        <ConfigPanel
-          activeSection={activeSection}
-          config={config}
-          onChange={setConfig}
-          storeId={store?.id}
-          storeName={storeName}
-          subdomain={subdomain}
-          onStoreNameChange={setStoreName}
-          onSubdomainChange={setSubdomain}
-          store={store}
-          onStoreUpdate={loadStore}
-        />
-
-        {/* Coluna 3: Preview */}
-        <div className="flex-1 flex flex-col border-l bg-muted/20">
-          <PreviewToolbar viewMode={viewMode} onViewModeChange={setViewMode} />
-          <div className="flex-1 overflow-auto">
-            <StorefrontPreview
-              config={config}
-              storeName={storeName || "Minha Loja"}
-              storeId={store?.id}
-              viewMode={viewMode}
-              activeSection={activeSection}
+        {!isMobile && !showPreview && (
+          <motion.div 
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="w-60 border-r bg-background flex-shrink-0"
+          >
+            <EditorSidebar 
+              activeSection={activeSection} 
+              onSectionChange={setActiveSection} 
             />
-          </div>
-        </div>
+          </motion.div>
+        )}
+
+        {!showPreview && (
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="w-full lg:w-80 border-r bg-background overflow-y-auto flex-shrink-0"
+          >
+            <ConfigPanel
+              activeSection={activeSection}
+              config={config}
+              onChange={setConfig}
+              storeId={store?.id}
+              storeName={storeName}
+              subdomain={subdomain}
+              onStoreNameChange={setStoreName}
+              onSubdomainChange={setSubdomain}
+              store={store}
+              onStoreUpdate={loadStore}
+            />
+          </motion.div>
+        )}
+
+        {(!isMobile || showPreview) && (
+          <motion.div 
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex-1 flex flex-col bg-muted/20 overflow-hidden"
+          >
+            <div className="flex-1 overflow-auto">
+              <StorefrontPreview
+                config={config}
+                storeName={storeName || "Minha Loja"}
+                storeId={store?.id}
+                viewMode={viewMode}
+                activeSection={activeSection}
+              />
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

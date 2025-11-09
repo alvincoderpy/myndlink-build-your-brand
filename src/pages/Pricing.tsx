@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useForceTheme } from "@/hooks/useForceTheme";
 
 const Pricing = () => {
+  useForceTheme("light");
   const plans = [
     {
       name: "Free",

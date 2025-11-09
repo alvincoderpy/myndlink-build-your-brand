@@ -1,14 +1,13 @@
-import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { BrandingConfig } from "./BrandingConfig";
 import { TopBarConfig } from "./TopBarConfig";
 import { HeroConfig } from "./HeroConfig";
 import { CategoriesConfig } from "./CategoriesConfig";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface ConfigPanelProps {
   activeSection: string;
@@ -36,154 +35,125 @@ export function ConfigPanel({
   onStoreUpdate,
 }: ConfigPanelProps) {
   const handlePublishToggle = async (checked: boolean) => {
-    if (!store) return;
+    if (!storeId) {
+      toast.error("Por favor, guarde a loja primeiro");
+      return;
+    }
 
     try {
       const { error } = await supabase
         .from("stores")
         .update({ is_published: checked })
-        .eq("id", store.id);
+        .eq("id", storeId);
 
       if (error) throw error;
 
-      if (checked) {
-        const storeUrl = `https://${subdomain}.myndlink.com`;
-        toast.success("Loja publicada com sucesso!", {
-          description: "A tua loja já está online!",
-          action: {
-            label: "Ver loja",
-            onClick: () => window.open(storeUrl, "_blank"),
-          },
-        });
-      } else {
-        toast.success("Loja despublicada");
-      }
-
+      toast.success(
+        checked ? "Loja publicada com sucesso!" : "Loja despublicada"
+      );
       onStoreUpdate();
     } catch (error: any) {
-      toast.error("Erro ao publicar loja");
+      console.error("Error toggling publish:", error);
+      toast.error("Erro ao atualizar estado de publicação");
     }
   };
 
   return (
-    <div className="w-96 border-r bg-background overflow-y-auto h-full">
-      <div className="p-6 space-y-6">
-        <AnimatePresence mode="wait">
+    <div className="h-full flex flex-col">
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-6">
           {activeSection === "branding" && (
-            <motion.div
-              key="branding"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-semibold text-lg mb-4">Marca</h3>
-              <BrandingConfig config={config} onChange={onChange} storeId={storeId} />
-            </motion.div>
-          )}
-
-          {activeSection === "topbar" && (
-            <motion.div
-              key="topbar"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-semibold text-lg mb-4">Barra Superior</h3>
-              <TopBarConfig config={config} onChange={onChange} />
-            </motion.div>
-          )}
-
-          {activeSection === "hero" && (
-            <motion.div
-              key="hero"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-semibold text-lg mb-4">Banner Principal</h3>
-              <HeroConfig config={config} onChange={onChange} storeId={storeId} />
-            </motion.div>
-          )}
-
-          {activeSection === "categories" && (
-            <motion.div
-              key="categories"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3 className="font-semibold text-lg mb-4">Categorias</h3>
-              <CategoriesConfig config={config} onChange={onChange} storeId={storeId} />
-            </motion.div>
-          )}
-
-          {activeSection === "settings" && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
-            >
             <div>
-              <h3 className="font-semibold text-lg mb-4">Configurações da Loja</h3>
+              <h3 className="font-semibold mb-4">Marca</h3>
+              <BrandingConfig 
+                config={config} 
+                onChange={onChange} 
+                storeId={storeId} 
+              />
             </div>
-
-            <Card className="p-6">
-              <h4 className="font-semibold mb-4">Informações Básicas</h4>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Nome da Loja</Label>
-                  <Input
-                    id="name"
-                    placeholder="Minha Loja Incrível"
-                    value={storeName}
-                    onChange={(e) => onStoreNameChange(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="subdomain">Subdomínio</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      id="subdomain"
-                      placeholder="minhaloja"
-                      value={subdomain}
-                      onChange={(e) => onSubdomainChange(e.target.value.toLowerCase())}
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-muted-foreground">.myndlink.com</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Apenas letras minúsculas, números e hífens
-                  </p>
-                </div>
+          )}
+          
+          {activeSection === "topbar" && (
+            <div>
+              <h3 className="font-semibold mb-4">Barra Superior</h3>
+              <TopBarConfig config={config} onChange={onChange} />
+            </div>
+          )}
+          
+          {activeSection === "hero" && (
+            <div>
+              <h3 className="font-semibold mb-4">Banner Principal</h3>
+              <HeroConfig config={config} onChange={onChange} storeId={storeId} />
+            </div>
+          )}
+          
+          {activeSection === "categories" && (
+            <div>
+              <h3 className="font-semibold mb-4">Categorias</h3>
+              <CategoriesConfig 
+                config={config} 
+                onChange={onChange} 
+                storeId={storeId} 
+              />
+            </div>
+          )}
+          
+          {activeSection === "settings" && (
+            <div className="space-y-6">
+              <h3 className="font-semibold mb-4">Configurações</h3>
+              
+              <div>
+                <Label htmlFor="storeName">Nome da Loja</Label>
+                <Input
+                  id="storeName"
+                  value={storeName}
+                  onChange={(e) => onStoreNameChange(e.target.value)}
+                  placeholder="Minha Loja"
+                  className="mt-2"
+                />
               </div>
-            </Card>
 
-            {store && (
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <Switch checked={store?.is_published} onCheckedChange={handlePublishToggle} />
+              <div>
+                <Label htmlFor="subdomain">Subdomínio</Label>
+                <div className="mt-2 flex items-center gap-2">
+                  <Input
+                    id="subdomain"
+                    value={subdomain}
+                    onChange={(e) =>
+                      onSubdomainChange(e.target.value.toLowerCase())
+                    }
+                    placeholder="minhaloja"
+                    className="flex-1"
+                  />
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    .myndlink.com
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Apenas letras minúsculas, números e hífens
+                </p>
+              </div>
+
+              {storeId && (
+                <div className="flex items-center justify-between pt-4 border-t">
                   <div>
-                    <Label className="text-base font-bold">Publicar Loja</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Torna a tua loja visível ao público
+                    <Label className="text-base font-semibold">
+                      Publicar Loja
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Torna a loja visível publicamente
                     </p>
                   </div>
+                  <Switch
+                    checked={store?.is_published || false}
+                    onCheckedChange={handlePublishToggle}
+                  />
                 </div>
-              </Card>
-            )}
-            </motion.div>
+              )}
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+        </div>
+      </ScrollArea>
     </div>
   );
 }

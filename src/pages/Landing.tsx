@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Zap, Globe, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useForceTheme } from "@/hooks/useForceTheme";
 
 const Landing = () => {
   const { t } = useTranslation();
+  useForceTheme("light");
   return <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">

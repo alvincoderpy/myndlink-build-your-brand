@@ -69,7 +69,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error('Error loading stores:', error);
-      toast.error('Erro ao carregar lojas');
     } finally {
       setLoading(false);
     }

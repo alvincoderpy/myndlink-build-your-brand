@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { useForceTheme } from "@/hooks/useForceTheme";
 const Auth = () => {
   const {
     t
   } = useTranslation();
+  useForceTheme("light");
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

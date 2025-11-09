@@ -219,11 +219,10 @@ export default function Settings() {
               <SelectTrigger id="language" className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pt">🇵🇹 Português</SelectItem>
-                <SelectItem value="en">🇬🇧 English</SelectItem>
-                <SelectItem value="es">🇪🇸 Español</SelectItem>
-              </SelectContent>
+                  <SelectContent>
+                    <SelectItem value="pt">🇵🇹 Português</SelectItem>
+                    <SelectItem value="en">🇬🇧 English</SelectItem>
+                  </SelectContent>
             </Select>
           </div>
 

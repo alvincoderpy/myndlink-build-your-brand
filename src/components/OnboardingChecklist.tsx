@@ -23,16 +23,16 @@ export const OnboardingChecklist = () => {
     link: "/dashboard/store/edit",
     completed: false
   }, {
-    id: "edit_store",
-    title: "Editar loja",
-    description: "Personalize cores e template",
-    link: "/dashboard/store/edit",
-    completed: false
-  }, {
     id: "add_product",
     title: "Adicionar primeiro produto",
     description: "Adicione pelo menos 1 produto",
     link: "/dashboard/products",
+    completed: false
+  }, {
+    id: "edit_store",
+    title: "Editar loja",
+    description: "Personalize cores e template",
+    link: "/dashboard/store/edit",
     completed: false
   }, {
     id: "publish_store",
