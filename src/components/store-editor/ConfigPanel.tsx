@@ -1,9 +1,11 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { templates } from "@/config/templates";
 import { BrandingConfig } from "./BrandingConfig";
 import { TopBarConfig } from "./TopBarConfig";
 import { HeroConfig } from "./HeroConfig";
@@ -102,6 +104,45 @@ export function ConfigPanel({
             <div className="space-y-6">
               <h3 className="font-semibold mb-4">Configurações</h3>
               
+              {/* Seletor de Templates */}
+              <div>
+                <Label>Template</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Escolha um template base para sua loja
+                </p>
+                <Select 
+                  value={store?.template || "minimog"}
+                  onValueChange={async (template) => {
+                    if (!storeId) return;
+                    
+                    try {
+                      await supabase
+                        .from("stores")
+                        .update({ 
+                          template,
+                          template_config: templates[template] as any
+                        })
+                        .eq("id", storeId);
+                      
+                      onChange(templates[template]);
+                      onStoreUpdate();
+                      toast.success("Template alterado com sucesso!");
+                    } catch (error) {
+                      toast.error("Erro ao alterar template");
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="minimog">Minimog Fashion</SelectItem>
+                    <SelectItem value="modern">Modern Business</SelectItem>
+                    <SelectItem value="elegant">Elegant Store</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div>
                 <Label htmlFor="storeName">Nome da Loja</Label>
                 <Input

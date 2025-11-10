@@ -103,8 +103,16 @@ export default function MyStore() {
       <Card className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Store className="w-8 h-8 text-primary" />
+            <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+              {currentStore?.template_config?.branding?.logo ? (
+                <img 
+                  src={currentStore.template_config.branding.logo} 
+                  alt={currentStore.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Store className="w-8 h-8 text-primary" />
+              )}
             </div>
             <div>
               <h2 className="text-2xl font-bold">

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { TopBar } from "@/components/storefront/TopBar";
 import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
@@ -8,6 +8,7 @@ import { ProductTabs } from "@/components/storefront/ProductTabs";
 import { StorefrontFooter } from "@/components/storefront/StorefrontFooter";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontPreviewProps {
   config: any;
@@ -23,6 +24,7 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode, active
   const heroRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const productsRef = useRef<HTMLDivElement>(null);
+  const [realProducts, setRealProducts] = useState<any[]>([]);
 
   useEffect(() => {
     const refs: Record<string, React.RefObject<HTMLDivElement>> = {
@@ -41,6 +43,32 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode, active
       });
     }
   }, [activeSection]);
+
+  // Carregar produtos reais
+  useEffect(() => {
+    if (!storeId) return;
+    
+    const loadProducts = async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("*")
+        .eq("store_id", storeId)
+        .eq("is_active", true)
+        .limit(8);
+      
+      if (data && data.length > 0) {
+        setRealProducts(data);
+      }
+    };
+    
+    loadProducts();
+
+    // Escutar por atualizações
+    const handleUpdate = () => loadProducts();
+    window.addEventListener("products-updated", handleUpdate);
+    return () => window.removeEventListener("products-updated", handleUpdate);
+  }, [storeId]);
+
   const mockProducts = [
     {
       id: "1",
@@ -148,6 +176,9 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode, active
     },
   ];
 
+  // Usar produtos reais se existirem, senão usar mock
+  const productsToDisplay = realProducts.length > 0 ? realProducts : mockProducts;
+
   const containerWidth = {
     desktop: "100%",
     tablet: "768px",
@@ -249,7 +280,7 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode, active
             >
               <HeroSection
                 config={heroConfig}
-                featuredProducts={mockProducts.filter((p) => p.is_featured)}
+                featuredProducts={productsToDisplay.filter((p) => p.is_featured)}
               />
             </div>
 
@@ -272,7 +303,7 @@ export function StorefrontPreview({ config, storeName, storeId, viewMode, active
             >
               <ProductTabs
                 config={productTabsConfig}
-                products={mockProducts}
+                products={productsToDisplay}
                 onAddToCart={() => {}}
               />
             </div>

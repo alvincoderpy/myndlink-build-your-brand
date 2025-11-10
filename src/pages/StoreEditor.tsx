@@ -16,6 +16,7 @@ import { StorefrontPreview } from "@/components/store-editor/StorefrontPreview";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useHistory } from "@/hooks/useHistory";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -254,11 +255,7 @@ const StoreEditor = () => {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Top Bar */}
-      <motion.div 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="border-b bg-background px-4 py-2 flex items-center justify-between h-14 flex-shrink-0"
-      >
+      <div className="border-b bg-background px-4 py-2 flex items-center justify-between h-14 flex-shrink-0">
         {/* Left: Back + Section Selector */}
         <div className="flex items-center gap-2">
           <Button 
@@ -276,11 +273,11 @@ const StoreEditor = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="branding">🎨 Marca</SelectItem>
-              <SelectItem value="topbar">📢 Barra Superior</SelectItem>
-              <SelectItem value="hero">🖼️ Banner Principal</SelectItem>
-              <SelectItem value="categories">📂 Categorias</SelectItem>
-              <SelectItem value="settings">⚙️ Configurações</SelectItem>
+              <SelectItem value="branding">Marca</SelectItem>
+              <SelectItem value="topbar">Barra Superior</SelectItem>
+              <SelectItem value="hero">Banner Principal</SelectItem>
+              <SelectItem value="categories">Categorias</SelectItem>
+              <SelectItem value="settings">Configurações</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -334,28 +331,39 @@ const StoreEditor = () => {
           </Button>
         </div>
 
-        {/* Mobile: Preview Button */}
-        <div className="md:hidden">
+        {/* Desktop: Ver Loja / Mobile: Toggle Preview */}
+        <div className="flex items-center gap-2">
+          {/* Desktop: Ver Loja */}
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => {
+              if (store?.subdomain) {
+                window.open(`https://${store.subdomain}.myndlink.com`, "_blank");
+              }
+            }}
+            disabled={!store?.subdomain || !store?.is_published}
+            className="h-9 hidden md:flex"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            Ver Loja
+          </Button>
+          
+          {/* Mobile: Toggle Preview */}
           <Button 
             size="sm" 
             variant="outline"
             onClick={() => setShowPreview(!showPreview)}
-            className="h-9"
+            className="h-9 md:hidden"
           >
             <Eye className="w-4 h-4" />
           </Button>
-        </div>
 
-        {/* Right: Save */}
-        <div className="flex items-center gap-3">
+          {/* Save Button */}
           {lastSaved && (
-            <motion.span
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="hidden md:block text-xs text-muted-foreground"
-            >
+            <span className="hidden md:block text-xs text-muted-foreground">
               ✓ Guardado
-            </motion.span>
+            </span>
           )}
           <Button 
             size="sm" 
@@ -367,61 +375,56 @@ const StoreEditor = () => {
             {saving ? "Guardando..." : "Guardar"}
           </Button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {!isMobile && !showPreview && (
-          <motion.div 
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="w-60 border-r bg-background flex-shrink-0"
-          >
-            <EditorSidebar 
-              activeSection={activeSection} 
-              onSectionChange={setActiveSection} 
-            />
-          </motion.div>
-        )}
+        {/* Sidebar */}
+        <div className="w-60 border-r bg-background flex-shrink-0 hidden lg:block">
+          <EditorSidebar 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection} 
+          />
+        </div>
 
-        {!showPreview && (
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="w-full lg:w-80 border-r bg-background overflow-y-auto flex-shrink-0"
-          >
-            <ConfigPanel
-              activeSection={activeSection}
+        {/* Config Panel */}
+        <div 
+          className={cn(
+            "w-full lg:w-80 border-b lg:border-r lg:border-b-0 bg-background overflow-y-auto flex-shrink-0",
+            showPreview && "hidden md:block"
+          )}
+        >
+          <ConfigPanel
+            activeSection={activeSection}
+            config={config}
+            onChange={setConfig}
+            storeId={store?.id}
+            storeName={storeName}
+            subdomain={subdomain}
+            onStoreNameChange={setStoreName}
+            onSubdomainChange={setSubdomain}
+            store={store}
+            onStoreUpdate={loadStore}
+          />
+        </div>
+
+        {/* Preview */}
+        <div 
+          className={cn(
+            "flex-1 flex flex-col bg-muted/20 overflow-hidden",
+            !showPreview && "hidden md:flex"
+          )}
+        >
+          <div className="flex-1 overflow-auto">
+            <StorefrontPreview
               config={config}
-              onChange={setConfig}
+              storeName={storeName || "Minha Loja"}
               storeId={store?.id}
-              storeName={storeName}
-              subdomain={subdomain}
-              onStoreNameChange={setStoreName}
-              onSubdomainChange={setSubdomain}
-              store={store}
-              onStoreUpdate={loadStore}
+              viewMode={viewMode}
+              activeSection={activeSection}
             />
-          </motion.div>
-        )}
-
-        {(!isMobile || showPreview) && (
-          <motion.div 
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="flex-1 flex flex-col bg-muted/20 overflow-hidden"
-          >
-            <div className="flex-1 overflow-auto">
-              <StorefrontPreview
-                config={config}
-                storeName={storeName || "Minha Loja"}
-                storeId={store?.id}
-                viewMode={viewMode}
-                activeSection={activeSection}
-              />
-            </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );
