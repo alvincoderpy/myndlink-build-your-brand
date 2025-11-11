@@ -106,6 +106,25 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
         </Button>
       </div>
 
+      <div>
+        <Label htmlFor="category-bg">Cor de Fundo das Categorias</Label>
+        <div className="flex gap-2 mt-2">
+          <Input
+            id="category-bg"
+            type="color"
+            value={config.categoryBackgroundColor || "#f5f5f5"}
+            onChange={(e) => onChange({ ...config, categoryBackgroundColor: e.target.value })}
+            className="w-20 h-10 cursor-pointer"
+          />
+          <Input
+            value={config.categoryBackgroundColor || "#f5f5f5"}
+            onChange={(e) => onChange({ ...config, categoryBackgroundColor: e.target.value })}
+            placeholder="#f5f5f5"
+            className="flex-1"
+          />
+        </div>
+      </div>
+
       <div className="space-y-4">
         {categories.map((category: any, index: number) => (
           <div key={index} className="border border-border rounded-lg p-4 space-y-3">

@@ -268,18 +268,21 @@ const StoreEditor = () => {
             <span className="hidden md:inline">Voltar</span>
           </Button>
           
-          <Select value={activeSection} onValueChange={setActiveSection}>
-            <SelectTrigger className="w-[180px] h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="branding">Marca</SelectItem>
-              <SelectItem value="topbar">Barra Superior</SelectItem>
-              <SelectItem value="hero">Banner Principal</SelectItem>
-              <SelectItem value="categories">Categorias</SelectItem>
-              <SelectItem value="settings">Configurações</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Mobile Section Selector */}
+          <div className="lg:hidden">
+            <Select value={activeSection} onValueChange={setActiveSection}>
+              <SelectTrigger className="w-[180px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="branding">Marca</SelectItem>
+                <SelectItem value="topbar">Barra Superior</SelectItem>
+                <SelectItem value="hero">Banner Principal</SelectItem>
+                <SelectItem value="categories">Categorias</SelectItem>
+                <SelectItem value="settings">Configurações</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Center: View Mode + Undo/Redo */}
@@ -338,11 +341,15 @@ const StoreEditor = () => {
             size="sm" 
             variant="outline"
             onClick={() => {
-              if (store?.subdomain) {
-                window.open(`https://${store.subdomain}.myndlink.com`, "_blank");
+              if (store?.subdomain && store?.is_published) {
+                window.open(`/storefront/${store.subdomain}`, "_blank");
+              } else if (!store?.is_published) {
+                toast.error("Publique a loja primeiro nas configurações");
+              } else {
+                toast.error("Configure um subdomínio primeiro");
               }
             }}
-            disabled={!store?.subdomain || !store?.is_published}
+            disabled={!store?.subdomain}
             className="h-9 hidden md:flex"
           >
             <Eye className="w-4 h-4 mr-2" />
@@ -360,11 +367,6 @@ const StoreEditor = () => {
           </Button>
 
           {/* Save Button */}
-          {lastSaved && (
-            <span className="hidden md:block text-xs text-muted-foreground">
-              ✓ Guardado
-            </span>
-          )}
           <Button 
             size="sm" 
             onClick={handleSave} 
@@ -377,21 +379,39 @@ const StoreEditor = () => {
         </div>
       </div>
 
-      {/* Main Layout */}
+      {/* Main Layout: Sidebar Left | Preview Center | Config Right */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-60 border-r bg-background flex-shrink-0 hidden lg:block">
+        {/* Left Sidebar - Section Navigation */}
+        <div className="w-60 border-r bg-background flex-shrink-0 hidden lg:block overflow-y-auto">
           <EditorSidebar 
             activeSection={activeSection} 
             onSectionChange={setActiveSection} 
           />
         </div>
 
-        {/* Config Panel */}
+        {/* Center - Preview */}
         <div 
           className={cn(
-            "w-full lg:w-80 border-b lg:border-r lg:border-b-0 bg-background overflow-y-auto flex-shrink-0",
-            showPreview && "hidden md:block"
+            "flex-1 flex flex-col bg-muted/20 overflow-hidden",
+            showPreview ? "block" : "hidden md:flex"
+          )}
+        >
+          <div className="flex-1 overflow-auto">
+            <StorefrontPreview
+              config={config}
+              storeName={storeName || "Minha Loja"}
+              storeId={store?.id}
+              viewMode={viewMode}
+              activeSection={activeSection}
+            />
+          </div>
+        </div>
+
+        {/* Right Panel - Configuration */}
+        <div 
+          className={cn(
+            "w-full lg:w-80 border-l bg-background overflow-y-auto flex-shrink-0",
+            showPreview ? "hidden md:block" : "block"
           )}
         >
           <ConfigPanel
@@ -406,24 +426,6 @@ const StoreEditor = () => {
             store={store}
             onStoreUpdate={loadStore}
           />
-        </div>
-
-        {/* Preview */}
-        <div 
-          className={cn(
-            "flex-1 flex flex-col bg-muted/20 overflow-hidden",
-            !showPreview && "hidden md:flex"
-          )}
-        >
-          <div className="flex-1 overflow-auto">
-            <StorefrontPreview
-              config={config}
-              storeName={storeName || "Minha Loja"}
-              storeId={store?.id}
-              viewMode={viewMode}
-              activeSection={activeSection}
-            />
-          </div>
         </div>
       </div>
     </div>

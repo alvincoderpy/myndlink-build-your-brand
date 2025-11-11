@@ -134,6 +134,66 @@ export function HeroConfig({ config, onChange, storeId }: HeroConfigProps) {
               />
             </div>
           </div>
+
+          <div>
+            <Label htmlFor="hero-overlay">Cor de Sobreposição</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                id="hero-overlay"
+                type="color"
+                value={heroConfig.overlayColor || "#000000"}
+                onChange={(e) => updateHero({ overlayColor: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={heroConfig.overlayColor || "#000000"}
+                onChange={(e) => updateHero({ overlayColor: e.target.value })}
+                placeholder="#000000"
+                className="flex-1"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Cor escura sobre a imagem de fundo
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="hero-title-color">Cor do Título</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                id="hero-title-color"
+                type="color"
+                value={heroConfig.titleColor || "#ffffff"}
+                onChange={(e) => updateHero({ titleColor: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={heroConfig.titleColor || "#ffffff"}
+                onChange={(e) => updateHero({ titleColor: e.target.value })}
+                placeholder="#ffffff"
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="hero-button-color">Cor do Botão</Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                id="hero-button-color"
+                type="color"
+                value={heroConfig.buttonColor || "#ffffff"}
+                onChange={(e) => updateHero({ buttonColor: e.target.value })}
+                className="w-20 h-10 cursor-pointer"
+              />
+              <Input
+                value={heroConfig.buttonColor || "#ffffff"}
+                onChange={(e) => updateHero({ buttonColor: e.target.value })}
+                placeholder="#ffffff"
+                className="flex-1"
+              />
+            </div>
+          </div>
         </>
       )}
     </div>
