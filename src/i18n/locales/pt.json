@@ -177,7 +177,7 @@
   },
   "settings": {
     "title": "Configurações",
-    "userProfile": "Perfil do Usuário",
+    
     "firstName": "Nome",
     "lastName": "Apelido",
     "firstNamePlaceholder": "Teu nome",
