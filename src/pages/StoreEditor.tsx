@@ -227,7 +227,29 @@ const StoreEditor = () => {
 
         if (error) throw error;
         setStore(newStore);
-        toast.success("Loja criada com sucesso!");
+
+        // Insert mock products for new store
+        if (newStore) {
+          const template = templates[newStore.template as keyof typeof templates];
+          if (template?.mockProducts) {
+            const mockProductsToInsert = template.mockProducts.map((product, index) => ({
+              store_id: newStore.id,
+              ...product,
+              is_mock: true,
+              display_order: index + 1,
+            }));
+
+            const { error: productsError } = await supabase
+              .from("products")
+              .insert(mockProductsToInsert);
+
+            if (productsError) {
+              console.error("Erro ao inserir produtos mock:", productsError);
+            }
+          }
+        }
+
+        toast.success("Loja criada com produtos de exemplo!");
       }
 
       setLastSaved(new Date());

@@ -123,7 +123,7 @@ export default function Settings() {
 
       {/* Perfil do Usuário */}
       <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4">{t('settings.userProfile')}</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('settings.profile')}</h2>
         <div className="space-y-4">
           <div>
             <Label htmlFor="first_name">{t('settings.firstName')}</Label>
