@@ -104,24 +104,14 @@ export default function MyStore() {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
-              {currentStore?.template_config?.branding?.logo ? (
-                <img 
-                  src={currentStore.template_config.branding.logo} 
-                  alt={currentStore.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Store className="w-8 h-8 text-primary" />
-              )}
+              {currentStore?.template_config?.branding?.logo ? <img src={currentStore.template_config.branding.logo} alt={currentStore.name} className="w-full h-full object-cover" /> : <Store className="w-8 h-8 text-primary" />}
             </div>
             <div>
               <h2 className="text-2xl font-bold">
                 {currentStore?.name || "Sem nome"}
               </h2>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant={currentStore?.is_published ? "default" : "secondary"}>
-                  {currentStore?.is_published ? "Publicada" : "Não publicada"}
-                </Badge>
+                
                 {currentStore?.subdomain && <span className="text-sm text-muted-foreground">
                     {currentStore.subdomain}.myndlink.com
                   </span>}
