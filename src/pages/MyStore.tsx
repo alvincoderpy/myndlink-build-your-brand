@@ -93,10 +93,12 @@ export default function MyStore() {
           </p>
         </div>
         
-        <Button onClick={() => navigate("/dashboard/store/edit")} size="lg">
-          <Edit className="w-4 h-4 mr-2" />
-          Editar Loja
-        </Button>
+        <div className="hidden md:flex">
+          <Button onClick={() => navigate("/dashboard/store/edit")} size="lg">
+            <Edit className="w-4 h-4 mr-2" />
+            Editar Loja
+          </Button>
+        </div>
       </div>
 
       {/* Status Card */}
