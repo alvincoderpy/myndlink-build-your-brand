@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,11 +29,28 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Store, Upload, Package } from "lucide-react";
+import { Plus, Edit, Trash2, Store, Upload, Package, GripVertical, ArrowUpDown } from "lucide-react";
 import { getProductLimit } from "@/lib/planLimits";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const productSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome muito longo"),
@@ -46,6 +64,116 @@ const productSchema = z.object({
   discount_percentage: z.number().min(0).max(100).optional(),
 });
 
+interface SortableProductCardProps {
+  product: any;
+  index: number;
+  onEdit: (product: any) => void;
+  onDelete: (id: string) => void;
+}
+
+function SortableProductCard({ product, index, onEdit, onDelete }: SortableProductCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: product.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative flex-shrink-0 w-80"
+    >
+      <Card className="p-4 h-full">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+            >
+              <GripVertical className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <Badge variant="outline" className="font-mono">
+              #{index + 1}
+            </Badge>
+          </div>
+          {product.is_mock && (
+            <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100">
+              Mock
+            </Badge>
+          )}
+        </div>
+
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-40 object-cover rounded-lg mb-3"
+          />
+        ) : (
+          <div className="w-full h-40 bg-muted rounded-lg mb-3 flex items-center justify-center">
+            <Package className="w-12 h-12 text-muted-foreground" />
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
+          {product.description && (
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {product.description}
+            </p>
+          )}
+          
+          <div className="flex items-center justify-between pt-2">
+            <div>
+              <p className="text-xl font-bold">{product.price} MT</p>
+              <p className="text-sm text-muted-foreground">Stock: {product.stock}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => onEdit(product)}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => onDelete(product.id)}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex gap-2 flex-wrap pt-2">
+            {product.is_featured && (
+              <Badge variant="default">Destaque</Badge>
+            )}
+            {product.is_new && (
+              <Badge variant="secondary">Novo</Badge>
+            )}
+            {product.discount_percentage > 0 && (
+              <Badge variant="destructive">-{product.discount_percentage}%</Badge>
+            )}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 const Products = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
@@ -54,9 +182,17 @@ const Products = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<string>("custom");
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const form = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -85,7 +221,6 @@ const Products = () => {
         return;
       }
 
-      // Load store
       const { data: storeData, error: storeError } = await supabase
         .from("stores")
         .select("*")
@@ -95,12 +230,12 @@ const Products = () => {
       if (storeError) throw storeError;
       setStore(storeData);
 
-      // Load products
       if (storeData) {
         const { data: productsData, error: productsError } = await supabase
           .from("products")
           .select("*")
           .eq("store_id", storeData.id)
+          .order("display_order", { ascending: true, nullsFirst: false })
           .order("created_at", { ascending: false });
 
         if (productsError) throw productsError;
@@ -118,7 +253,6 @@ const Products = () => {
     }
   };
 
-
   const checkProductLimit = () => {
     const limit = getProductLimit(store?.plan || 'free');
     if (products.length >= limit) {
@@ -132,7 +266,6 @@ const Products = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Erro",
@@ -142,7 +275,6 @@ const Products = () => {
       return;
     }
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
         title: "Erro",
@@ -192,14 +324,12 @@ const Products = () => {
       return;
     }
 
-    // Check product limit for new products
     if (!editingProduct && !checkProductLimit()) {
       return;
     }
 
     try {
       if (editingProduct) {
-        // Update
         const { error } = await supabase
           .from("products")
           .update({
@@ -221,7 +351,6 @@ const Products = () => {
           title: "Produto atualizado!",
         });
       } else {
-        // Create
         const { error } = await supabase
           .from("products")
           .insert({
@@ -235,6 +364,7 @@ const Products = () => {
             is_featured: values.is_featured || false,
             is_new: values.is_new || false,
             discount_percentage: values.discount_percentage || 0,
+            display_order: products.length,
           });
 
         if (error) throw error;
@@ -299,6 +429,56 @@ const Products = () => {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = products.findIndex((p) => p.id === active.id);
+    const newIndex = products.findIndex((p) => p.id === over.id);
+
+    const newProducts = arrayMove(products, oldIndex, newIndex);
+    setProducts(newProducts);
+
+    try {
+      const updates = newProducts.map((product, index) => ({
+        id: product.id,
+        display_order: index,
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from("products")
+          .update({ display_order: update.display_order })
+          .eq("id", update.id);
+      }
+    } catch (error: any) {
+      console.error("Error updating order:", error);
+      toast({
+        title: "Erro ao reordenar",
+        description: error.message,
+        variant: "destructive",
+      });
+      loadData();
+    }
+  };
+
+  const sortedProducts = [...products].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case "oldest":
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case "mostSold":
+        return (b.sold || 0) - (a.sold || 0);
+      case "custom":
+      default:
+        return (a.display_order || 0) - (b.display_order || 0);
+    }
+  });
+
   return loading ? (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -308,10 +488,10 @@ const Products = () => {
         </div>
         <Skeleton className="h-10 w-40" />
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex gap-4 overflow-x-auto pb-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
-            <Skeleton className="w-full h-48 mb-4" />
+          <Card key={i} className="flex-shrink-0 w-80 p-4">
+            <Skeleton className="w-full h-40 mb-3" />
             <Skeleton className="h-6 w-3/4 mb-2" />
             <Skeleton className="h-4 w-full mb-4" />
             <Skeleton className="h-8 w-24" />
@@ -332,8 +512,7 @@ const Products = () => {
     </div>
   ) : (
     <>
-      {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Produtos</h1>
           <p className="text-muted-foreground mt-1">
@@ -352,7 +531,7 @@ const Products = () => {
               Adicionar Produto
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? "Editar Produto" : "Adicionar Produto"}
@@ -360,6 +539,7 @@ const Products = () => {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                {/* ... keep existing code (form fields) */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -381,7 +561,7 @@ const Products = () => {
                     <FormItem>
                       <FormLabel>Descrição</FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={3} />
+                        <Textarea {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -396,7 +576,7 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>Preço (MT)</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" step="0.01" />
+                          <Input type="number" step="0.01" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -410,83 +590,13 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>Stock</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="image_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Imagem do Produto</FormLabel>
-                      <div className="space-y-4">
-                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                          <input
-                            type="file"
-                            id="image-upload"
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            disabled={uploadingImage}
-                          />
-                          <label
-                            htmlFor="image-upload"
-                            className={`cursor-pointer flex flex-col items-center ${
-                              uploadingImage ? "opacity-50" : ""
-                            }`}
-                          >
-                            <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground mb-1">
-                              {uploadingImage ? "Carregando..." : "Clique para carregar imagem"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              PNG, JPG, WEBP até 5MB
-                            </p>
-                          </label>
-                        </div>
-                        
-                        {field.value && (
-                          <div className="relative">
-                            <img
-                              src={field.value}
-                              alt="Preview"
-                              className="w-full h-48 object-cover rounded-lg"
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => form.setValue("image_url", "")}
-                              className="absolute top-2 right-2"
-                            >
-                              Remover
-                            </Button>
-                          </div>
-                        )}
-                        
-                        <div>
-                          <Label htmlFor="image_url_manual" className="text-sm text-muted-foreground">
-                            Ou cole uma URL:
-                          </Label>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              id="image_url_manual"
-                              type="url"
-                              placeholder="https://exemplo.com/imagem.jpg"
-                            />
-                          </FormControl>
-                        </div>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={form.control}
@@ -494,84 +604,130 @@ const Products = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Categoria</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma categoria" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="acessorios">Acessórios</SelectItem>
-                          <SelectItem value="calcados">Calçados</SelectItem>
-                          <SelectItem value="bolsas">Bolsas</SelectItem>
-                          <SelectItem value="roupas">Roupas</SelectItem>
-                          <SelectItem value="joias">Joias</SelectItem>
-                          <SelectItem value="outros">Outros</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Input {...field} placeholder="Ex: Roupas, Eletrônicos..." />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="discount_percentage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Desconto (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          value={field.value || 0}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-4">
+                  <Label>Imagem do Produto</Label>
+                  <div className="flex items-center gap-4">
+                    <label className="cursor-pointer">
+                      <div className="border-2 border-dashed rounded-lg p-4 hover:border-primary transition-colors">
+                        <Upload className="w-6 h-6 mx-auto mb-2" />
+                        <p className="text-sm text-center">Carregar imagem</p>
+                        <p className="text-xs text-muted-foreground text-center">PNG, JPG até 5MB</p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage}
+                      />
+                    </label>
+                    {form.watch("image_url") && (
+                      <img
+                        src={form.watch("image_url")}
+                        alt="Preview"
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                    )}
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="discount_percentage"
+                    name="image_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Desconto (%)</FormLabel>
+                        <FormLabel>Ou cole a URL:</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            min="0" 
-                            max="100"
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                          />
+                          <Input {...field} placeholder="https://..." />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="is_featured"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between space-y-0">
-                          <FormLabel>Produto em Destaque</FormLabel>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="is_new"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center justify-between space-y-0">
-                          <FormLabel>Novidade</FormLabel>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </div>
 
-                <div className="flex justify-end gap-4">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="is_featured"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                        <div>
+                          <FormLabel>Produto em Destaque</FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Aparece na seção de destaques
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="is_new"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                        <div>
+                          <FormLabel>Produto Novo</FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Marcado como "Novo"
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      setEditingProduct(null);
+                      form.reset();
+                    }}
+                  >
                     Cancelar
                   </Button>
                   <Button type="submit">
@@ -584,90 +740,85 @@ const Products = () => {
         </Dialog>
       </div>
 
-      {/* Products Grid */}
-      <div>
-
-        {products.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-xl font-bold mb-2">Nenhum produto ainda</h2>
-            <p className="text-muted-foreground mb-4">Comece a adicionar produtos ao seu catálogo</p>
-            <Button onClick={() => setIsDialogOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Adicionar Primeiro Produto
-            </Button>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Card key={product.id} className="p-6 hover:shadow-lg transition-shadow">
-                {product.image_url && (
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                )}
-                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {product.description}
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-bold">{product.price} MT</span>
-                  <span className="text-sm text-muted-foreground">
-                    Stock: {product.stock}
-                  </span>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleEdit(product)}
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+      <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Ordenar por:</span>
+        </div>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="custom">Ordem Personalizada</SelectItem>
+            <SelectItem value="newest">Mais Recente</SelectItem>
+            <SelectItem value="oldest">Mais Antigo</SelectItem>
+            <SelectItem value="mostSold">Mais Vendido</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Delete Confirmation Dialog */}
+      {products.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-xl font-semibold mb-2">Nenhum produto ainda</h2>
+          <p className="text-muted-foreground mb-4">
+            Adiciona o teu primeiro produto para começar a vender
+          </p>
+          <Button onClick={() => setIsDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar Primeiro Produto
+          </Button>
+        </Card>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={sortedProducts.map((p) => p.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {sortedProducts.map((product, index) => (
+                <SortableProductCard
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+
       <AlertDialog open={!!productToDelete} onOpenChange={() => setProductToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar Produto</AlertDialogTitle>
+            <AlertDialogTitle>Tens a certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tens a certeza que queres eliminar este produto? Esta ação não pode ser desfeita.
+              Esta ação não pode ser desfeita. O produto será eliminado permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction onClick={confirmDelete}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Upgrade Dialog */}
       <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Limite de Produtos Atingido</AlertDialogTitle>
             <AlertDialogDescription>
-              O plano {store?.plan.toUpperCase()} permite apenas {getProductLimit(store?.plan)} produtos.
-              Faça upgrade para adicionar mais produtos!
+              O plano {store?.plan} permite apenas {getProductLimit(store?.plan || 'free')} produtos.
+              Faz upgrade para adicionar mais produtos!
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -162,10 +162,12 @@ export type Database = {
           created_at: string
           description: string | null
           discount_percentage: number | null
+          display_order: number | null
           id: string
           image_url: string | null
           is_active: boolean
           is_featured: boolean | null
+          is_mock: boolean | null
           is_new: boolean | null
           name: string
           price: number
@@ -178,10 +180,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
+          display_order?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean | null
+          is_mock?: boolean | null
           is_new?: boolean | null
           name: string
           price: number
@@ -194,10 +198,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
+          display_order?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean | null
+          is_mock?: boolean | null
           is_new?: boolean | null
           name?: string
           price?: number

@@ -23,7 +23,7 @@ export function StorefrontHeader({
   
   return (
     <>
-      <header className="border-b sticky top-0 bg-background z-50">
+      <header className="sticky top-0 z-50 backdrop-blur-lg bg-background/80 border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Search (Desktop) / Menu (Mobile) */}
