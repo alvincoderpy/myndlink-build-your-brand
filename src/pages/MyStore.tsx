@@ -121,9 +121,7 @@ export default function MyStore() {
             </div>
           </div>
 
-          <Button variant={currentStore?.is_published ? "outline" : "default"} onClick={handlePublishToggle}>
-            {currentStore?.is_published ? "Despublicar" : "Publicar Loja"}
-          </Button>
+          
         </div>
 
         {/* Link da loja publicada */}
