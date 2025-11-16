@@ -48,7 +48,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  horizontalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -91,22 +91,21 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
     <div
       ref={setNodeRef}
       style={style}
-      className="relative flex-shrink-0 w-80"
+      className="relative w-full"
     >
-      <Card className="p-4 h-full">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
-            >
-              <GripVertical className="w-4 h-4 text-muted-foreground" />
-            </div>
-            <Badge variant="outline" className="font-mono">
-              #{index + 1}
-            </Badge>
+      <Card className="p-4 h-[180px] flex items-center gap-4">
+        {/* Drag Handle e Badges */}
+        <div className="absolute top-2 left-2 flex items-center gap-2 z-10">
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded bg-background/80 backdrop-blur-sm"
+          >
+            <GripVertical className="w-4 h-4 text-muted-foreground" />
           </div>
+          <Badge variant="outline" className="font-mono bg-background/80 backdrop-blur-sm">
+            #{index + 1}
+          </Badge>
           {product.is_mock && (
             <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100">
               Mock
@@ -114,59 +113,77 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
           )}
         </div>
 
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="w-full h-40 object-cover rounded-lg mb-3"
-          />
-        ) : (
-          <div className="w-full h-40 bg-muted rounded-lg mb-3 flex items-center justify-center">
-            <Package className="w-12 h-12 text-muted-foreground" />
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
-          {product.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {product.description}
-            </p>
+        {/* Imagem */}
+        <div className="flex-shrink-0 w-32 h-full">
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-cover rounded-lg"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+              <Package className="w-12 h-12 text-muted-foreground" />
+            </div>
           )}
-          
-          <div className="flex items-center justify-between pt-2">
-            <div>
-              <p className="text-xl font-bold">{product.price} MT</p>
-              <p className="text-sm text-muted-foreground">Stock: {product.stock}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => onEdit(product)}
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => onDelete(product.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+        </div>
+
+        {/* Informações */}
+        <div className="flex-1 flex flex-col h-full justify-between pt-8 pb-2">
+          <div className="space-y-1">
+            <h3 className="font-semibold line-clamp-1 text-base">{product.name}</h3>
+            {product.description && (
+              <p className="text-xs text-muted-foreground line-clamp-1">
+                {product.description}
+              </p>
+            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="secondary" className="font-mono text-xs">
+                {product.price} MT
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Stock: {product.stock}
+              </Badge>
+              {product.category && (
+                <Badge variant="outline" className="text-xs">{product.category}</Badge>
+              )}
+              {product.is_featured && (
+                <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-100 text-xs">
+                  Destaque
+                </Badge>
+              )}
+              {product.is_new && (
+                <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100 text-xs">
+                  Novo
+                </Badge>
+              )}
+              {product.discount_percentage > 0 && (
+                <Badge className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100 text-xs">
+                  -{product.discount_percentage}%
+                </Badge>
+              )}
             </div>
           </div>
 
-          <div className="flex gap-2 flex-wrap pt-2">
-            {product.is_featured && (
-              <Badge variant="default">Destaque</Badge>
-            )}
-            {product.is_new && (
-              <Badge variant="secondary">Novo</Badge>
-            )}
-            {product.discount_percentage > 0 && (
-              <Badge variant="destructive">-{product.discount_percentage}%</Badge>
-            )}
+          {/* Ações */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-8 text-xs"
+              onClick={() => onEdit(product)}
+            >
+              <Edit className="w-3 h-3 mr-1" />
+              Editar
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-2 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+              onClick={() => onDelete(product.id)}
+            >
+              <Trash2 className="w-3 h-3" />
+            </Button>
           </div>
         </div>
       </Card>
@@ -778,9 +795,9 @@ const Products = () => {
         >
           <SortableContext
             items={sortedProducts.map((p) => p.id)}
-            strategy={horizontalListSortingStrategy}
+            strategy={rectSortingStrategy}
           >
-            <div className="flex gap-4 overflow-x-auto pb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sortedProducts.map((product, index) => (
                 <SortableProductCard
                   key={product.id}
