@@ -224,36 +224,42 @@ const links: Links[] = [
   },
 ];
 
-export function AnimatedSidebar() {
+function SidebarContent() {
   const { open } = useSidebar();
 
   return (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="mb-6 flex items-center gap-3 px-2">
+        <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
+          <Store className="w-5 h-5 text-primary-foreground" />
+        </div>
+        <motion.span
+          animate={{
+            display: open ? "inline-block" : "none",
+            opacity: open ? 1 : 0,
+          }}
+          className="font-semibold text-base whitespace-nowrap"
+        >
+          MyndLink
+        </motion.span>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="flex flex-col gap-1 flex-1">
+        {links.map((link) => (
+          <SidebarLink key={link.href} link={link} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AnimatedSidebar() {
+  return (
     <Sidebar animate={true}>
       <SidebarBody>
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="mb-6 flex items-center gap-3 px-2">
-            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
-              <Store className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <motion.span
-              animate={{
-                display: open ? "inline-block" : "none",
-                opacity: open ? 1 : 0,
-              }}
-              className="font-semibold text-base whitespace-nowrap"
-            >
-              MyndLink
-            </motion.span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="flex flex-col gap-1 flex-1">
-            {links.map((link) => (
-              <SidebarLink key={link.href} link={link} />
-            ))}
-          </div>
-        </div>
+        <SidebarContent />
       </SidebarBody>
     </Sidebar>
   );
