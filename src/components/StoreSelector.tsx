@@ -24,7 +24,7 @@ export function StoreSelector() {
   };
   return <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full max-w-[240px] sm:max-w-none justify-between px-[35px]">
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full max-w-[280px] lg:max-w-[200px] justify-between px-3">
           <div className="flex items-center gap-2 truncate">
             <StoreIcon className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">
