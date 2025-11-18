@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-muted/30 border-r border-border w-[240px] flex-shrink-0",
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-background shadow-lg rounded-2xl m-4 w-[240px] flex-shrink-0",
         className
       )}
       animate={{
@@ -135,7 +135,7 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-background z-[100] flex flex-col justify-between p-6",
+                "fixed h-full w-full inset-0 bg-background rounded-2xl z-[100] flex flex-col justify-between p-6",
                 className
               )}
             >
@@ -166,11 +166,12 @@ export const SidebarLink = ({
   return (
     <NavLink
       to={link.href}
+      end={link.href === "/dashboard"}
       className={({ isActive }) =>
         cn(
-          "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-md transition-all duration-150",
-          "hover:bg-accent/10",
-          isActive && "bg-accent/20 text-accent font-medium",
+          "flex items-center justify-start gap-3 group/sidebar py-3 px-3 mx-1 rounded-xl transition-all duration-150",
+          "hover:bg-secondary",
+          isActive && "bg-primary text-primary-foreground font-medium",
           className
         )
       }
@@ -230,16 +231,23 @@ function SidebarContent() {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="mb-6 flex items-center gap-3 px-2">
-        <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center flex-shrink-0">
-          <Store className="w-5 h-5 text-primary-foreground" />
-        </div>
+      <div className="mb-6 flex items-center gap-3 px-3 py-3 rounded-xl bg-card shadow-sm">
+        <img 
+          src="/logo-light.png" 
+          alt="Mynd Logo" 
+          className="w-8 h-8 flex-shrink-0 dark:hidden"
+        />
+        <img 
+          src="/logo-dark.png" 
+          alt="Mynd Logo" 
+          className="w-8 h-8 flex-shrink-0 hidden dark:block"
+        />
         <motion.span
           animate={{
             display: open ? "inline-block" : "none",
             opacity: open ? 1 : 0,
           }}
-          className="font-semibold text-base whitespace-nowrap"
+          className="font-bold text-base whitespace-nowrap"
         >
           MyndLink
         </motion.span>
