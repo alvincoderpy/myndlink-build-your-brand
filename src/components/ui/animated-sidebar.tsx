@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-background shadow-lg rounded-2xl m-4 w-[240px] flex-shrink-0",
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-2xl m-4 w-[240px] flex-shrink-0",
         className
       )}
       animate={{
@@ -171,7 +171,7 @@ export const SidebarLink = ({
         cn(
           "flex items-center justify-start gap-3 group/sidebar py-3 px-3 mx-1 rounded-xl transition-all duration-150",
           "hover:bg-secondary",
-          isActive && "bg-primary text-primary-foreground font-medium",
+          isActive && "bg-primary text-primary-foreground",
           className
         )
       }
