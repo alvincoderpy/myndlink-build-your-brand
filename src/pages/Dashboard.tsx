@@ -107,12 +107,12 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <OnboardingChecklist />
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
         </div>
 
@@ -143,13 +143,13 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalSales")}</p>
             <DollarSign className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.totalSales.toFixed(2)} MT</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalSales.toFixed(2)} MT</p>
           {stats.salesGrowth !== 0 && (
             <p
               className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}
@@ -161,37 +161,37 @@ const Dashboard = () => {
           )}
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
+        <Card className="p-4 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.pendingOrders")}</p>
             <ShoppingCart className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.pendingOrders}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
           <p className="text-xs text-muted-foreground mt-2">{t("dashboard.inSelectedPeriod")}</p>
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
+        <Card className="p-4 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.productsSold")}</p>
             <Package className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.productsSold}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.productsSold}</p>
           <p className="text-xs text-muted-foreground mt-2">{t("dashboard.withSales")}</p>
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
+        <Card className="p-4 bg-card border border-border hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalOrders")}</p>
             <ShoppingCart className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.totalOrders}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
           <p className="text-xs text-muted-foreground mt-2">{t("dashboard.inSelectedPeriod")}</p>
         </Card>
       </div>
 
       {/* Quick Actions / Recent Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-4">
           <h3 className="font-semibold mb-4">{t("dashboard.quickActions")}</h3>
           <div className="space-y-2">
             <a href="/dashboard/products" className="block p-3 rounded-lg hover:bg-muted transition-colors">
@@ -209,7 +209,7 @@ const Dashboard = () => {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-4">
           <h3 className="font-semibold mb-4">{t("dashboard.growthTips")}</h3>
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>✓ {t("Eu sou bom")}</p>

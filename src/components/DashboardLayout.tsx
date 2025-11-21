@@ -34,7 +34,7 @@ export const DashboardLayout = ({
       <AnimatedSidebar />
       
       <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-4 md:p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        <main className="flex-1 p-3 md:p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
           {children}
         </main>
       </div>

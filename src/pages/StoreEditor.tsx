@@ -233,7 +233,7 @@ const StoreEditor = () => {
   }
   return <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Top Bar */}
-      <div className="border-b bg-background px-4 py-2 flex items-center justify-between h-14 flex-shrink-0">
+      <div className="border-b bg-background px-3 py-2 flex items-center justify-between h-14 flex-shrink-0">
         {/* Left: Back + Section Selector */}
         <div className="flex items-center gap-2 mx-0 px-px">
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard/store")} className="h-9">
@@ -324,7 +324,7 @@ const StoreEditor = () => {
         </div>
 
         {/* Right Panel - Configuration */}
-        <div className={cn("w-full lg:w-80 border-l bg-background overflow-y-auto flex-shrink-0", showPreview ? "hidden md:block" : "block")}>
+        <div className={cn("w-full lg:w-80 border-l bg-background overflow-y-auto flex-shrink-0 p-3", showPreview ? "hidden md:block" : "block")}>
           <ConfigPanel activeSection={activeSection} config={config} onChange={setConfig} storeId={store?.id} storeName={storeName} subdomain={subdomain} onStoreNameChange={setStoreName} onSubdomainChange={setSubdomain} store={store} onStoreUpdate={loadStore} />
         </div>
       </div>
