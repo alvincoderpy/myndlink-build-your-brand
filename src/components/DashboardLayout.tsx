@@ -34,13 +34,7 @@ export const DashboardLayout = ({
       <AnimatedSidebar />
       
       <div className="flex-1 flex flex-col">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
-          <div className="flex h-14 items-center gap-4 px-4 lg:px-6">
-            <StoreSelector />
-          </div>
-        </header>
-
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-4 md:p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
           {children}
         </main>
       </div>
