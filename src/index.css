@@ -102,7 +102,7 @@ All colors MUST be HSL.
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;       /* 24px */
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -110,7 +110,7 @@ All colors MUST be HSL.
   }
 
   h2 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;     /* 18px */
     font-weight: 600;
     letter-spacing: -0.02em;
     @apply text-black dark:text-white;
@@ -122,8 +122,8 @@ All colors MUST be HSL.
   }
 
   p {
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    font-size: 0.875rem;     /* 14px */
+    line-height: 1.5;
   }
 }
 

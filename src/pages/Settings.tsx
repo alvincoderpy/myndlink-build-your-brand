@@ -119,11 +119,11 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl animate-fade-in">
-      <h1 className="text-4xl font-bold mb-8 text-foreground">{t('settings.title')}</h1>
+      <h1 className="text-3xl font-bold mb-6 text-foreground">{t('settings.title')}</h1>
 
       {/* Perfil do Usuário */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4">{t('settings.profile')}</h2>
+      <Card className="p-4 mb-4">
+        <h2 className="text-xl font-bold mb-4">{t('settings.profile')}</h2>
         <div className="space-y-4">
           <div>
             <Label htmlFor="first_name">{t('settings.firstName')}</Label>
@@ -162,8 +162,8 @@ export default function Settings() {
       </Card>
 
       {/* Segurança */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+      <Card className="p-4 mb-4">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Key className="w-6 h-6" />
           {t('settings.security')}
         </h2>
@@ -180,8 +180,8 @@ export default function Settings() {
       </Card>
 
       {/* Notificações */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+      <Card className="p-4 mb-4">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Bell className="w-6 h-6" />
           {t('settings.notifications')}
         </h2>
@@ -204,8 +204,8 @@ export default function Settings() {
       </Card>
 
       {/* Preferências */}
-      <Card className="p-6 mb-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+      <Card className="p-4 mb-4">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Languages className="w-6 h-6" />
           {t('settings.preferences')}
         </h2>
@@ -247,11 +247,11 @@ export default function Settings() {
 
       {/* Plano Atual */}
       {currentStore && (
-        <Card className="p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">{t('settings.currentPlan')}</h2>
+        <Card className="p-4 mb-4">
+          <h2 className="text-xl font-bold mb-4">{t('settings.currentPlan')}</h2>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">{getPlanName(currentStore.plan)}</p>
+              <p className="text-2xl font-bold">{getPlanName(currentStore.plan)}</p>
               <p className="text-muted-foreground mt-1">
                 {currentStore.plan === 'free' && t('settings.freePlanDesc')}
                 {currentStore.plan === 'grow' && t('settings.growPlanDesc')}
@@ -269,8 +269,8 @@ export default function Settings() {
       )}
 
       {/* Sessão */}
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">{t('settings.session')}</h2>
+      <Card className="p-4">
+        <h2 className="text-xl font-bold mb-4">{t('settings.session')}</h2>
         <div className="space-y-4">
           <div>
             <Label className="text-base">{t('settings.logout')}</Label>

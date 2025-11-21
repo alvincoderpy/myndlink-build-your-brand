@@ -100,25 +100,25 @@ const Pricing = () => {
       </nav>
 
       {/* Header */}
-      <div className="pt-32 pb-20 px-6 bg-muted/30">
+      <div className="pt-24 pb-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
-          <h1 className="text-5xl font-bold mb-4">
+          <h1 className="text-4xl font-bold mb-3">
             Planos para Todos os Negócios
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg text-muted-foreground">
             Começa grátis e evolui conforme o teu negócio cresce
           </p>
         </div>
       </div>
 
       {/* Pricing Cards */}
-      <div className="py-20 px-6">
+      <div className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {plans.map((plan) => (
               <Card
                 key={plan.name}
-                className={`p-8 relative ${
+                className={`p-6 relative ${
                   plan.popular ? "border-2 border-border scale-105 shadow-lg" : ""
                 }`}
               >
@@ -130,13 +130,13 @@ const Pricing = () => {
                   </div>
                 )}
 
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     {plan.description}
                   </p>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-3xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </div>
@@ -160,7 +160,7 @@ const Pricing = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-16 text-center max-w-2xl mx-auto">
+          <div className="mt-12 text-center max-w-2xl mx-auto">
             <p className="text-sm text-muted-foreground italic">
               Aviso: Planos e funcionalidades podem ser ajustados ao longo do
               desenvolvimento da plataforma.
@@ -170,16 +170,16 @@ const Pricing = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="py-20 px-6 bg-muted/30">
+      <div className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl font-bold mb-3">
             Pronto para Começar?
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-lg text-muted-foreground mb-6">
             Cria a tua loja online em minutos. Sem cartão de crédito.
           </p>
           <Link to="/auth">
-            <Button size="lg" className="text-lg h-12 px-[40px]">
+            <Button size="lg" className="text-base h-10 px-8">
               Começar Grátis Agora
             </Button>
           </Link>

@@ -93,7 +93,7 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
       style={style}
       className="relative w-full"
     >
-      <Card className="p-4 h-[180px] flex items-center gap-4">
+      <Card className="p-3 h-[160px] flex items-center gap-3">
         {/* Drag Handle e Badges */}
         <div className="absolute top-2 left-2 flex items-center gap-2 z-10">
           <div
@@ -131,7 +131,7 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
         {/* Informações */}
         <div className="flex-1 flex flex-col h-full justify-between pt-8 pb-2">
           <div className="space-y-1">
-            <h3 className="font-semibold line-clamp-1 text-base">{product.name}</h3>
+            <h3 className="font-semibold line-clamp-1 text-sm">{product.name}</h3>
             {product.description && (
               <p className="text-xs text-muted-foreground line-clamp-1">
                 {product.description}
@@ -497,7 +497,7 @@ const Products = () => {
   });
 
   return loading ? (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <Skeleton className="h-9 w-32 mb-2" />
@@ -529,9 +529,9 @@ const Products = () => {
     </div>
   ) : (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold">Produtos</h1>
+          <h1 className="text-2xl font-bold">Produtos</h1>
           <p className="text-muted-foreground mt-1">
             Gerencie o catálogo da tua loja · {products.length} produtos
           </p>

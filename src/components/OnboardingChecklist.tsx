@@ -112,12 +112,12 @@ export const OnboardingChecklist = () => {
   if (isDismissed || progress === 100) {
     return null;
   }
-  return <Card className="mb-6 overflow-hidden border-2 border-primary/20">
-      <div className="p-4 bg-primary/5">
+  return <Card className="mb-4 overflow-hidden border border-primary/20">
+      <div className="p-3 bg-primary/5">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg">Começar </h3>
+              <h3 className="font-bold text-base">Começar </h3>
               <span className="text-sm text-muted-foreground">
                 {completedCount}/{items.length} completo
               </span>
@@ -139,9 +139,9 @@ export const OnboardingChecklist = () => {
         </div>
       </div>
 
-      {!isCollapsed && <div className="p-4 space-y-3">
+      {!isCollapsed && <div className="p-3 space-y-2">
           {items.map(item => <Link key={item.id} to={item.link} className="block">
-              <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-start gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="mt-0.5">
                   {item.completed ? <CheckCircle2 className="w-5 h-5 text-green-600" /> : <Circle className="w-5 h-5 text-muted-foreground" />}
                 </div>
