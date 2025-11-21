@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-2xl m-4 w-[240px] flex-shrink-0",
+        "h-full px-4 py-4 hidden md:flex md:flex-col bg-background shadow-lg rounded-2xl m-4 w-[240px] flex-shrink-0",
         className
       )}
       animate={{
@@ -255,9 +255,13 @@ function SidebarContent() {
 
       {/* Navigation Links */}
       <div className="flex flex-col gap-1 flex-1">
-        {links.map((link) => (
+        {links.filter(link => link.href !== "/dashboard/settings").map((link) => (
           <SidebarLink key={link.href} link={link} />
         ))}
+      </div>
+
+      <div className="mt-auto pt-4 border-t border-border/50">
+        <SidebarLink link={links.find(l => l.href === "/dashboard/settings")!} />
       </div>
     </div>
   );
