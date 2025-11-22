@@ -212,10 +212,10 @@ const Dashboard = () => {
         <Card className="p-6">
           <h3 className="font-semibold mb-4">{t("dashboard.growthTips")}</h3>
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p> {t("Eu sou o fundador")}</p>
-            <p> {t("Tu es o fundador")}</p>
-            <p> {t("Ele e o fundador")}</p>
-            <p> {t("Nos somos o fundador")}</p>
+            <p>• {t("dashboard.tip1")}</p>
+            <p>• {t("dashboard.tip2")}</p>
+            <p>• {t("dashboard.tip3")}</p>
+            <p>• {t("dashboard.tip4")}</p>
           </div>
         </Card>
       </div>
