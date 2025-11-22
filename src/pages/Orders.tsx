@@ -190,14 +190,14 @@ const Orders = () => {
   };
 
   return loading ? (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
         <Skeleton className="h-9 w-32 mb-2" />
         <Skeleton className="h-4 w-48" />
       </div>
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-4">
+          <Card key={i} className="p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <Skeleton className="h-6 w-40 mb-2" />
@@ -241,8 +241,8 @@ const Orders = () => {
   ) : (
     <>
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Pedidos</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Pedidos</h1>
         <p className="text-muted-foreground mt-1">
           Gerencie os pedidos da tua loja · {orders.length} pedidos
         </p>
@@ -260,7 +260,7 @@ const Orders = () => {
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="p-4 hover:shadow-lg transition-shadow">
+              <Card key={order.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold mb-1">

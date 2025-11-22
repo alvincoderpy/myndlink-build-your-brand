@@ -61,17 +61,17 @@ const Auth = () => {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen gradient-hero flex items-center justify-center px-4 py-8">
+  return <div className="min-h-screen gradient-hero flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <Link to="/">
-            <h1 className="text-2xl font-bold">MyndLink</h1>
+            <h1 className="text-3xl font-bold">MyndLink</h1>
           </Link>
         </div>
 
-        <Card className="p-6 shadow-glow">
-          <div className="mb-4 text-center">
-            <h2 className="text-xl font-bold mb-2">
+        <Card className="p-8 shadow-glow">
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold mb-2">
               {isLogin ? t('auth.login') : t('auth.signup')}
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -79,7 +79,7 @@ const Auth = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && <>
                 <div>
                   <Label htmlFor="firstName">{t('auth.firstName')}</Label>
@@ -112,14 +112,14 @@ const Auth = () => {
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-muted-foreground hover:underline">
               {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
             </button>
           </div>
         </Card>
 
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">Voltar ao Início{t('auth.backToHome')}
           </Link>
         </div>

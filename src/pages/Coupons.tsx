@@ -212,9 +212,9 @@ export default function Coupons() {
   return (
     <>
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">{t('coupons.title')}</h1>
+          <h1 className="text-3xl font-bold">{t('coupons.title')}</h1>
           <p className="text-muted-foreground mt-1">
             {t('coupons.subtitle')} · {coupons.length} {t('coupons.count')}
           </p>

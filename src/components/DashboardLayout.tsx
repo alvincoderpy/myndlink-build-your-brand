@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AnimatedSidebar } from "./ui/animated-sidebar";
+import { useStore } from "@/contexts/StoreContext";
+import { DashboardSidebar } from "./DashboardSidebar";
 import { StoreSelector } from "./StoreSelector";
+import { Button } from "./ui/button";
+import { Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -13,7 +17,12 @@ export const DashboardLayout = ({
     user,
     loading
   } = useAuth();
+  const {
+    currentStore
+  } = useStore();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
@@ -30,13 +39,25 @@ export const DashboardLayout = ({
   if (!user) {
     return null;
   }
-  return <div className="min-h-screen flex w-full">
-      <AnimatedSidebar />
+  return <div className="min-h-screen w-full bg-muted/30">
+      <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 p-3 md:p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-          {children}
-        </main>
-      </div>
+      {/* Top Bar */}
+      <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40`}>
+        <div className={`h-full px-6 flex items-center justify-center gap-4 ${!isMobile ? 'ml-64' : ''}`}>
+          {isMobile && <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="absolute left-4">
+              <Menu className="w-5 h-5" />
+            </Button>}
+          
+          <div className="w-full max-w-xs px-[52px]">
+            <StoreSelector />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className={`${isMobile ? 'ml-0' : 'ml-64'} mt-16 p-8 min-h-screen animate-fade-in`}>
+        {children}
+      </main>
     </div>;
 };
