@@ -543,5 +543,221 @@
     "close": "Close",
     "confirm": "Confirm",
     "required": "required"
+  },
+  "editor": {
+    "loadError": "Error loading store",
+    "saveSuccess": "Store updated successfully!",
+    "createSuccess": "Store created with sample products!",
+    "saveError": "Error saving store",
+    "subdomainInvalid": "Invalid subdomain. Use only lowercase letters, numbers and hyphens.",
+    "back": "Back",
+    "viewStore": "View Store",
+    "publishFirst": "Publish the store first in settings",
+    "configureSubdomain": "Configure a subdomain first",
+    "saving": "Saving...",
+    "save": "Save",
+    "branding": "Branding",
+    "topbar": "Top Bar",
+    "hero": "Hero Banner",
+    "categories": "Categories",
+    "settings": "Settings",
+    "myStore": "My Store",
+    "mockProductsError": "Error inserting mock products"
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "deleteProduct": "Delete Product",
+    "productName": "Product Name",
+    "productDescription": "Description",
+    "productPrice": "Price",
+    "productStock": "Stock",
+    "productCategory": "Category",
+    "productImage": "Image",
+    "featured": "Featured",
+    "new": "New",
+    "discount": "Discount",
+    "mock": "Mock",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this product?",
+    "uploadImage": "Upload Image",
+    "sorting": "Sorting",
+    "sortCustom": "Custom (Drag)",
+    "sortRecent": "Recently Added",
+    "sortOldest": "Oldest",
+    "sortMostSold": "Most Sold",
+    "validation": {
+      "name": "Name must be at least 3 characters",
+      "price": "Price must be greater than 0",
+      "stock": "Stock must be 0 or greater"
+    },
+    "toast": {
+      "added": "Product added successfully!",
+      "updated": "Product updated!",
+      "deleted": "Product deleted!",
+      "imageUploaded": "Image uploaded!",
+      "imageError": "Error uploading image",
+      "saveError": "Error saving product",
+      "deleteError": "Error deleting product",
+      "reorderSuccess": "Product order updated!",
+      "reorderError": "Error reordering products",
+      "loadError": "Error loading products"
+    },
+    "noStore": "No Store Found",
+    "createStorePrompt": "Create your first store to start adding products!",
+    "createStoreBtn": "Create Store",
+    "noProducts": "No products added",
+    "addFirstProduct": "Add your first product!",
+    "limitReached": "Product Limit Reached",
+    "limitDescription": "Your {{plan}} plan allows only {{limit}} products. Upgrade to add more!",
+    "upgradePlan": "Upgrade Plan",
+    "close": "Close"
+  },
+  "orders": {
+    "title": "Orders",
+    "order": "Order",
+    "customer": "Customer",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "markComplete": "Mark as Complete",
+    "downloadPDF": "Download PDF",
+    "customerInfo": "Customer Information",
+    "customerName": "Name",
+    "customerEmail": "Email",
+    "customerPhone": "Phone",
+    "customerAddress": "Address",
+    "paymentMethod": "Payment Method",
+    "orderItems": "Order Items",
+    "quantity": "Quantity",
+    "price": "Price",
+    "notes": "Notes",
+    "noNotes": "No notes",
+    "noStore": "No Store Found",
+    "createStorePrompt": "Create your first store to start receiving orders!",
+    "createStoreBtn": "Create Store",
+    "noOrders": "No orders received",
+    "firstOrderPrompt": "Customer orders will appear here",
+    "toast": {
+      "completed": "Order marked as complete!",
+      "error": "Error",
+      "loadError": "Error loading orders",
+      "completeError": "Error completing order"
+    }
+  },
+  "myStore": {
+    "title": "My Store",
+    "editStore": "Edit Store",
+    "viewStore": "View Store",
+    "storeName": "Store Name",
+    "subdomain": "Subdomain",
+    "published": "Published",
+    "notPublished": "Not Published",
+    "publishSuccess": "Store published successfully!",
+    "unpublishSuccess": "Store unpublished!",
+    "publishError": "Error publishing store",
+    "linkCopied": "Link copied!",
+    "stats": {
+      "products": "Products",
+      "orders": "Orders",
+      "plan": "Plan"
+    },
+    "preview": {
+      "title": "Store Preview",
+      "publishPrompt": "Publish your store to see the live preview"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "editDesign": "Edit Store Design",
+      "addProducts": "Add Products"
+    }
+  },
+  "pricing": {
+    "title": "Plans for All Businesses",
+    "subtitle": "Start free and grow as your business grows",
+    "period": "/month",
+    "mostPopular": "MOST POPULAR",
+    "cta": {
+      "free": "Start Free",
+      "grow": "Choose Grow",
+      "business": "Choose Business",
+      "enterprise": "Choose Enterprise"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "0 MT",
+        "description": "Perfect to get started",
+        "features": [
+          "1 store",
+          "Up to 10 products",
+          "Card payment only",
+          "Custom subdomain",
+          "Basic dashboard",
+          "Email support"
+        ]
+      },
+      "grow": {
+        "name": "Grow",
+        "price": "199 MT",
+        "description": "For growing businesses",
+        "features": [
+          "1 store",
+          "Up to 100 products",
+          "M-Pesa + eMola + Card",
+          "Coupons and discounts",
+          "Custom subdomain",
+          "Basic statistics",
+          "Priority support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "price": "399 MT",
+        "description": "For established businesses",
+        "features": [
+          "3 stores",
+          "Up to 500 products per store",
+          "M-Pesa + eMola + Card",
+          "Coupons and discounts",
+          "Custom subdomain",
+          "Export PDF receipts",
+          "Advanced statistics",
+          "24/7 Priority support"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "899 MT",
+        "description": "Complete solution",
+        "features": [
+          "10 stores",
+          "Up to 2,000 products per store",
+          "M-Pesa + eMola + Card",
+          "Coupons and discounts",
+          "Custom subdomain",
+          "Export PDF receipts",
+          "Complete statistics",
+          "Early access to updates",
+          "Dedicated priority support",
+          "Personalized onboarding"
+        ]
+      }
+    },
+    "disclaimer": "Notice: Plans and features may be adjusted during platform development.",
+    "ready": {
+      "title": "Ready to Start?",
+      "subtitle": "Create your online store in minutes. No credit card required.",
+      "cta": "Start Free Now"
+    },
+    "nav": {
+      "login": "Login",
+      "startFree": "Start Free"
+    }
   }
 }

@@ -550,5 +550,221 @@
     "close": "Fechar",
     "confirm": "Confirmar",
     "required": "obrigatório"
+  },
+  "editor": {
+    "loadError": "Erro ao carregar loja",
+    "saveSuccess": "Loja atualizada com sucesso!",
+    "createSuccess": "Loja criada com produtos de exemplo!",
+    "saveError": "Erro ao guardar loja",
+    "subdomainInvalid": "Subdomínio inválido. Use apenas letras minúsculas, números e hífens.",
+    "back": "Voltar",
+    "viewStore": "Ver Loja",
+    "publishFirst": "Publique a loja primeiro nas configurações",
+    "configureSubdomain": "Configure um subdomínio primeiro",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "branding": "Marca",
+    "topbar": "Barra Superior",
+    "hero": "Banner Principal",
+    "categories": "Categorias",
+    "settings": "Configurações",
+    "myStore": "Minha Loja",
+    "mockProductsError": "Erro ao inserir produtos mock"
+  },
+  "products": {
+    "title": "Produtos",
+    "addProduct": "Adicionar Produto",
+    "editProduct": "Editar Produto",
+    "deleteProduct": "Eliminar Produto",
+    "productName": "Nome do Produto",
+    "productDescription": "Descrição",
+    "productPrice": "Preço",
+    "productStock": "Stock",
+    "productCategory": "Categoria",
+    "productImage": "Imagem",
+    "featured": "Destaque",
+    "new": "Novo",
+    "discount": "Desconto",
+    "mock": "Mock",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "Tens a certeza que queres eliminar este produto?",
+    "uploadImage": "Carregar Imagem",
+    "sorting": "Ordenação",
+    "sortCustom": "Personalizado (Arrastar)",
+    "sortRecent": "Adicionados Recentemente",
+    "sortOldest": "Mais Antigos",
+    "sortMostSold": "Mais Vendidos",
+    "validation": {
+      "name": "Nome deve ter pelo menos 3 caracteres",
+      "price": "Preço deve ser maior que 0",
+      "stock": "Stock deve ser 0 ou maior"
+    },
+    "toast": {
+      "added": "Produto adicionado com sucesso!",
+      "updated": "Produto atualizado!",
+      "deleted": "Produto eliminado!",
+      "imageUploaded": "Imagem carregada!",
+      "imageError": "Erro ao carregar imagem",
+      "saveError": "Erro ao guardar produto",
+      "deleteError": "Erro ao eliminar produto",
+      "reorderSuccess": "Ordem dos produtos atualizada!",
+      "reorderError": "Erro ao reordenar produtos",
+      "loadError": "Erro ao carregar produtos"
+    },
+    "noStore": "Nenhuma Loja Encontrada",
+    "createStorePrompt": "Cria a tua primeira loja para começar a adicionar produtos!",
+    "createStoreBtn": "Criar Loja",
+    "noProducts": "Nenhum produto adicionado",
+    "addFirstProduct": "Adiciona o teu primeiro produto!",
+    "limitReached": "Limite de Produtos Atingido",
+    "limitDescription": "O teu plano {{plan}} permite apenas {{limit}} produtos. Faça upgrade para adicionar mais!",
+    "upgradePlan": "Fazer Upgrade do Plano",
+    "close": "Fechar"
+  },
+  "orders": {
+    "title": "Pedidos",
+    "order": "Pedido",
+    "customer": "Cliente",
+    "total": "Total",
+    "status": "Estado",
+    "date": "Data",
+    "pending": "Pendente",
+    "completed": "Concluído",
+    "cancelled": "Cancelado",
+    "markComplete": "Marcar como Concluído",
+    "downloadPDF": "Descarregar PDF",
+    "customerInfo": "Informação do Cliente",
+    "customerName": "Nome",
+    "customerEmail": "Email",
+    "customerPhone": "Telefone",
+    "customerAddress": "Morada",
+    "paymentMethod": "Método de Pagamento",
+    "orderItems": "Itens do Pedido",
+    "quantity": "Quantidade",
+    "price": "Preço",
+    "notes": "Notas",
+    "noNotes": "Sem notas",
+    "noStore": "Nenhuma Loja Encontrada",
+    "createStorePrompt": "Cria a tua primeira loja para começar a receber pedidos!",
+    "createStoreBtn": "Criar Loja",
+    "noOrders": "Nenhum pedido recebido",
+    "firstOrderPrompt": "Os pedidos dos clientes aparecerão aqui",
+    "toast": {
+      "completed": "Pedido marcado como concluído!",
+      "error": "Erro",
+      "loadError": "Erro ao carregar pedidos",
+      "completeError": "Erro ao completar pedido"
+    }
+  },
+  "myStore": {
+    "title": "Minha Loja",
+    "editStore": "Editar Loja",
+    "viewStore": "Ver Loja",
+    "storeName": "Nome da Loja",
+    "subdomain": "Subdomínio",
+    "published": "Publicada",
+    "notPublished": "Não Publicada",
+    "publishSuccess": "Loja publicada com sucesso!",
+    "unpublishSuccess": "Loja despublicada!",
+    "publishError": "Erro ao publicar loja",
+    "linkCopied": "Link copiado!",
+    "stats": {
+      "products": "Produtos",
+      "orders": "Pedidos",
+      "plan": "Plano"
+    },
+    "preview": {
+      "title": "Pré-visualização da Loja",
+      "publishPrompt": "Publica a tua loja para ver a pré-visualização ao vivo"
+    },
+    "quickActions": {
+      "title": "Ações Rápidas",
+      "editDesign": "Editar Design da Loja",
+      "addProducts": "Adicionar Produtos"
+    }
+  },
+  "pricing": {
+    "title": "Planos para Todos os Negócios",
+    "subtitle": "Começa grátis e evolui conforme o teu negócio cresce",
+    "period": "/mês",
+    "mostPopular": "MAIS POPULAR",
+    "cta": {
+      "free": "Começar Grátis",
+      "grow": "Escolher Grow",
+      "business": "Escolher Business",
+      "enterprise": "Escolher Enterprise"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "0 MT",
+        "description": "Perfeito para começar",
+        "features": [
+          "1 loja",
+          "Até 10 produtos",
+          "Pagamento apenas Cartão",
+          "Subdomínio personalizado",
+          "Painel básico",
+          "Suporte por email"
+        ]
+      },
+      "grow": {
+        "name": "Grow",
+        "price": "199 MT",
+        "description": "Para negócios em crescimento",
+        "features": [
+          "1 loja",
+          "Até 100 produtos",
+          "M-Pesa + eMola + Cartão",
+          "Cupons e descontos",
+          "Subdomínio personalizado",
+          "Estatísticas básicas",
+          "Suporte prioritário"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "price": "399 MT",
+        "description": "Para negócios estabelecidos",
+        "features": [
+          "3 lojas",
+          "Até 500 produtos por loja",
+          "M-Pesa + eMola + Cartão",
+          "Cupons e descontos",
+          "Subdomínio personalizado",
+          "Exportar recibos PDF",
+          "Estatísticas avançadas",
+          "Suporte prioritário 24/7"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "899 MT",
+        "description": "Solução completa",
+        "features": [
+          "10 lojas",
+          "Até 2.000 produtos por loja",
+          "M-Pesa + eMola + Cartão",
+          "Cupons e descontos",
+          "Subdomínio personalizado",
+          "Exportar recibos PDF",
+          "Estatísticas completas",
+          "Acesso antecipado a atualizações",
+          "Suporte dedicado prioritário",
+          "Onboarding personalizado"
+        ]
+      }
+    },
+    "disclaimer": "Aviso: Planos e funcionalidades podem ser ajustados ao longo do desenvolvimento da plataforma.",
+    "ready": {
+      "title": "Pronto para Começar?",
+      "subtitle": "Cria a tua loja online em minutos. Sem cartão de crédito.",
+      "cta": "Começar Grátis Agora"
+    },
+    "nav": {
+      "login": "Entrar",
+      "startFree": "Começar Grátis"
+    }
   }
 }

@@ -146,7 +146,7 @@ const Auth = () => {
 
         <div className="mt-6 text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
-            Voltar ao Início{t("auth.backToHome")}
+            {t("auth.backToHome")}
           </Link>
         </div>
       </div>
