@@ -220,8 +220,8 @@ export default function Settings() {
                 <SelectValue />
               </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pt">🇵🇹 Português</SelectItem>
-                    <SelectItem value="en">🇬🇧 English</SelectItem>
+                    <SelectItem value="pt">Português</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
                   </SelectContent>
             </Select>
           </div>

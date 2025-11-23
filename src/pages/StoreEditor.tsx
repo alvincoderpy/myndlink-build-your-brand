@@ -15,8 +15,10 @@ import { useHistory } from "@/hooks/useHistory";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 type ViewMode = "desktop" | "tablet" | "mobile";
 const StoreEditor = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const {
     user
@@ -42,7 +44,7 @@ const StoreEditor = () => {
     ...templates.minimog,
     topBar: {
       showAnnouncement: true,
-      announcement: "🎉 Frete grátis em compras acima de 500 MT | Entrega em 24h",
+      announcement: "Frete grátis em compras acima de 500 MT | Entrega em 24h",
       showSocial: true,
       socialLinks: {
         instagram: "https://instagram.com/minhaloja",
@@ -141,7 +143,7 @@ const StoreEditor = () => {
       }
     } catch (error: any) {
       console.error("Error loading store:", error);
-      toast.error("Erro ao carregar loja");
+      toast.error(t("editor.loadError"));
     } finally {
       setLoading(false);
     }
@@ -171,11 +173,11 @@ const StoreEditor = () => {
           template_config: config
         }).eq("id", store.id);
         if (error) throw error;
-        toast.success("Loja atualizada com sucesso!");
+        toast.success(t("editor.saveSuccess"));
       } else {
         const subdomainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
         if (!subdomainRegex.test(subdomain)) {
-          toast.error("Subdomínio inválido. Use apenas letras minúsculas, números e hífens.");
+          toast.error(t("editor.subdomainInvalid"));
           return;
         }
         const {
@@ -205,17 +207,17 @@ const StoreEditor = () => {
               error: productsError
             } = await supabase.from("products").insert(mockProductsToInsert);
             if (productsError) {
-              console.error("Erro ao inserir produtos mock:", productsError);
+              console.error(t("editor.mockProductsError"), productsError);
             }
           }
         }
-        toast.success("Loja criada com produtos de exemplo!");
+        toast.success(t("editor.createSuccess"));
       }
       setLastSaved(new Date());
       await loadStore();
     } catch (error: any) {
       console.error("Save error:", error);
-      toast.error(error.message || "Erro ao guardar loja");
+      toast.error(error.message || t("editor.saveError"));
     } finally {
       setSaving(false);
     }
@@ -238,7 +240,7 @@ const StoreEditor = () => {
         <div className="flex items-center gap-2 mx-0 px-px">
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard/store")} className="h-9">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="hidden md:inline">Voltar</span>
+            <span className="hidden md:inline">{t("editor.back")}</span>
           </Button>
           
           {/* Mobile Section Selector */}
@@ -248,11 +250,11 @@ const StoreEditor = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="branding">Marca</SelectItem>
-                <SelectItem value="topbar">Barra Superior</SelectItem>
-                <SelectItem value="hero">Banner Principal</SelectItem>
-                <SelectItem value="categories">Categorias</SelectItem>
-                <SelectItem value="settings">Configurações</SelectItem>
+                <SelectItem value="branding">{t("editor.branding")}</SelectItem>
+                <SelectItem value="topbar">{t("editor.topbar")}</SelectItem>
+                <SelectItem value="hero">{t("editor.hero")}</SelectItem>
+                <SelectItem value="categories">{t("editor.categories")}</SelectItem>
+                <SelectItem value="settings">{t("editor.settings")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -287,13 +289,13 @@ const StoreEditor = () => {
           if (store?.subdomain && store?.is_published) {
             window.open(`/storefront/${store.subdomain}`, "_blank");
           } else if (!store?.is_published) {
-            toast.error("Publique a loja primeiro nas configurações");
+            toast.error(t("editor.publishFirst"));
           } else {
-            toast.error("Configure um subdomínio primeiro");
+            toast.error(t("editor.configureSubdomain"));
           }
         }} disabled={!store?.subdomain} className="h-9 hidden md:flex">
             <Eye className="w-4 h-4 mr-2" />
-            Ver Loja
+            {t("editor.viewStore")}
           </Button>
           
           {/* Mobile: Toggle Preview */}
@@ -304,7 +306,7 @@ const StoreEditor = () => {
           {/* Save Button */}
           <Button size="sm" onClick={handleSave} disabled={saving} className="h-9">
             <Save className="w-4 h-4 mr-2" />
-            {saving ? "Guardando..." : "Guardar"}
+            {saving ? t("editor.saving") : t("editor.save")}
           </Button>
         </div>
       </div>
@@ -319,7 +321,7 @@ const StoreEditor = () => {
         {/* Center - Preview */}
         <div className={cn("flex-1 flex flex-col bg-muted/20 overflow-hidden", showPreview ? "block" : "hidden md:flex")}>
           <div className="flex-1 overflow-auto">
-            <StorefrontPreview config={config} storeName={storeName || "Minha Loja"} storeId={store?.id} viewMode={viewMode} activeSection={activeSection} />
+            <StorefrontPreview config={config} storeName={storeName || t("editor.myStore")} storeId={store?.id} viewMode={viewMode} activeSection={activeSection} />
           </div>
         </div>
 
