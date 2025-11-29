@@ -39,21 +39,26 @@ export const DashboardLayout = ({
   if (!user) {
     return null;
   }
-  return <div className="min-h-screen w-full bg-muted/30">
+  return <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      {/* Top Bar */}
-      <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40 ${!isMobile ? 'ml-64' : ''}`}>
-        <div className={`h-full px-6 flex items-center gap-4`}>
-          {isMobile && <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
-              <Menu className="w-5 h-5" />
-            </Button>}
-        </div>
-      </header>
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+      )}
 
-      {/* Main Content */}
-      <main className={`${isMobile ? 'ml-0' : 'ml-64'} mt-16 p-8 min-h-screen animate-fade-in`}>
-        {children}
+      {/* Main Content with Rounded Borders */}
+      <main className={`${isMobile ? 'ml-0 p-4' : 'ml-64 p-6'} min-h-screen animate-fade-in`}>
+        <div className="bg-background rounded-3xl shadow-lg border border-border p-6 md:p-8 min-h-[calc(100vh-3rem)]">
+          {children}
+        </div>
       </main>
     </div>;
 };
