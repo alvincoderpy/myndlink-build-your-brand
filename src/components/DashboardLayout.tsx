@@ -43,15 +43,11 @@ export const DashboardLayout = ({
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Top Bar */}
-      <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40`}>
-        <div className={`h-full px-6 flex items-center justify-center gap-4 ${!isMobile ? 'ml-64' : ''}`}>
-          {isMobile && <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="absolute left-4">
+      <header className={`fixed top-0 left-0 right-0 h-16 bg-card border-b-2 border-border z-40 ${!isMobile ? 'ml-64' : ''}`}>
+        <div className={`h-full px-6 flex items-center gap-4`}>
+          {isMobile && <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
               <Menu className="w-5 h-5" />
             </Button>}
-          
-          <div className="w-full max-w-xs px-[52px]">
-            <StoreSelector />
-          </div>
         </div>
       </header>
 
