@@ -87,18 +87,18 @@ export default function MyStore() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Minha Loja</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-bold">Minha Loja</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Visualiza e edita a tua loja online
           </p>
         </div>
         
         <div className="hidden md:flex">
-          <Button onClick={() => navigate("/dashboard/store/edit")} size="lg">
+          <Button onClick={() => navigate("/dashboard/store/edit")}>
             <Edit className="w-4 h-4 mr-2" />
             Editar Loja
           </Button>
@@ -106,21 +106,21 @@ export default function MyStore() {
       </div>
 
       {/* Status Card */}
-      <Card className="p-6">
+      <Card className="p-4">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
               {currentStore?.template_config?.branding?.logo ? (
                 <img src={currentStore.template_config.branding.logo} alt={currentStore.name} className="w-full h-full object-cover" />
               ) : (
-                <Store className="w-8 h-8 text-primary" />
+                <Store className="w-6 h-6 text-primary" />
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-xl font-bold">
                 {currentStore?.name || "Sem nome"}
               </h2>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-0.5">
                 {currentStore?.subdomain && (
                   <span className="text-sm text-muted-foreground">
                     {currentStore.subdomain}.myndlink.com
@@ -150,41 +150,41 @@ export default function MyStore() {
       </Card>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-6">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Produtos</p>
-              <p className="text-3xl font-bold mt-1">{stats.products}</p>
+              <p className="text-2xl font-bold mt-0.5">{stats.products}</p>
             </div>
-            <Package className="w-8 h-8 text-muted-foreground" />
+            <Package className="w-6 h-6 text-muted-foreground" />
           </div>
-          <Button variant="link" className="mt-2 p-0 h-auto" onClick={() => navigate("/dashboard/products")}>
+          <Button variant="link" className="mt-1.5 p-0 h-auto text-sm" onClick={() => navigate("/dashboard/products")}>
             Gerir produtos
           </Button>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Pedidos</p>
-              <p className="text-3xl font-bold mt-1">{stats.orders}</p>
+              <p className="text-2xl font-bold mt-0.5">{stats.orders}</p>
             </div>
-            <ShoppingCart className="w-8 h-8 text-muted-foreground" />
+            <ShoppingCart className="w-6 h-6 text-muted-foreground" />
           </div>
-          <Button variant="link" className="mt-2 p-0 h-auto" onClick={() => navigate("/dashboard/orders")}>
+          <Button variant="link" className="mt-1.5 p-0 h-auto text-sm" onClick={() => navigate("/dashboard/orders")}>
             Ver pedidos
           </Button>
         </Card>
       </div>
 
       {/* Preview Básico */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Preview da Loja</h3>
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold">Preview da Loja</h3>
           {storeUrl && (
             <Button variant="outline" size="sm" onClick={() => window.open(storeUrl, "_blank")}>
-              <ExternalLink className="w-4 h-4 mr-2" />
+              <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
               Abrir loja
             </Button>
           )}
@@ -210,23 +210,23 @@ export default function MyStore() {
       </Card>
 
       {/* Quick Actions */}
-      <Card className="p-6">
-        <h3 className="font-semibold text-lg mb-4">Ações Rápidas</h3>
+      <Card className="p-4">
+        <h3 className="font-semibold mb-3">Ações Rápidas</h3>
         <div className="grid gap-3 md:grid-cols-2">
-          <Button variant="outline" className="justify-start h-auto py-4" onClick={() => navigate("/dashboard/store/edit")}>
-            <Edit className="w-5 h-5 mr-3" />
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => navigate("/dashboard/store/edit")}>
+            <Edit className="w-4 h-4 mr-2.5" />
             <div className="text-left">
-              <div className="font-medium">Editar Design</div>
+              <div className="font-medium text-sm">Editar Design</div>
               <div className="text-xs text-muted-foreground">
                 Cores, logo, hero, categorias
               </div>
             </div>
           </Button>
 
-          <Button variant="outline" className="justify-start h-auto py-4" onClick={() => navigate("/dashboard/products")}>
-            <Package className="w-5 h-5 mr-3" />
+          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => navigate("/dashboard/products")}>
+            <Package className="w-4 h-4 mr-2.5" />
             <div className="text-left">
-              <div className="font-medium">Adicionar Produtos</div>
+              <div className="font-medium text-sm">Adicionar Produtos</div>
               <div className="text-xs text-muted-foreground">
                 Expande o teu catálogo
               </div>

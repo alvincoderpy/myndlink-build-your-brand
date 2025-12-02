@@ -48,15 +48,15 @@ export const DashboardLayout = ({
           variant="ghost" 
           size="icon" 
           onClick={() => setSidebarOpen(true)}
-          className="fixed top-4 left-4 z-50"
+          className="fixed top-3 left-3 z-50"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </Button>
       )}
 
       {/* Main Content with Rounded Borders */}
-      <main className={`${isMobile ? 'ml-0 p-4' : 'ml-64 p-6'} min-h-screen animate-fade-in`}>
-        <div className="bg-background rounded-3xl shadow-lg border border-border p-6 md:p-8 min-h-[calc(100vh-3rem)]">
+      <main className={`${isMobile ? 'ml-0 p-3' : 'ml-56 p-4'} min-h-screen animate-fade-in`}>
+        <div className="bg-background rounded-2xl shadow-lg border border-border p-4 md:p-5 min-h-[calc(100vh-2rem)]">
           {children}
         </div>
       </main>

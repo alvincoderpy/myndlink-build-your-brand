@@ -190,47 +190,47 @@ const Orders = () => {
   };
 
   return loading ? (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <Skeleton className="h-9 w-32 mb-2" />
-        <Skeleton className="h-4 w-48" />
+        <Skeleton className="h-7 w-28 mb-1.5" />
+        <Skeleton className="h-4 w-40" />
       </div>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
-            <div className="flex items-start justify-between mb-4">
+          <Card key={i} className="p-4">
+            <div className="flex items-start justify-between mb-3">
               <div>
-                <Skeleton className="h-6 w-40 mb-2" />
-                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-5 w-36 mb-1.5" />
+                <Skeleton className="h-3.5 w-28" />
               </div>
-              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-5 w-16" />
             </div>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="grid md:grid-cols-2 gap-3 mb-3">
               <div>
-                <Skeleton className="h-5 w-20 mb-2" />
-                <Skeleton className="h-4 w-full mb-1" />
-                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-16 mb-1.5" />
+                <Skeleton className="h-3.5 w-full mb-1" />
+                <Skeleton className="h-3.5 w-3/4" />
               </div>
               <div>
-                <Skeleton className="h-5 w-20 mb-2" />
-                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-16 mb-1.5" />
+                <Skeleton className="h-3.5 w-full" />
               </div>
             </div>
-            <div className="border-t pt-4">
-              <Skeleton className="h-8 w-32" />
+            <div className="border-t pt-3">
+              <Skeleton className="h-7 w-28" />
             </div>
           </Card>
         ))}
       </div>
     </div>
   ) : !store ? (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <Card className="max-w-md w-full p-8 text-center">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Store className="w-8 h-8" />
+    <div className="flex items-center justify-center min-h-[350px]">
+      <Card className="max-w-md w-full p-6 text-center">
+        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Store className="w-6 h-6" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Nenhuma Loja Encontrada</h2>
-        <p className="text-muted-foreground mb-6">
+        <h2 className="text-xl font-bold mb-1.5">Nenhuma Loja Encontrada</h2>
+        <p className="text-sm text-muted-foreground mb-4">
           Cria a tua primeira loja antes de ver pedidos.
         </p>
         <Link to="/dashboard/store/edit">
@@ -241,9 +241,9 @@ const Orders = () => {
   ) : (
     <>
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Pedidos</h1>
-        <p className="text-muted-foreground mt-1">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Pedidos</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Gerencie os pedidos da tua loja · {orders.length} pedidos
         </p>
       </div>
@@ -252,21 +252,21 @@ const Orders = () => {
       <div>
 
         {orders.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Store className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-xl font-bold mb-2">Nenhum pedido ainda</h2>
-            <p className="text-muted-foreground">Os pedidos dos clientes aparecerão aqui</p>
+          <Card className="p-8 text-center">
+            <Store className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+            <h2 className="text-lg font-bold mb-1.5">Nenhum pedido ainda</h2>
+            <p className="text-sm text-muted-foreground">Os pedidos dos clientes aparecerão aqui</p>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {orders.map((order) => (
-              <Card key={order.id} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between mb-4">
+              <Card key={order.id} className="p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-xl font-bold mb-1">
+                    <h3 className="text-lg font-bold mb-0.5">
                       Pedido #{order.id.slice(0, 8)}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {new Date(order.created_at).toLocaleDateString("pt-PT", {
                         day: "numeric",
                         month: "long",
@@ -281,36 +281,36 @@ const Orders = () => {
                   </Badge>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="grid md:grid-cols-2 gap-3 mb-3">
                   <div>
-                    <h4 className="font-bold mb-2">Cliente</h4>
+                    <h4 className="font-semibold text-sm mb-1.5">Cliente</h4>
                     <p className="text-sm">{order.customer_name}</p>
-                    <p className="text-sm text-muted-foreground">{order.customer_phone}</p>
+                    <p className="text-xs text-muted-foreground">{order.customer_phone}</p>
                     {order.customer_email && (
-                      <p className="text-sm text-muted-foreground">{order.customer_email}</p>
+                      <p className="text-xs text-muted-foreground">{order.customer_email}</p>
                     )}
                   </div>
 
                   <div>
-                    <h4 className="font-bold mb-2">Entrega</h4>
+                    <h4 className="font-semibold text-sm mb-1.5">Entrega</h4>
                     <p className="text-sm">{order.customer_address}</p>
                     {order.notes && (
-                      <p className="text-sm text-muted-foreground mt-2">
+                      <p className="text-xs text-muted-foreground mt-1.5">
                         Obs: {order.notes}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="border-t pt-3">
+                  <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-sm text-muted-foreground">Pagamento</p>
-                      <p className="font-bold">{order.payment_method}</p>
+                      <p className="text-xs text-muted-foreground">Pagamento</p>
+                      <p className="font-semibold text-sm">{order.payment_method}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Total</p>
-                      <p className="text-2xl font-bold">{order.total.toFixed(2)} MT</p>
+                      <p className="text-xs text-muted-foreground">Total</p>
+                      <p className="text-xl font-bold">{order.total.toFixed(2)} MT</p>
                       {order.discount_amount > 0 && (
                         <p className="text-xs text-green-600">
                           Desconto: -{order.discount_amount.toFixed(2)} MT ({order.coupon_code})
@@ -325,7 +325,7 @@ const Orders = () => {
                       size="sm"
                       onClick={() => handleDownloadPDF(order)}
                     >
-                      <FileDown className="w-4 h-4 mr-2" />
+                      <FileDown className="w-3.5 h-3.5 mr-1.5" />
                       Baixar PDF
                     </Button>
                     {order.status !== "completed" && (
@@ -333,7 +333,7 @@ const Orders = () => {
                         size="sm"
                         onClick={() => handleComplete(order.id)}
                       >
-                        <Check className="w-4 h-4 mr-2" />
+                        <Check className="w-3.5 h-3.5 mr-1.5" />
                         Marcar como Concluído
                       </Button>
                     )}

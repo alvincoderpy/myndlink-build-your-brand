@@ -91,15 +91,15 @@ const Dashboard = () => {
   };
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
-          <p className="text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="p-6 animate-pulse">
-              <div className="h-12 bg-muted rounded"></div>
+            <Card key={i} className="p-4 animate-pulse">
+              <div className="h-10 bg-muted rounded"></div>
             </Card>
           ))}
         </div>
@@ -107,13 +107,13 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <OnboardingChecklist />
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
-          <p className="text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
         </div>
 
         <Popover>
@@ -143,16 +143,16 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalSales")}</p>
-            <DollarSign className="w-5 h-5 text-muted-foreground" />
+            <DollarSign className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.totalSales.toFixed(2)} MT</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalSales.toFixed(2)} MT</p>
           {stats.salesGrowth !== 0 && (
             <p
-              className={`text-xs mt-2 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}
+              className={`text-xs mt-1.5 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}
             >
               <TrendingUp className="w-3 h-3" />
               {stats.salesGrowth > 0 ? "+" : ""}
@@ -161,57 +161,57 @@ const Dashboard = () => {
           )}
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.pendingOrders")}</p>
-            <ShoppingCart className="w-5 h-5 text-muted-foreground" />
+            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.pendingOrders}</p>
-          <p className="text-xs text-muted-foreground mt-2">{t("dashboard.inSelectedPeriod")}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.inSelectedPeriod")}</p>
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.productsSold")}</p>
-            <Package className="w-5 h-5 text-muted-foreground" />
+            <Package className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.productsSold}</p>
-          <p className="text-xs text-muted-foreground mt-2">{t("dashboard.withSales")}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.productsSold}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.withSales")}</p>
         </Card>
 
-        <Card className="p-6 bg-card border border-border hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalOrders")}</p>
-            <ShoppingCart className="w-5 h-5 text-muted-foreground" />
+            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
           </div>
-          <p className="text-3xl font-bold text-foreground">{stats.totalOrders}</p>
-          <p className="text-xs text-muted-foreground mt-2">{t("dashboard.inSelectedPeriod")}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.inSelectedPeriod")}</p>
         </Card>
       </div>
 
       {/* Quick Actions / Recent Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-6">
-          <h3 className="font-semibold mb-4">{t("dashboard.quickActions")}</h3>
-          <div className="space-y-2">
-            <a href="/dashboard/products" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3 text-sm">{t("dashboard.quickActions")}</h3>
+          <div className="space-y-1.5">
+            <a href="/dashboard/products" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t("dashboard.addProduct")}</p>
               <p className="text-xs text-muted-foreground">{t("dashboard.expandCatalog")}</p>
             </a>
-            <a href="/dashboard/orders" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+            <a href="/dashboard/orders" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t("dashboard.viewOrders")}</p>
               <p className="text-xs text-muted-foreground">{t("dashboard.managePending")}</p>
             </a>
-            <a href="/dashboard/store/edit" className="block p-3 rounded-lg hover:bg-muted transition-colors">
+            <a href="/dashboard/store/edit" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
               <p className="font-medium text-sm">{t("dashboard.editStore")}</p>
               <p className="text-xs text-muted-foreground">{t("dashboard.customizeStore")}</p>
             </a>
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h3 className="font-semibold mb-4">{t("dashboard.growthTips")}</h3>
-          <div className="space-y-3 text-sm text-muted-foreground">
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3 text-sm">{t("dashboard.growthTips")}</h3>
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>• {t("dashboard.tip1")}</p>
             <p>• {t("dashboard.tip2")}</p>
             <p>• {t("dashboard.tip3")}</p>
