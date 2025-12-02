@@ -423,9 +423,9 @@ const Products = () => {
             <Button onClick={() => {
             setEditingProduct(null);
             form.reset();
-          }} className="text-accent bg-blue-600 hover:bg-blue-500">
+          }} className="text-accent bg-blue-600 hover:bg-blue-500 text-center pr-[4px] pl-[18px] border-none border-0">
               <Plus className="w-4 h-4 mr-2" />
-              Adicionar Produto
+              ​ 
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
