@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, Zap, Globe, CreditCard } from "lucide-react";
+import { Zap, Globe, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
+import { AnimatedHero } from "@/components/landing/AnimatedHero";
 
 const Landing = () => {
   const { t } = useTranslation();
   useForceTheme("light");
-  return <div className="min-h-screen">
+
+  return (
+    <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -28,33 +31,9 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="container mx-auto max-w-5xl text-center">
-          <div className="animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              {t('hero.title')}
-              <br />
-              <span className="bg-clip-text text-foreground">
-                {t('hero.subtitle')}
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">{t('hero.description')}</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/auth">
-                <Button size="lg" className="text-lg px-8 py-6">
-                  {t('hero.cta')} <ArrowRight className="ml-2" />
-                </Button>
-              </Link>
-              <Link to="/pricing">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                  {t('hero.viewPricing')}
-                </Button>
-              </Link>
-            </div>
-            
-          </div>
-        </div>
-      </section>
+      <div className="pt-20">
+        <AnimatedHero />
+      </div>
 
       {/* Features */}
       <section className="px-6 py-[40px]">
@@ -98,101 +77,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Pricing Preview */}
-      <section className="py-20 px-6 bg-card/50">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">{t('pricing.title')}</h2>
-            <p className="text-xl text-muted-foreground">{t('pricing.subtitle')}</p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">{t('pricing.free.name')}</h3>
-              <div className="text-3xl font-bold mb-4">{t('pricing.free.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.free.feature1')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.free.feature2')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.free.feature3')}
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">{t('pricing.grow.name')}</h3>
-              <div className="text-3xl font-bold mb-4">{t('pricing.grow.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.grow.feature1')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.grow.feature2')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.grow.feature3')}
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-card p-6 border-2 border-border shadow-lg rounded-md px-[24px] mx-0 my-0 py-[24px]">
-              <div className="text-xs font-bold text-foreground mb-2 rounded-none mx-0">{t('pricing.business.popular')}</div>
-              <h3 className="text-xl font-bold mb-2">{t('pricing.business.name')}</h3>
-              <div className="text-3xl font-bold mb-4">{t('pricing.business.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.business.feature1')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.business.feature2')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.business.feature3')}
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-card p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-bold mb-2">{t('pricing.enterprise.name')}</h3>
-              <div className="text-3xl font-bold mb-4">{t('pricing.enterprise.price')}<span className="text-sm text-muted-foreground">{t('pricing.perMonth')}</span></div>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.enterprise.feature1')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.enterprise.feature2')}
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4 text-muted-foreground" />
-                  {t('pricing.enterprise.feature3')}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <Link to="/pricing">
-              <Button>{t('pricing.viewAll')}</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Final */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl text-center">
@@ -204,10 +88,9 @@ const Landing = () => {
           </p>
           <Link to="/auth">
             <Button size="lg" className="text-lg py-6 px-[24px]">
-              {t('cta.button')} <ArrowRight className="ml-2" />
+              {t('cta.button')}
             </Button>
           </Link>
-          
         </div>
       </section>
 
@@ -217,6 +100,8 @@ const Landing = () => {
           <p>&copy; 2025 MyndLink. {t('footer.copyright')}</p>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default Landing;

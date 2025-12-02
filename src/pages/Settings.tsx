@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useStore } from "@/contexts/StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ import { useTranslation } from "react-i18next";
 
 export default function Settings() {
   const { user, signOut } = useAuth();
-  const { currentStore } = useStore();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
@@ -37,7 +35,7 @@ export default function Settings() {
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
     localStorage.setItem("language", newLang);
-    window.location.reload(); // Reload to apply language change
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -85,16 +83,6 @@ export default function Settings() {
   const handleLogout = async () => {
     await signOut();
     navigate("/");
-  };
-
-  const getPlanName = (plan: string) => {
-    const plans: any = {
-      free: "Free",
-      grow: "Grow",
-      business: "Business",
-      enterprise: "Enterprise"
-    };
-    return plans[plan] || "Free";
   };
 
   const handleChangePassword = async () => {
@@ -219,10 +207,10 @@ export default function Settings() {
               <SelectTrigger id="language" className="w-full">
                 <SelectValue />
               </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pt">Português</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                  </SelectContent>
+              <SelectContent>
+                <SelectItem value="pt">Português</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
             </Select>
           </div>
 
@@ -244,29 +232,6 @@ export default function Settings() {
           </div>
         </div>
       </Card>
-
-      {/* Plano Atual */}
-      {currentStore && (
-        <Card className="p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">{t('settings.currentPlan')}</h2>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-3xl font-bold">{getPlanName(currentStore.plan)}</p>
-              <p className="text-muted-foreground mt-1">
-                {currentStore.plan === 'free' && t('settings.freePlanDesc')}
-                {currentStore.plan === 'grow' && t('settings.growPlanDesc')}
-                {currentStore.plan === 'business' && t('settings.businessPlanDesc')}
-                {currentStore.plan === 'enterprise' && t('settings.enterprisePlanDesc')}
-              </p>
-            </div>
-            {currentStore.plan !== 'enterprise' && (
-              <Button onClick={() => navigate("/pricing")}>
-                {t('settings.upgrade')}
-              </Button>
-            )}
-          </div>
-        </Card>
-      )}
 
       {/* Sessão */}
       <Card className="p-6">
