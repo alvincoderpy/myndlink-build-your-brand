@@ -10,7 +10,6 @@ import { DashboardLayout } from "./components/DashboardLayout";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import Pricing from "./pages/Pricing";
 import StoreEditor from "./pages/StoreEditor";
 import MyStore from "./pages/MyStore";
 import Products from "./pages/Products";
@@ -37,7 +36,6 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/password-reset" element={<PasswordReset />} />
                 <Route path="/update-password" element={<UpdatePassword />} />
                 

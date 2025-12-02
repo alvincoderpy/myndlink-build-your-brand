@@ -30,7 +30,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Store, Upload, Package, GripVertical, ArrowUpDown } from "lucide-react";
-import { getProductLimit } from "@/lib/planLimits";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -197,7 +196,6 @@ const Products = () => {
   const [store, setStore] = useState<any>(null);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("custom");
   const navigate = useNavigate();
@@ -270,15 +268,6 @@ const Products = () => {
     }
   };
 
-  const checkProductLimit = () => {
-    const limit = getProductLimit(store?.plan || 'free');
-    if (products.length >= limit) {
-      setShowUpgradeDialog(true);
-      return false;
-    }
-    return true;
-  };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -338,10 +327,6 @@ const Products = () => {
         description: "Cria primeiro a tua loja",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (!editingProduct && !checkProductLimit()) {
       return;
     }
 
@@ -824,24 +809,6 @@ const Products = () => {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
               Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Limite de Produtos Atingido</AlertDialogTitle>
-            <AlertDialogDescription>
-              O plano {store?.plan} permite apenas {getProductLimit(store?.plan || 'free')} produtos.
-              Faz upgrade para adicionar mais produtos!
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => navigate("/pricing")}>
-              Ver Planos
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
