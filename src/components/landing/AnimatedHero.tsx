@@ -20,8 +20,8 @@ export function AnimatedHero() {
     <section className="relative w-full py-20 md:py-32 overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            <span>Algo </span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl tracking-tight mb-6">
+            <span className="block font-normal">Isto é algo</span>
             <AnimatePresence mode="wait">
               <motion.span
                 key={titleIndex}
@@ -29,12 +29,11 @@ export function AnimatedHero() {
                 animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
                 exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="inline-block text-primary"
+                className="block font-bold text-primary"
               >
                 {titles[titleIndex]}
               </motion.span>
             </AnimatePresence>
-            <span> está a chegar.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-8">
