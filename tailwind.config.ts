@@ -87,7 +87,7 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Lato',
+  				'Montserrat',
   				'ui-sans-serif',
   				'system-ui',
   				'sans-serif',
