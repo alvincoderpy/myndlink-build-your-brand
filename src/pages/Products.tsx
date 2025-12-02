@@ -92,51 +92,51 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
       style={style}
       className="relative w-full"
     >
-      <Card className="p-4 h-[180px] flex items-center gap-4">
+      <Card className="p-3 h-[150px] flex items-center gap-3">
         {/* Drag Handle e Badges */}
-        <div className="absolute top-2 left-2 flex items-center gap-2 z-10">
+        <div className="absolute top-1.5 left-1.5 flex items-center gap-1.5 z-10">
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded bg-background/80 backdrop-blur-sm"
+            className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded bg-background/80 backdrop-blur-sm"
           >
-            <GripVertical className="w-4 h-4 text-muted-foreground" />
+            <GripVertical className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
-          <Badge variant="outline" className="font-mono bg-background/80 backdrop-blur-sm">
+          <Badge variant="outline" className="font-mono text-xs bg-background/80 backdrop-blur-sm">
             #{index + 1}
           </Badge>
           {product.is_mock && (
-            <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100">
+            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100">
               Mock
             </Badge>
           )}
         </div>
 
         {/* Imagem */}
-        <div className="flex-shrink-0 w-32 h-full">
+        <div className="flex-shrink-0 w-28 h-full">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-md"
             />
           ) : (
-            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
-              <Package className="w-12 h-12 text-muted-foreground" />
+            <div className="w-full h-full bg-muted rounded-md flex items-center justify-center">
+              <Package className="w-10 h-10 text-muted-foreground" />
             </div>
           )}
         </div>
 
         {/* Informações */}
-        <div className="flex-1 flex flex-col h-full justify-between pt-8 pb-2">
-          <div className="space-y-1">
-            <h3 className="font-semibold line-clamp-1 text-base">{product.name}</h3>
+        <div className="flex-1 flex flex-col h-full justify-between pt-6 pb-1">
+          <div className="space-y-0.5">
+            <h3 className="font-medium line-clamp-1 text-sm">{product.name}</h3>
             {product.description && (
               <p className="text-xs text-muted-foreground line-clamp-1">
                 {product.description}
               </p>
             )}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <Badge variant="secondary" className="font-mono text-xs">
                 {product.price} MT
               </Badge>
@@ -165,11 +165,11 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
           </div>
 
           {/* Ações */}
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 h-8 text-xs"
+              className="flex-1 h-7 text-xs"
               onClick={() => onEdit(product)}
             >
               <Edit className="w-3 h-3 mr-1" />
@@ -178,7 +178,7 @@ function SortableProductCard({ product, index, onEdit, onDelete }: SortableProdu
             <Button
               variant="outline"
               size="sm"
-              className="h-8 px-2 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+              className="h-7 px-2 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
               onClick={() => onDelete(product.id)}
             >
               <Trash2 className="w-3 h-3" />
@@ -482,29 +482,26 @@ const Products = () => {
   });
 
   return loading ? (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <Skeleton className="h-9 w-32 mb-2" />
-          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-7 w-28 mb-1.5" />
+          <Skeleton className="h-4 w-40" />
         </div>
-        <Skeleton className="h-10 w-40" />
+        <Skeleton className="h-9 w-36" />
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="flex-shrink-0 w-80 p-4">
-            <Skeleton className="w-full h-40 mb-3" />
-            <Skeleton className="h-6 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-4" />
-            <Skeleton className="h-8 w-24" />
+          <Card key={i} className="p-3 h-[150px]">
+            <Skeleton className="w-full h-full" />
           </Card>
         ))}
       </div>
     </div>
   ) : !store ? (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <Card className="max-w-md w-full p-8 text-center">
-        <p className="text-muted-foreground mb-4">
+    <div className="flex items-center justify-center min-h-[350px]">
+      <Card className="max-w-md w-full p-6 text-center">
+        <p className="text-sm text-muted-foreground mb-3">
           Cria a tua primeira loja antes de adicionar produtos.
         </p>
         <Link to="/dashboard/store/edit">
@@ -514,10 +511,10 @@ const Products = () => {
     </div>
   ) : (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold">Produtos</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-bold">Produtos</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Gerencie o catálogo da tua loja · {products.length} produtos
           </p>
         </div>
@@ -742,13 +739,13 @@ const Products = () => {
         </Dialog>
       </div>
 
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Ordenar por:</span>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-1.5">
+          <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Ordenar:</span>
         </div>
         <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-44 h-8">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -761,10 +758,10 @@ const Products = () => {
       </div>
 
       {products.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-semibold mb-2">Nenhum produto ainda</h2>
-          <p className="text-muted-foreground mb-4">
+        <Card className="p-8 text-center">
+          <Package className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+          <h2 className="text-lg font-semibold mb-1.5">Nenhum produto ainda</h2>
+          <p className="text-sm text-muted-foreground mb-3">
             Adiciona o teu primeiro produto para começar a vender
           </p>
           <Button onClick={() => setIsDialogOpen(true)}>
@@ -782,7 +779,7 @@ const Products = () => {
             items={sortedProducts.map((p) => p.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {sortedProducts.map((product, index) => (
                 <SortableProductCard
                   key={product.id}
