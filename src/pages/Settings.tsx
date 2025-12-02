@@ -13,65 +13,63 @@ import { useNavigate } from "react-router-dom";
 import { Key, Bell, Languages, Trash2, Moon, Sun, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
-
 export default function Settings() {
-  const { user, signOut } = useAuth();
+  const {
+    user,
+    signOut
+  } = useAuth();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
-  const { t } = useTranslation();
+  const {
+    theme,
+    setTheme
+  } = useTheme();
+  const {
+    t
+  } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     first_name: "",
     last_name: "",
     full_name: "",
-    email: "",
+    email: ""
   });
   const [notifications, setNotifications] = useState({
     email_orders: true,
-    email_marketing: false,
+    email_marketing: false
   });
   const [language, setLanguage] = useState(localStorage.getItem("language") || "pt");
-
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
     localStorage.setItem("language", newLang);
     window.location.reload();
   };
-
   useEffect(() => {
     if (user) {
       loadProfile();
     }
   }, [user]);
-
   const loadProfile = async () => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", user?.id)
-      .single();
-    
+    const {
+      data
+    } = await supabase.from("profiles").select("*").eq("user_id", user?.id).single();
     if (data) {
       setProfile({
         first_name: data.first_name || "",
         last_name: data.last_name || "",
         full_name: data.full_name || "",
-        email: data.email || "",
+        email: data.email || ""
       });
     }
   };
-
   const handleUpdateProfile = async () => {
     setLoading(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        first_name: profile.first_name,
-        last_name: profile.last_name,
-        full_name: `${profile.first_name} ${profile.last_name}`.trim(),
-      })
-      .eq("user_id", user?.id);
-
+    const {
+      error
+    } = await supabase.from("profiles").update({
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      full_name: `${profile.first_name} ${profile.last_name}`.trim()
+    }).eq("user_id", user?.id);
     if (error) {
       toast.error(t('settings.errorUpdateProfile'));
     } else {
@@ -79,20 +77,18 @@ export default function Settings() {
     }
     setLoading(false);
   };
-
   const handleLogout = async () => {
     await signOut();
     navigate("/");
   };
-
   const handleChangePassword = async () => {
     if (!profile.email) return;
-    
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(profile.email, {
-      redirectTo: `${window.location.origin}/update-password`,
+    const {
+      error
+    } = await supabase.auth.resetPasswordForEmail(profile.email, {
+      redirectTo: `${window.location.origin}/update-password`
     });
-    
     if (error) {
       toast.error(t('settings.errorSendEmail'));
     } else {
@@ -100,14 +96,11 @@ export default function Settings() {
     }
     setLoading(false);
   };
-
   const handleDeleteAccount = async () => {
     toast.error(t('settings.inDevelopment'));
   };
-
-  return (
-    <div className="max-w-4xl animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 text-foreground">{t('settings.title')}</h1>
+  return <div className="max-w-4xl animate-fade-in">
+      <h1 className="text-2xl font-bold mb-6 text-muted-foreground">{t('settings.title')}</h1>
 
       {/* Perfil do Usuário */}
       <Card className="p-4 mb-4">
@@ -115,30 +108,21 @@ export default function Settings() {
         <div className="space-y-3">
           <div>
             <Label htmlFor="first_name">{t('settings.firstName')}</Label>
-            <Input
-              id="first_name"
-              value={profile.first_name}
-              onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
-              placeholder={t('settings.firstNamePlaceholder')}
-            />
+            <Input id="first_name" value={profile.first_name} onChange={e => setProfile({
+            ...profile,
+            first_name: e.target.value
+          })} placeholder={t('settings.firstNamePlaceholder')} />
           </div>
           <div>
             <Label htmlFor="last_name">{t('settings.lastName')}</Label>
-            <Input
-              id="last_name"
-              value={profile.last_name}
-              onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
-              placeholder={t('settings.lastNamePlaceholder')}
-            />
+            <Input id="last_name" value={profile.last_name} onChange={e => setProfile({
+            ...profile,
+            last_name: e.target.value
+          })} placeholder={t('settings.lastNamePlaceholder')} />
           </div>
           <div>
             <Label htmlFor="email">{t('settings.email')}</Label>
-            <Input
-              id="email"
-              value={profile.email}
-              disabled
-              className="bg-muted"
-            />
+            <Input id="email" value={profile.email} disabled className="bg-muted" />
             <p className="text-sm text-muted-foreground mt-1">
               {t('settings.emailReadonly')}
             </p>
@@ -181,12 +165,10 @@ export default function Settings() {
                 {t('settings.orderNotificationsDesc')}
               </p>
             </div>
-            <Switch 
-              checked={notifications.email_orders}
-              onCheckedChange={(checked) => 
-                setNotifications({...notifications, email_orders: checked})
-              }
-            />
+            <Switch checked={notifications.email_orders} onCheckedChange={checked => setNotifications({
+            ...notifications,
+            email_orders: checked
+          })} />
           </div>
         </div>
       </Card>
@@ -221,11 +203,7 @@ export default function Settings() {
                 {t('settings.darkModeDesc')}
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
+            <Button variant="outline" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             </Button>
@@ -242,11 +220,7 @@ export default function Settings() {
             <p className="text-sm text-muted-foreground mb-2">
               {t('settings.logoutDesc')}
             </p>
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={handleLogout}
-            >
+            <Button variant="outline" className="w-full" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
               {t('settings.logout')}
             </Button>
@@ -283,6 +257,5 @@ export default function Settings() {
           </div>
         </div>
       </Card>
-    </div>
-  );
+    </div>;
 }
