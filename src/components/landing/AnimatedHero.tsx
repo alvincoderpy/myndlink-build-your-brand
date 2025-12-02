@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const titles = ["incrível", "novo", "fantástico", "bonito", "inteligente"];
 
 export function AnimatedHero() {
+  const { t } = useTranslation();
   const [titleIndex, setTitleIndex] = useState(0);
 
   useEffect(() => {
@@ -40,12 +42,20 @@ export function AnimatedHero() {
             Simplificamos o comércio para pequenas e médias empresas. Cria a tua loja online em minutos e começa a vender hoje.
           </p>
 
-          <Link to="/auth">
-            <Button size="lg" className="gap-2">
-              Criar conta grátis
-              <MoveRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link to="/auth">
+              <Button size="lg" className="gap-2">
+                Criar conta grátis
+                <MoveRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <a 
+              href="#" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+            >
+              {t("hero.readLaunchArticle")}
+            </a>
+          </div>
         </div>
       </div>
     </section>
