@@ -111,6 +111,7 @@ All colors MUST be HSL.
     --chart-4: 304 26.5% 62.7%;
     --chart-5: 16 24.6% 64.5%;
     --sidebar: 266 4% 20.8%;
+    --font-sans: Poppins, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 }
 
