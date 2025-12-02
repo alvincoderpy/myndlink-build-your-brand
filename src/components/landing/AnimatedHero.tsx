@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { PhoneCall, MoveRight } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const titles = ["incrível", "novo", "fantástico", "bonito", "inteligente"];
@@ -41,23 +41,12 @@ export function AnimatedHero() {
             Simplificamos o comércio para pequenas e médias empresas. Cria a tua loja online em minutos e começa a vender hoje.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              variant="outline"
-              size="lg"
-              className="gap-2"
-              onClick={() => window.open("tel:+258840000000", "_self")}
-            >
-              <PhoneCall className="w-4 h-4" />
-              Falar connosco
+          <Link to="/auth">
+            <Button size="lg" className="gap-2">
+              Criar conta grátis
+              <MoveRight className="w-4 h-4" />
             </Button>
-            <Link to="/auth">
-              <Button size="lg" className="gap-2 w-full sm:w-auto">
-                Criar conta grátis
-                <MoveRight className="w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
     </section>
