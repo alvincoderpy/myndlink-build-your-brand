@@ -22,8 +22,16 @@ export function AnimatedHero() {
     <section className="relative w-full py-20 md:py-32 overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+          <a 
+            href="#" 
+            className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 text-sm font-medium border border-border rounded-full hover:bg-muted transition-colors"
+          >
+            {t("hero.readLaunchArticle")}
+            <MoveRight className="w-4 h-4" />
+          </a>
+
           <h1 className="text-4xl sm:text-5xl md:text-7xl tracking-tight mb-6">
-            <span className="block font-normal mb-2">Isto é algo</span>
+            <span className="block font-normal">Isto é algo</span>
             <AnimatePresence mode="wait">
               <motion.span
                 key={titleIndex}
@@ -42,20 +50,12 @@ export function AnimatedHero() {
             Simplificamos o comércio para pequenas e médias empresas. Cria a tua loja online em minutos e começa a vender hoje.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <Link to="/auth">
-              <Button size="lg" className="gap-2">
-                Criar conta grátis
-                <MoveRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <a 
-              href="#" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-            >
-              {t("hero.readLaunchArticle")}
-            </a>
-          </div>
+          <Link to="/auth">
+            <Button size="lg" className="gap-2">
+              Criar conta grátis
+              <MoveRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
