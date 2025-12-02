@@ -87,7 +87,7 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Poppins',
+  				'Lato',
   				'ui-sans-serif',
   				'system-ui',
   				'sans-serif',
