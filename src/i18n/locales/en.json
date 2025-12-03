@@ -185,7 +185,9 @@
     "manageOrders": "Manage Orders",
     "optimizeProducts": "Optimize product descriptions to increase conversions",
     "usePhotos": "Use high-quality photos to attract more customers",
-    "promoteCoupons": "Promote discount coupons to encourage purchases"
+    "promoteCoupons": "Promote discount coupons to encourage purchases",
+    "salesChart": "Sales in Period",
+    "noSalesData": "No sales data in selected period"
   },
   "products": {
     "title": "Products",

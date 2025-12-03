@@ -190,30 +190,5 @@ export default function MyStore() {
           </div>}
       </Card>
 
-      {/* Quick Actions */}
-      <Card className="p-4">
-        <h3 className="font-semibold mb-3">Ações Rápidas</h3>
-        <div className="grid gap-3 md:grid-cols-2">
-          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => navigate("/dashboard/store/edit")}>
-            <Edit className="w-4 h-4 mr-2.5" />
-            <div className="text-left">
-              <div className="font-medium text-sm">Editar Design</div>
-              <div className="text-xs text-muted-foreground">
-                Cores, logo, hero, categorias
-              </div>
-            </div>
-          </Button>
-
-          <Button variant="outline" className="justify-start h-auto py-3" onClick={() => navigate("/dashboard/products")}>
-            <Package className="w-4 h-4 mr-2.5" />
-            <div className="text-left">
-              <div className="font-medium text-sm">Adicionar Produtos</div>
-              <div className="text-xs text-muted-foreground">
-                Expande o teu catálogo
-              </div>
-            </div>
-          </Button>
-        </div>
-      </Card>
     </div>;
 }

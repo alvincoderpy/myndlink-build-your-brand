@@ -181,7 +181,9 @@
     "tips": "Dicas de Crescimento",
     "optimizeProducts": "Otimiza descrições dos produtos para aumentar conversões",
     "usePhotos": "Usa fotos de alta qualidade para atrair mais clientes",
-    "promoteCoupons": "Promove cupons de desconto para incentivar compras"
+    "promoteCoupons": "Promove cupons de desconto para incentivar compras",
+    "salesChart": "Vendas no Período",
+    "noSalesData": "Sem dados de vendas no período selecionado"
   },
   "products": {
     "title": "Produtos",

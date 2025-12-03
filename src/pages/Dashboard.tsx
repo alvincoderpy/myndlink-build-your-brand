@@ -12,23 +12,33 @@ import { pt as ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useTranslation } from "react-i18next";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+
+interface ChartDataPoint {
+  date: string;
+  sales: number;
+}
+
 interface Stats {
   totalSales: number;
   pendingOrders: number;
   productsSold: number;
   salesGrowth: number;
   totalOrders: number;
+  chartData: ChartDataPoint[];
 }
 const Dashboard = () => {
   const { user } = useAuth();
   const { currentStore } = useStore();
   const { t } = useTranslation();
-  const [stats, setStats] = useState<Stats>({
+const [stats, setStats] = useState<Stats>({
     totalSales: 0,
     pendingOrders: 0,
     productsSold: 0,
     salesGrowth: 0,
     totalOrders: 0,
+    chartData: [],
   });
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -76,12 +86,25 @@ const Dashboard = () => {
         .lte("created_at", previousEndDate.toISOString());
       const previousSales = previousOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
       const growth = previousSales > 0 ? ((totalSales - previousSales) / previousSales) * 100 : 0;
+
+      // Aggregate sales by day for chart
+      const salesByDay: Record<string, number> = {};
+      orders?.forEach((order) => {
+        const day = format(new Date(order.created_at), "dd MMM", { locale: ptBR });
+        salesByDay[day] = (salesByDay[day] || 0) + Number(order.total);
+      });
+      const chartData = Object.entries(salesByDay).map(([date, sales]) => ({
+        date,
+        sales,
+      }));
+
       setStats({
         totalSales,
         pendingOrders: pendingCount,
         productsSold,
         salesGrowth: growth,
         totalOrders,
+        chartData,
       });
     } catch (error) {
       console.error("Error loading stats:", error);
@@ -189,36 +212,49 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Quick Actions / Recent Activity */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-4">
-          <h3 className="font-semibold mb-3 text-sm">{t("dashboard.quickActions")}</h3>
-          <div className="space-y-1.5">
-            <a href="/dashboard/products" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
-              <p className="font-medium text-sm">{t("dashboard.addProduct")}</p>
-              <p className="text-xs text-muted-foreground">{t("dashboard.expandCatalog")}</p>
-            </a>
-            <a href="/dashboard/orders" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
-              <p className="font-medium text-sm">{t("dashboard.viewOrders")}</p>
-              <p className="text-xs text-muted-foreground">{t("dashboard.managePending")}</p>
-            </a>
-            <a href="/dashboard/store/edit" className="block p-2.5 rounded-lg hover:bg-muted transition-colors">
-              <p className="font-medium text-sm">{t("dashboard.editStore")}</p>
-              <p className="text-xs text-muted-foreground">{t("dashboard.customizeStore")}</p>
-            </a>
+      {/* Sales Chart */}
+      <Card className="p-4">
+        <h3 className="font-semibold mb-3 text-sm">{t("dashboard.salesChart")}</h3>
+        {stats.chartData.length > 0 ? (
+          <ChartContainer
+            config={{
+              sales: {
+                label: t("dashboard.totalSales"),
+                color: "hsl(var(--primary))",
+              },
+            }}
+            className="h-[200px] w-full"
+          >
+            <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+              <XAxis 
+                dataKey="date" 
+                tick={{ fontSize: 12 }} 
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                tick={{ fontSize: 12 }} 
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `${value} MT`}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="monotone"
+                dataKey="sales"
+                stroke="hsl(var(--primary))"
+                fill="hsl(var(--primary)/0.2)"
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ChartContainer>
+        ) : (
+          <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
+            {t("dashboard.noSalesData")}
           </div>
-        </Card>
-
-        <Card className="p-4">
-          <h3 className="font-semibold mb-3 text-sm">{t("dashboard.growthTips")}</h3>
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <p>• {t("dashboard.tip1")}</p>
-            <p>• {t("dashboard.tip2")}</p>
-            <p>• {t("dashboard.tip3")}</p>
-            <p>• {t("dashboard.tip4")}</p>
-          </div>
-        </Card>
-      </div>
+        )}
+      </Card>
     </div>
   );
 };
