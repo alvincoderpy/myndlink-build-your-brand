@@ -18,6 +18,7 @@ const Landing = () => {
           <div className="flex items-center gap-2">
             <img src={logoLight} alt="MyndLink" className="h-10 dark:hidden" />
             <img src={logoDark} alt="MyndLink" className="h-10 hidden dark:block" />
+            <span className="text-xl font-bold">MyndLink</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
