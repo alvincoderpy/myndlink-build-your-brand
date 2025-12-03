@@ -54,7 +54,7 @@ export function AnimatedHero() {
           </p>
 
           <Link to="/auth">
-            <Button size="lg" className="gap-2 bg-blue-600 hover:bg-blue-500">
+            <Button size="lg" className="gap-2 bg-primary-foreground">
               Criar conta grátis
               <MoveRight className="w-4 h-4" />
             </Button>

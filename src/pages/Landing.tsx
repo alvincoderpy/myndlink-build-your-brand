@@ -87,7 +87,7 @@ const Landing = () => {
             {t('cta.subtitle')}
           </p>
           <Link to="/auth">
-            <Button size="lg" className="text-lg py-6 px-[24px]">
+            <Button size="lg" className="text-lg py-6 px-[24px] bg-blue-600 hover:bg-blue-500">
               {t('cta.button')}
             </Button>
           </Link>
