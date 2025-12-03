@@ -4,16 +4,15 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
 import { AnimatedHero } from "@/components/landing/AnimatedHero";
-
 const Landing = () => {
-  const { t } = useTranslation();
+  const {
+    t
+  } = useTranslation();
   useForceTheme("light");
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-6 flex items-center justify-between py-[24px]">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold">
               <span className="bg-clip-text text-foreground mx-0 px-0">Myndlink</span>
@@ -100,8 +99,6 @@ const Landing = () => {
           <p>&copy; 2025 MyndLink. {t('footer.copyright')}</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
