@@ -14,6 +14,12 @@
     --background: 0 0% 100%;
     --foreground: 265 4% 12.9%;
 
+    /* Liquid Glass */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: rgba(31, 38, 135, 0.12);
+    --glass-blur: 15px;
+
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9216%;
 
@@ -83,6 +89,11 @@
   .dark {
     --background: 20 14.2857% 4.1176%;
     --foreground: 248 0.3% 98.4%;
+
+    /* Liquid Glass Dark */
+    --glass-bg: rgba(0, 0, 0, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: rgba(0, 0, 0, 0.5);
 
     --card: 0 0% 3.9216%;
     --card-foreground: 248 0.3% 98.4%;
@@ -162,6 +173,16 @@
 }
 
 @layer utilities {
+  .liquid-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 
+      0 4px 12px var(--glass-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
