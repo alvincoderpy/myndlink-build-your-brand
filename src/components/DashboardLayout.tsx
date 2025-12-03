@@ -59,7 +59,7 @@ export const DashboardLayout = ({
         <div className="bg-background rounded-2xl shadow-lg border border-border h-[calc(100vh-2rem)] relative overflow-hidden flex flex-col">
           
           {/* Liquid Glass Header - Fixed at top */}
-          <div className="sticky top-0 z-10 h-14 backdrop-blur-xl bg-background/60 border-b border-border/40 rounded-t-2xl flex-shrink-0" />
+          <div className="sticky top-0 z-10 h-14 backdrop-blur-2xl bg-gradient-to-r from-background/50 via-background/30 to-background/50 border-b border-border/20 rounded-t-2xl flex-shrink-0 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(255,255,255,0.03)]" />
           
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto p-4 md:p-5">
