@@ -39,7 +39,7 @@ export const DashboardLayout = ({
   if (!user) {
     return null;
   }
-  return <div className="h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
+  return <div className="h-screen w-full bg-muted overflow-hidden">
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Mobile Menu Button */}
@@ -55,11 +55,11 @@ export const DashboardLayout = ({
       )}
 
       {/* Main Content with Rounded Borders - Static Container */}
-      <main className={`${isMobile ? 'ml-0 p-3' : 'ml-56 p-4'} h-screen animate-fade-in`}>
+      <main className={`${isMobile ? 'ml-0 p-3' : 'ml-64 pr-4 py-4'} h-screen animate-fade-in`}>
         <div className="bg-background rounded-2xl shadow-lg border border-border h-[calc(100vh-2rem)] relative overflow-hidden flex flex-col">
           
           {/* Liquid Glass Header - Fixed at top */}
-          <div className="sticky top-0 z-10 h-14 backdrop-blur-2xl bg-gradient-to-r from-background/50 via-background/30 to-background/50 border-b border-border/20 rounded-t-2xl flex-shrink-0 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(255,255,255,0.03)]" />
+          <div className="sticky top-0 z-10 h-14 backdrop-blur-3xl bg-gradient-to-r from-background/60 via-background/40 to-background/60 border-b border-white/10 dark:border-white/5 rounded-t-2xl flex-shrink-0 shadow-[0_1px_15px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_15px_rgba(0,0,0,0.3)]" />
           
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto p-4 md:p-5">

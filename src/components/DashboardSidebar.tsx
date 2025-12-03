@@ -56,10 +56,11 @@ export function DashboardSidebar({
     }} />}
 
       <aside className={`
-          fixed bg-card border-border z-50
-          transition-all duration-300 ease-in-out
-          ${isMobile ? `left-0 right-0 h-auto rounded-t-2xl border-t shadow-2xl
-               ${isOpen ? 'bottom-0' : '-bottom-full'}` : 'left-0 top-0 h-screen w-56 border-r'}
+          fixed z-50 transition-all duration-300 ease-in-out
+          ${isMobile 
+            ? `left-0 right-0 h-auto rounded-t-2xl border-t shadow-2xl bg-card border-border
+               ${isOpen ? 'bottom-0' : '-bottom-full'}` 
+            : 'left-4 top-4 h-[calc(100vh-2rem)] w-56 bg-background rounded-2xl shadow-lg border border-border'}
         `} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{
       touchAction: isMobile ? 'none' : 'auto',
       ...(isMobile && isDragging ? {
@@ -70,7 +71,7 @@ export function DashboardSidebar({
         {isMobile && <div className="w-12 h-1 bg-muted rounded-full mx-auto my-3" />}
 
         {/* Logo (apenas desktop) */}
-        {!isMobile && <div className="p-4 border-b border-border flex items-center gap-2">
+        {!isMobile && <div className="p-4 border-b border-border/50 flex items-center gap-2">
             <img src={logoLight} alt="MyndLink" className="h-8 dark:hidden" />
             <img src={logoDark} alt="MyndLink" className="h-8 hidden dark:block" />
             <span className="text-xl font-bold">MyndLink</span>
