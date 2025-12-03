@@ -20,7 +20,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 265 4% 12.9%;
 
-    --primary: 0 0% 88.6275%;
+    --primary: 240 5.8824% 90%;
     --primary-foreground: 0 0% 3.9216%;
 
     --secondary: 248 0.7% 96.8%;
@@ -56,7 +56,7 @@
     --chart-4: 84 18.9% 82.8%;
     --chart-5: 70 18.8% 76.9%;
 
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans: Poppins, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
     --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
 
