@@ -189,6 +189,22 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
+  .liquid-glass-bottom {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .dark .liquid-glass-bottom {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
