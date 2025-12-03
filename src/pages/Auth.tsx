@@ -63,7 +63,7 @@ const Auth = () => {
             <img 
               src={logoLight} 
               alt="MyndLink" 
-              className="h-10 mx-auto" 
+              className="h-12 mx-auto" 
             />
           </Link>
         </div>
