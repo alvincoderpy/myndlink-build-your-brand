@@ -19,12 +19,12 @@ const Landing = () => {
             <img 
               src={logoLight} 
               alt="MyndLink" 
-              className="h-8 dark:hidden" 
+              className="h-10 dark:hidden" 
             />
             <img 
               src={logoDark} 
               alt="MyndLink" 
-              className="h-8 hidden dark:block" 
+              className="h-10 hidden dark:block" 
             />
           </div>
           <div className="flex items-center gap-4">

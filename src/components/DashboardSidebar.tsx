@@ -74,12 +74,12 @@ export function DashboardSidebar({
             <img 
               src={logoLight} 
               alt="MyndLink" 
-              className="h-6 dark:hidden" 
+              className="h-8 dark:hidden" 
             />
             <img 
               src={logoDark} 
               alt="MyndLink" 
-              className="h-6 hidden dark:block" 
+              className="h-8 hidden dark:block" 
             />
           </div>}
 

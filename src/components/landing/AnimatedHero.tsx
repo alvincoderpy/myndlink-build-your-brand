@@ -19,7 +19,7 @@ export function AnimatedHero() {
   }, []);
 
   return (
-    <section className="relative w-full py-20 md:py-32 overflow-hidden">
+    <section className="relative w-full py-12 md:py-20 overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           <a 
