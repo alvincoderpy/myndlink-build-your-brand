@@ -66,6 +66,9 @@ export const DashboardLayout = ({
             {children}
           </div>
           
+          {/* Liquid Glass Footer - Blur no FUNDO */}
+          <div className="sticky bottom-0 z-10 h-14 liquid-glass-bottom rounded-b-2xl flex-shrink-0" />
+          
         </div>
       </main>
     </div>;
