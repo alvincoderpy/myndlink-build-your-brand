@@ -60,11 +60,10 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <img 
-              src={logoLight} 
-              alt="MyndLink" 
-              className="h-12 mx-auto" 
-            />
+            <div className="flex items-center justify-center gap-2">
+              <img src={logoLight} alt="MyndLink" className="h-12" />
+              <span className="text-2xl font-bold">MyndLink</span>
+            </div>
           </Link>
         </div>
 

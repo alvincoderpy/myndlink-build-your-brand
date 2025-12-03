@@ -70,17 +70,10 @@ export function DashboardSidebar({
         {isMobile && <div className="w-12 h-1 bg-muted rounded-full mx-auto my-3" />}
 
         {/* Logo (apenas desktop) */}
-        {!isMobile && <div className="p-4 border-b border-border">
-            <img 
-              src={logoLight} 
-              alt="MyndLink" 
-              className="h-8 dark:hidden" 
-            />
-            <img 
-              src={logoDark} 
-              alt="MyndLink" 
-              className="h-8 hidden dark:block" 
-            />
+        {!isMobile && <div className="p-4 border-b border-border flex items-center gap-2">
+            <img src={logoLight} alt="MyndLink" className="h-8 dark:hidden" />
+            <img src={logoDark} alt="MyndLink" className="h-8 hidden dark:block" />
+            <span className="text-xl font-bold">MyndLink</span>
           </div>}
 
         <nav className="p-3">
