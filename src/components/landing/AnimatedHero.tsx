@@ -4,28 +4,22 @@ import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
 const titles = ["incrível", "novo", "fantástico", "bonito", "inteligente"];
-
 export function AnimatedHero() {
-  const { t } = useTranslation();
+  const {
+    t
+  } = useTranslation();
   const [titleIndex, setTitleIndex] = useState(0);
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setTitleIndex((prev) => (prev + 1) % titles.length);
+      setTitleIndex(prev => (prev + 1) % titles.length);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
-
-  return (
-    <section className="relative w-full py-12 md:py-20 overflow-hidden">
+  return <section className="relative w-full py-12 md:py-20 overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          <a 
-            href="#" 
-            className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 text-sm font-medium border border-border rounded-full hover:bg-muted transition-colors"
-          >
+          <a href="#" className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 text-sm font-medium border border-border rounded-full hover:bg-muted transition-colors">
             {t("hero.readLaunchArticle")}
             <MoveRight className="w-4 h-4" />
           </a>
@@ -33,14 +27,23 @@ export function AnimatedHero() {
           <h1 className="text-4xl sm:text-5xl md:text-7xl tracking-tight mb-6">
             <span className="block font-normal">Isto é algo</span>
             <AnimatePresence mode="wait">
-              <motion.span
-                key={titleIndex}
-                initial={{ y: 20, opacity: 0, filter: "blur(8px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="block font-bold text-foreground"
-              >
+              <motion.span key={titleIndex} initial={{
+              y: 20,
+              opacity: 0,
+              filter: "blur(8px)"
+            }} animate={{
+              y: 0,
+              opacity: 1,
+              filter: "blur(0px)"
+            }} exit={{
+              y: -20,
+              opacity: 0,
+              filter: "blur(8px)"
+            }} transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20
+            }} className="block font-bold text-foreground">
                 {titles[titleIndex]}
               </motion.span>
             </AnimatePresence>
@@ -51,13 +54,12 @@ export function AnimatedHero() {
           </p>
 
           <Link to="/auth">
-            <Button size="lg" className="gap-2">
+            <Button size="lg" className="gap-2 bg-blue-600 hover:bg-blue-500">
               Criar conta grátis
               <MoveRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }

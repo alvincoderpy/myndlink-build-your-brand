@@ -16,23 +16,15 @@ const Landing = () => {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-6 flex items-center justify-between py-[24px]">
           <div className="flex items-center gap-2">
-            <img 
-              src={logoLight} 
-              alt="MyndLink" 
-              className="h-10 dark:hidden" 
-            />
-            <img 
-              src={logoDark} 
-              alt="MyndLink" 
-              className="h-10 hidden dark:block" 
-            />
+            <img src={logoLight} alt="MyndLink" className="h-10 dark:hidden" />
+            <img src={logoDark} alt="MyndLink" className="h-10 hidden dark:block" />
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
               <Button variant="ghost" className="py-0 mx-0 px-0">{t('nav.login')}</Button>
             </Link>
             <Link to="/auth">
-              <Button>{t('nav.getStarted')}</Button>
+              <Button className="bg-blue-600 hover:bg-blue-500">{t('nav.getStarted')}</Button>
             </Link>
           </div>
         </div>
