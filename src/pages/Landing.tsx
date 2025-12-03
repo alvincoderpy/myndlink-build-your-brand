@@ -24,7 +24,7 @@ const Landing = () => {
               <Button variant="ghost" className="py-0 mx-0 px-0">{t('nav.login')}</Button>
             </Link>
             <Link to="/auth">
-              <Button className="bg-blue-600 hover:bg-blue-500">{t('nav.getStarted')}</Button>
+              <Button className="bg-primary-foreground">{t('nav.getStarted')}</Button>
             </Link>
           </div>
         </div>
