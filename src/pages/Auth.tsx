@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
+import logoLight from "@/assets/logo-light.png";
 const Auth = () => {
   const { t } = useTranslation();
   useForceTheme("light");
@@ -59,7 +60,11 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <h1 className="text-3xl font-bold">MyndLink</h1>
+            <img 
+              src={logoLight} 
+              alt="MyndLink" 
+              className="h-10 mx-auto" 
+            />
           </Link>
         </div>
 

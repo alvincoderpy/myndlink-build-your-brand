@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Store, Package, ShoppingCart, Settings, Tag } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 interface DashboardSidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -69,7 +71,16 @@ export function DashboardSidebar({
 
         {/* Logo (apenas desktop) */}
         {!isMobile && <div className="p-4 border-b border-border">
-            <h1 className="text-xl font-bold">Myndlink</h1>
+            <img 
+              src={logoLight} 
+              alt="MyndLink" 
+              className="h-6 dark:hidden" 
+            />
+            <img 
+              src={logoDark} 
+              alt="MyndLink" 
+              className="h-6 hidden dark:block" 
+            />
           </div>}
 
         <nav className="p-3">

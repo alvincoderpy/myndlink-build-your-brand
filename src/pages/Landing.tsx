@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
 import { AnimatedHero } from "@/components/landing/AnimatedHero";
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 const Landing = () => {
   const {
     t
@@ -14,9 +16,16 @@ const Landing = () => {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-6 flex items-center justify-between py-[24px]">
           <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold">
-              <span className="bg-clip-text text-foreground mx-0 px-0">Myndlink</span>
-            </div>
+            <img 
+              src={logoLight} 
+              alt="MyndLink" 
+              className="h-8 dark:hidden" 
+            />
+            <img 
+              src={logoDark} 
+              alt="MyndLink" 
+              className="h-8 hidden dark:block" 
+            />
           </div>
           <div className="flex items-center gap-4">
             <Link to="/auth">
