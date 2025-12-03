@@ -174,33 +174,19 @@
 
 @layer utilities {
   .liquid-glass {
-    background: linear-gradient(
-      180deg,
-      rgba(128, 128, 128, 0.08) 0%,
-      rgba(128, 128, 128, 0.03) 50%,
-      transparent 100%
-    );
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .dark .liquid-glass {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.02) 50%,
-      transparent 100%
-    );
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 
-      0 1px 3px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .animate-fade-in {
