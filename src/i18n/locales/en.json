@@ -1,7 +1,7 @@
 {
   "nav": {
     "login": "Login",
-    "getStarted": "Get Started Free",
+    "getStarted": "Get Started",
     "dashboard": "Dashboard",
     "myStore": "My Store",
     "products": "Products",
@@ -12,8 +12,8 @@
   "hero": {
     "title": "Create Your Online Store",
     "subtitle": "in Minutes",
-    "description": "Complete platform to sell online. Free subdomain, payment forms and responsive templates.",
-    "cta": "Start today. Free",
+    "description": "Complete platform to sell online. Subdomain included, payment forms and responsive templates.",
+    "cta": "Start today",
     "viewPricing": "View Pricing",
     "readLaunchArticle": "Read launch article"
   },
@@ -25,8 +25,8 @@
       "description": "Create your store in minutes with ready-made templates. No code, no hassle."
     },
     "subdomain": {
-      "title": "Free Subdomain",
-      "description": "Get YourStore.myndlink.com for free. Upgrade to custom domain coming soon."
+      "title": "Subdomain Included",
+      "description": "Get YourStore.myndlink.com. Upgrade to custom domain coming soon."
     },
     "payment": {
       "title": "Integrated Payments",
@@ -71,7 +71,7 @@
   "cta": {
     "title": "Ready to Get Started?",
     "subtitle": "Join thousands of entrepreneurs who have created their online stores",
-    "button": "Create My Store Free"
+    "button": "Create My Store"
   },
   "footer": {
     "copyright": "All rights reserved."
