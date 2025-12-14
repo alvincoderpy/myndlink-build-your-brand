@@ -1,7 +1,7 @@
 {
   "nav": {
     "login": "Entrar",
-    "getStarted": "Começar Grátis",
+    "getStarted": "Começar",
     "dashboard": "Dashboard",
     "myStore": "Minha Loja",
     "products": "Produtos",
@@ -12,8 +12,8 @@
   "hero": {
     "title": "Crie sua Loja Online",
     "subtitle": "em Minutos",
-    "description": "Plataforma completa para vender online. Subdomínio gratuito, Formas de pagamento e Templates responsivos.",
-    "cta": "Começa hoje. Grátis",
+    "description": "Plataforma completa para vender online. Subdomínio incluído, formas de pagamento e templates responsivos.",
+    "cta": "Começa hoje",
     "viewPricing": "Ver Preços",
     "readLaunchArticle": "Ler artigo de lançamento"
   },
@@ -25,8 +25,8 @@
       "description": "Cria a tua loja em minutos com templates prontos. Sem código, sem complicação."
     },
     "subdomain": {
-      "title": "Subdomínio Grátis",
-      "description": "Recebe TuaLoja.myndlink.com gratuitamente. Upgrade para domínio próprio em breve."
+      "title": "Subdomínio Incluído",
+      "description": "Recebe TuaLoja.myndlink.com. Upgrade para domínio próprio em breve."
     },
     "payment": {
       "title": "Pagamentos Integrados",
@@ -71,7 +71,7 @@
   "cta": {
     "title": "Pronto para Começar?",
     "subtitle": "Junta-te a milhares de empreendedores que já criaram suas lojas online",
-    "button": "Criar Minha Loja Grátis"
+    "button": "Criar Minha Loja"
   },
   "footer": {
     "copyright": "Todos os direitos reservados."
