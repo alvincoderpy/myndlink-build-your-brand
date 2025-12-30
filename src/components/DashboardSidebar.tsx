@@ -56,15 +56,17 @@ export function DashboardSidebar({
     }} />}
 
       <aside className={`
-          fixed z-[60] transition-all duration-300 ease-in-out
+          fixed z-[60]
           ${isMobile 
-            ? `left-0 right-0 h-auto rounded-t-2xl border-t shadow-2xl bg-card border-border
-               ${isOpen ? 'bottom-0' : '-bottom-full'}` 
-            : 'left-4 top-4 h-[calc(100vh-2rem)] w-56 bg-background rounded-2xl shadow-lg border border-border'}
+            ? `left-0 right-0 h-auto rounded-t-3xl border-t shadow-2xl bg-card border-border
+               transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+               ${isOpen ? 'translate-y-0' : 'translate-y-full'}` 
+            : 'left-4 top-4 h-[calc(100vh-2rem)] w-56 bg-background rounded-2xl shadow-lg border border-border transition-all duration-300 ease-in-out'}
         `} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{
       touchAction: isMobile ? 'none' : 'auto',
       ...(isMobile && isDragging ? {
-        transform: `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)`
+        transform: `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)`,
+        transition: 'none'
       } : {})
     }}>
         {/* Indicador visual de drag (apenas mobile) */}
