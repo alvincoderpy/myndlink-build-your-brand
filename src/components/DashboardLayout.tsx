@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useStore } from "@/contexts/StoreContext";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { StoreSelector } from "./StoreSelector";
-import { Button } from "./ui/button";
-import { Menu } from "lucide-react";
+import { MobileHeader } from "./MobileHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -42,17 +40,8 @@ export const DashboardLayout = ({
   return <div className="h-screen w-full bg-neutral-100 dark:bg-neutral-950 overflow-hidden">
       <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      {/* Mobile Menu Button */}
-      {isMobile && (
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setSidebarOpen(true)}
-          className="fixed top-3 left-3 z-50"
-        >
-          <Menu className="w-4 h-4" />
-        </Button>
-      )}
+      {/* Mobile Header */}
+      {isMobile && <MobileHeader onMenuClick={() => setSidebarOpen(true)} />}
 
       {/* Main Content with Rounded Borders - Static Container */}
       <main className={`${isMobile ? 'ml-0 pt-14 px-3 pb-3' : 'ml-64 pr-4 py-4'} h-screen animate-fade-in`}>
