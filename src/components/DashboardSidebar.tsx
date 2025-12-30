@@ -56,7 +56,7 @@ export function DashboardSidebar({
     }} />}
 
       <aside className={`
-          fixed z-50 transition-all duration-300 ease-in-out
+          fixed z-[60] transition-all duration-300 ease-in-out
           ${isMobile 
             ? `left-0 right-0 h-auto rounded-t-2xl border-t shadow-2xl bg-card border-border
                ${isOpen ? 'bottom-0' : '-bottom-full'}` 
