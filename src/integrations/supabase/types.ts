@@ -50,6 +50,13 @@ export type Database = {
             foreignKeyName: "coupons_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "public_stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
@@ -151,6 +158,13 @@ export type Database = {
             foreignKeyName: "orders_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "public_stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
@@ -212,6 +226,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "public_stores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_store_id_fkey"
             columns: ["store_id"]
@@ -346,7 +367,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_stores: {
+        Row: {
+          created_at: string | null
+          custom_domain: string | null
+          favicon_url: string | null
+          id: string | null
+          is_published: boolean | null
+          logo_url: string | null
+          meta_description: string | null
+          name: string | null
+          plan: string | null
+          social_links: Json | null
+          subdomain: string | null
+          template: string | null
+          template_config: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_domain?: string | null
+          favicon_url?: string | null
+          id?: string | null
+          is_published?: boolean | null
+          logo_url?: string | null
+          meta_description?: string | null
+          name?: string | null
+          plan?: string | null
+          social_links?: Json | null
+          subdomain?: string | null
+          template?: string | null
+          template_config?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_domain?: string | null
+          favicon_url?: string | null
+          id?: string | null
+          is_published?: boolean | null
+          logo_url?: string | null
+          meta_description?: string | null
+          name?: string | null
+          plan?: string | null
+          social_links?: Json | null
+          subdomain?: string | null
+          template?: string | null
+          template_config?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_order_atomic: {
