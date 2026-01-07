@@ -13,7 +13,7 @@ import { DateRange } from "react-day-picker";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { useTranslation } from "react-i18next";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface ChartDataPoint {
   date: string;

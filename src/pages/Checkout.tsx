@@ -141,11 +141,11 @@ export default function Checkout() {
       const { data, error } = await supabase.rpc('create_order_atomic', {
         p_store_id: store.id,
         p_customer_name: formData.customer_name,
-        p_customer_email: formData.customer_email || null,
+        p_customer_email: formData.customer_email || "",
         p_customer_phone: formData.customer_phone,
         p_customer_address: formData.customer_address,
         p_payment_method: formData.payment_method,
-        p_notes: formData.notes || null,
+        p_notes: formData.notes || "",
         p_coupon_code: appliedCoupon?.code || null,
         p_discount_amount: getDiscount(),
         p_cart_items: cartItems

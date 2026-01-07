@@ -1,9 +1,3 @@
-// Centralized Supabase error handler
-function handleSupabaseError(error: any, fallbackMessage: string) {
-  if (!error) return;
-  console.error(fallbackMessage, error);
-  toast.error(error.message || fallbackMessage);
-}
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Store, Upload, Package, GripVertical, ArrowUpDown } from "lucide-react";
+import { Plus, Edit, Trash2, Upload, Package, GripVertical, ArrowUpDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";

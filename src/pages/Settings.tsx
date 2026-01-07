@@ -56,9 +56,10 @@ export default function Settings() {
     }
   }, [user]);
   const loadProfile = async () => {
+    if (!user?.id) return;
     const {
       data
-    } = await supabase.from("profiles").select("*").eq("user_id", user?.id).single();
+    } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
     if (data) {
       setProfile({
         first_name: data.first_name || "",
@@ -69,6 +70,7 @@ export default function Settings() {
     }
   };
   const handleUpdateProfile = async () => {
+    if (!user?.id) return;
     setLoading(true);
     const {
       error
@@ -76,7 +78,7 @@ export default function Settings() {
       first_name: profile.first_name,
       last_name: profile.last_name,
       full_name: `${profile.first_name} ${profile.last_name}`.trim()
-    }).eq("user_id", user?.id);
+    }).eq("user_id", user.id);
     if (error) {
       handleSupabaseError(error, t('settings.errorUpdateProfile'));
     } else {

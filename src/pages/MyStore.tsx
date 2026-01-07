@@ -8,9 +8,7 @@ import { useStore } from "@/contexts/StoreContext";
 import { Store, Edit, ExternalLink, Package, ShoppingCart, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
 export default function MyStore() {
-  const {
-    user
-  } = useAuth();
+  useAuth();
   const {
     currentStore,
     refreshStores

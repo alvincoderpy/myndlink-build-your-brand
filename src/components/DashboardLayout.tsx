@@ -15,9 +15,7 @@ export const DashboardLayout = ({
     user,
     loading
   } = useAuth();
-  const {
-    currentStore
-  } = useStore();
+  useStore();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();

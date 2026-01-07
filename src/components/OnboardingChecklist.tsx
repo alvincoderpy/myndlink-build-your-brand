@@ -60,12 +60,11 @@ export const OnboardingChecklist = () => {
 
       // Check if products exist
       const {
-        data: products,
         count
       } = await supabase.from("products").select("*", {
         count: "exact",
         head: true
-      }).eq("store_id", store?.id);
+      }).eq("store_id", store?.id ?? "");
       setItems(prev => prev.map(item => {
         if (item.id === "create_store") {
           return {

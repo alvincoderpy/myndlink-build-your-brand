@@ -64,7 +64,7 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
 
     setUploadingIndex(index);
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("store-assets")
         .upload(fileName, file);
 
