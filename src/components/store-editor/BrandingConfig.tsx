@@ -37,7 +37,7 @@ export function BrandingConfig({ config, onChange, storeId }: BrandingConfigProp
 
     setUploading(true);
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("store-assets")
         .upload(fileName, file);
 

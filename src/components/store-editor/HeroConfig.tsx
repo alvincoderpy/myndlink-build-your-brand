@@ -37,7 +37,7 @@ export function HeroConfig({ config, onChange, storeId }: HeroConfigProps) {
 
     setUploading(true);
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("store-assets")
         .upload(fileName, file);
 

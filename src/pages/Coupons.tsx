@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +30,6 @@ interface Coupon {
 
 export default function Coupons() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { currentStore, loading: storeLoading } = useStore();
   const [loading, setLoading] = useState(true);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -366,9 +365,9 @@ export default function Coupons() {
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center gap-2">
                       <Switch
-                        checked={coupon.is_active && !isExpired}
+                        checked={Boolean(coupon.is_active) && !isExpired}
                         onCheckedChange={() => handleToggleActive(coupon)}
-                        disabled={isExpired}
+                        disabled={isExpired || false}
                       />
                       <span className="text-sm text-muted-foreground">
                         {coupon.is_active ? t('coupons.active') : t('coupons.inactive')}

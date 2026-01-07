@@ -33,7 +33,7 @@ const Auth = () => {
         navigate("/dashboard");
       } else {
         const redirectUrl = `/dashboard`; // SPA navigation, mas emailRedirectTo precisa de URL absoluta
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {

@@ -29,7 +29,7 @@ const StoreEditor = () => {
   const {
     user
   } = useAuth();
-  const isMobile = useIsMobile();
+  useIsMobile();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [store, setStore] = useState<any>(null);
@@ -37,7 +37,6 @@ const StoreEditor = () => {
   const [subdomain, setSubdomain] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("desktop");
   const [activeSection, setActiveSection] = useState("branding");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const {
     state: config,
@@ -163,7 +162,7 @@ const StoreEditor = () => {
         name: storeName,
         template_config: config
       }).eq("id", store.id);
-      setLastSaved(new Date());
+      // Auto-save completed
     } catch (error) {
       handleSupabaseError(error, t("editor.saveError"));
     }
@@ -227,7 +226,7 @@ const StoreEditor = () => {
         }
         toast.success(t("editor.createSuccess"));
       }
-      setLastSaved(new Date());
+      // Manual save completed
       await loadStore();
     } catch (error: any) {
       handleSupabaseError(error, t("editor.saveError"));
