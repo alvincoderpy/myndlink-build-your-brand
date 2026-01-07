@@ -23,14 +23,14 @@ import { CartSidebar } from "@/components/storefront/CartSidebar";
 interface Product {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   image_url: string | null;
   stock: number;
-  is_active: boolean;
+  is_active?: boolean;
   discount_percentage: number;
-  is_new: boolean;
-  is_featured: boolean;
+  is_new?: boolean;
+  is_featured?: boolean;
 }
 
 interface CartItem extends Product {
@@ -52,29 +52,42 @@ export default function Storefront() {
 
   const loadStore = async () => {
     setLoading(true);
-    const { data: storeData } = await supabase
-      .from("stores")
-      .select("*")
-      .eq("subdomain", subdomain)
-      .eq("is_published", true)
-      .single();
+    
+    // Use secure RPC function that doesn't expose user_id
+    const { data: storeData, error } = await supabase
+      .rpc("get_public_store", { p_subdomain: subdomain || "" });
 
-      if (!storeData) {
-        handleSupabaseError(new Error("Loja não encontrada"), "Loja não encontrada");
-        setLoading(false);
-        return;
-      }
-
-    setStore(storeData);
+    if (error || !storeData || storeData.length === 0) {
+      handleSupabaseError(error || new Error("Loja não encontrada"), "Loja não encontrada");
+      setLoading(false);
+      return;
+    }
+    
+    const storeRecord = storeData[0];
+    setStore(storeRecord);
 
     const { data: productsData } = await supabase
       .from("products")
       .select("*")
-      .eq("store_id", storeData.id)
+      .eq("store_id", storeRecord.id)
       .eq("is_active", true)
       .gt("stock", 0);
 
-    setProducts(productsData || []);
+    // Map products to ensure correct types
+    const mappedProducts: Product[] = (productsData || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      description: p.description || "",
+      price: p.price,
+      image_url: p.image_url,
+      stock: p.stock,
+      is_active: p.is_active,
+      discount_percentage: p.discount_percentage || 0,
+      is_new: p.is_new || false,
+      is_featured: p.is_featured || false
+    }));
+    
+    setProducts(mappedProducts);
     setLoading(false);
   };
 
