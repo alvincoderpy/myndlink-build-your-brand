@@ -1,3 +1,9 @@
+// Centralized Supabase error handler
+function handleSupabaseError(error: any, fallbackMessage: string) {
+  if (!error) return;
+  console.error(fallbackMessage, error);
+  toast.error(error.message || fallbackMessage);
+}
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

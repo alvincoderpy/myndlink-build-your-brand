@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
@@ -27,6 +28,7 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [currentStore, setCurrentStore] = useState<Store | null>(null);
   const [stores, setStores] = useState<Store[]>([]);
@@ -85,7 +87,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const createStore = () => {
     // Navigate to store editor
-    window.location.href = '/dashboard/store/edit';
+    navigate('/dashboard/store/edit');
   };
 
   const refreshStores = () => {

@@ -47,8 +47,9 @@ export function HeroSection({ config, featuredProducts }: HeroSectionProps) {
                 {product.image_url ? (
                   <img
                     src={product.image_url}
-                    alt={product.name}
+                    alt={product.name || 'Produto em destaque'}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center">

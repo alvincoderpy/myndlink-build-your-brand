@@ -1,3 +1,9 @@
+// Centralized Supabase error handler
+function handleSupabaseError(error: any, fallbackMessage: string) {
+  if (!error) return;
+  console.error(fallbackMessage, error);
+  toast.error(error.message || fallbackMessage);
+}
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -47,7 +53,7 @@ export default function UpdatePassword() {
       toast.success("Senha atualizada com sucesso!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao atualizar senha");
+      handleSupabaseError(error, "Erro ao atualizar senha");
     } finally {
       setLoading(false);
     }

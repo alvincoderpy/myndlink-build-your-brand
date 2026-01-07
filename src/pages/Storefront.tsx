@@ -1,3 +1,9 @@
+// Centralized Supabase error handler
+function handleSupabaseError(error: any, fallbackMessage: string) {
+  if (!error) return;
+  console.error(fallbackMessage, error);
+  toast.error(error.message || fallbackMessage);
+}
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,11 +59,11 @@ export default function Storefront() {
       .eq("is_published", true)
       .single();
 
-    if (!storeData) {
-      toast.error("Loja não encontrada");
-      setLoading(false);
-      return;
-    }
+      if (!storeData) {
+        handleSupabaseError(new Error("Loja não encontrada"), "Loja não encontrada");
+        setLoading(false);
+        return;
+      }
 
     setStore(storeData);
 

@@ -1,3 +1,9 @@
+// Centralized Supabase error handler
+function handleSupabaseError(error: any, fallbackMessage: string) {
+  if (!error) return;
+  console.error(fallbackMessage, error);
+  toast.error(error.message || fallbackMessage);
+}
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,7 +137,10 @@ const StoreEditor = () => {
       } = await supabase.from("stores").select("*").eq("user_id", user.id).order("created_at", {
         ascending: false
       });
-      if (error) throw error;
+      if (error) {
+        handleSupabaseError(error, t("editor.loadError"));
+        return;
+      }
       if (stores && stores.length > 0) {
         const currentStore = stores[0];
         setStore(currentStore);
@@ -142,8 +151,7 @@ const StoreEditor = () => {
         }
       }
     } catch (error: any) {
-      console.error("Error loading store:", error);
-      toast.error(t("editor.loadError"));
+      handleSupabaseError(error, t("editor.loadError"));
     } finally {
       setLoading(false);
     }
@@ -157,7 +165,7 @@ const StoreEditor = () => {
       }).eq("id", store.id);
       setLastSaved(new Date());
     } catch (error) {
-      console.error("Auto-save error:", error);
+      handleSupabaseError(error, t("editor.saveError"));
     }
   };
   const handleSave = async () => {
@@ -172,7 +180,10 @@ const StoreEditor = () => {
           subdomain: subdomain,
           template_config: config
         }).eq("id", store.id);
-        if (error) throw error;
+        if (error) {
+          handleSupabaseError(error, t("editor.saveError"));
+          return;
+        }
         toast.success(t("editor.saveSuccess"));
       } else {
         const subdomainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
@@ -190,7 +201,10 @@ const StoreEditor = () => {
           template: "minimog",
           template_config: config
         }).select().single();
-        if (error) throw error;
+        if (error) {
+          handleSupabaseError(error, t("editor.saveError"));
+          return;
+        }
         setStore(newStore);
 
         // Insert mock products for new store
@@ -207,7 +221,7 @@ const StoreEditor = () => {
               error: productsError
             } = await supabase.from("products").insert(mockProductsToInsert);
             if (productsError) {
-              console.error(t("editor.mockProductsError"), productsError);
+              handleSupabaseError(productsError, t("editor.mockProductsError"));
             }
           }
         }
@@ -216,8 +230,7 @@ const StoreEditor = () => {
       setLastSaved(new Date());
       await loadStore();
     } catch (error: any) {
-      console.error("Save error:", error);
-      toast.error(error.message || t("editor.saveError"));
+      handleSupabaseError(error, t("editor.saveError"));
     } finally {
       setSaving(false);
     }
@@ -287,7 +300,8 @@ const StoreEditor = () => {
           {/* Desktop: Ver Loja */}
           <Button size="sm" variant="outline" onClick={() => {
           if (store?.subdomain && store?.is_published) {
-            window.open(`/storefront/${store.subdomain}`, "_blank");
+            const url = `/storefront/${store.subdomain}`;
+            window.open(url, "_blank"); // Mantém nova aba, mas pode ser ajustado para navegação SPA se preferir
           } else if (!store?.is_published) {
             toast.error(t("editor.publishFirst"));
           } else {

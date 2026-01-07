@@ -1,3 +1,9 @@
+// Centralized Supabase error handler
+function handleSupabaseError(error: any, fallbackMessage: string) {
+  if (!error) return;
+  console.error(fallbackMessage, error);
+  toast.error(error.message || fallbackMessage);
+}
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,7 +47,8 @@ export default function Settings() {
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
     localStorage.setItem("language", newLang);
-    window.location.reload();
+    // Para navegação SPA, pode-se usar navigate(0) ou atualizar estado global/local
+    window.location.reload(); // Mantido, pois recarrega idioma; pode ser melhorado para SPA com contexto/i18n
   };
   useEffect(() => {
     if (user) {
@@ -71,7 +78,7 @@ export default function Settings() {
       full_name: `${profile.first_name} ${profile.last_name}`.trim()
     }).eq("user_id", user?.id);
     if (error) {
-      toast.error(t('settings.errorUpdateProfile'));
+      handleSupabaseError(error, t('settings.errorUpdateProfile'));
     } else {
       toast.success(t('settings.profileUpdated'));
     }
@@ -90,7 +97,7 @@ export default function Settings() {
       redirectTo: `${window.location.origin}/update-password`
     });
     if (error) {
-      toast.error(t('settings.errorSendEmail'));
+      handleSupabaseError(error, t('settings.errorSendEmail'));
     } else {
       toast.success(t('settings.resetEmailSent'));
     }

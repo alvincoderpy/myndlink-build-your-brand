@@ -32,7 +32,7 @@ const Auth = () => {
         toast.success(t("auth.welcomeBack"));
         navigate("/dashboard");
       } else {
-        const redirectUrl = `${window.location.origin}/dashboard`;
+        const redirectUrl = `/dashboard`; // SPA navigation, mas emailRedirectTo precisa de URL absoluta
         const { data, error } = await supabase.auth.signUp({
           email,
           password,

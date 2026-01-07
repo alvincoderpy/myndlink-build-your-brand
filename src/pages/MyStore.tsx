@@ -59,7 +59,7 @@ export default function MyStore() {
           description: "A tua loja já está online!",
           action: {
             label: "Ver loja",
-            onClick: () => window.open(storeUrl, "_blank")
+            onClick: () => window.open(storeUrl, "_blank") // Mantém nova aba, pode ser ajustado para SPA
           }
         });
       } else {
