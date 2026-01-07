@@ -435,6 +435,25 @@ export type Database = {
         }
         Returns: Json
       }
+      get_public_store: {
+        Args: { p_subdomain: string }
+        Returns: {
+          created_at: string
+          custom_domain: string
+          favicon_url: string
+          id: string
+          is_published: boolean
+          logo_url: string
+          meta_description: string
+          name: string
+          plan: string
+          social_links: Json
+          subdomain: string
+          template: string
+          template_config: Json
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"

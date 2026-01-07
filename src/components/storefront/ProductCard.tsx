@@ -7,9 +7,13 @@ import { Badge } from "@/components/ui/badge";
 interface Product {
   id: string;
   name: string;
+  description?: string;
   price: number;
   image_url: string | null;
   discount_percentage: number;
+  is_new?: boolean;
+  is_featured?: boolean;
+  is_active?: boolean;
   stock: number;
 }
 

@@ -6,11 +6,13 @@ import { ProductCard } from "./ProductCard";
 interface Product {
   id: string;
   name: string;
+  description?: string;
   price: number;
   image_url: string | null;
   discount_percentage: number;
-  is_new: boolean;
-  is_featured: boolean;
+  is_new?: boolean;
+  is_featured?: boolean;
+  is_active?: boolean;
   stock: number;
 }
 
@@ -35,8 +37,8 @@ export function ProductTabs({ config, products, onAddToCart }: ProductTabsProps)
   const filteredProducts = useMemo(() => {
     if (activeTab === "all") return products;
     if (activeTab === "on_sale") return products.filter(p => p.discount_percentage > 0);
-    if (activeTab === "new") return products.filter(p => p.is_new);
-    if (activeTab === "best_sellers" || activeTab === "featured") return products.filter(p => p.is_featured);
+    if (activeTab === "new") return products.filter(p => p.is_new === true);
+    if (activeTab === "best_sellers" || activeTab === "featured") return products.filter(p => p.is_featured === true);
     return products;
   }, [activeTab, products]);
   
