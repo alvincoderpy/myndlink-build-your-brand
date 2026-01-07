@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,16 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
+import { Check, X } from "lucide-react";
 import logoLight from "@/assets/logo-light.png";
+
+const passwordRequirements = [
+  { key: "length", test: (p: string) => p.length >= 8, label: "Mínimo 8 caracteres" },
+  { key: "uppercase", test: (p: string) => /[A-Z]/.test(p), label: "Uma letra maiúscula" },
+  { key: "lowercase", test: (p: string) => /[a-z]/.test(p), label: "Uma letra minúscula" },
+  { key: "number", test: (p: string) => /[0-9]/.test(p), label: "Um número" },
+  { key: "special", test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p), label: "Um caractere especial" },
+];
 const Auth = () => {
   const { t } = useTranslation();
   useForceTheme("light");
@@ -19,8 +28,23 @@ const Auth = () => {
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const passwordValidation = useMemo(() => {
+    return passwordRequirements.map((req) => ({
+      ...req,
+      passed: req.test(password),
+    }));
+  }, [password]);
+
+  const isPasswordValid = passwordValidation.every((req) => req.passed);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isLogin && !isPasswordValid) {
+      toast.error("A senha não atende aos requisitos mínimos de segurança");
+      return;
+    }
+    
     setLoading(true);
     try {
       if (isLogin) {
@@ -32,7 +56,7 @@ const Auth = () => {
         toast.success(t("auth.welcomeBack"));
         navigate("/dashboard");
       } else {
-        const redirectUrl = `/dashboard`; // SPA navigation, mas emailRedirectTo precisa de URL absoluta
+        const redirectUrl = `${window.location.origin}/dashboard`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -124,8 +148,27 @@ const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
+              {!isLogin && password.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {passwordValidation.map((req) => (
+                    <div
+                      key={req.key}
+                      className={`flex items-center gap-2 text-xs ${
+                        req.passed ? "text-green-600" : "text-muted-foreground"
+                      }`}
+                    >
+                      {req.passed ? (
+                        <Check className="h-3 w-3" />
+                      ) : (
+                        <X className="h-3 w-3" />
+                      )}
+                      {req.label}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {isLogin && (
