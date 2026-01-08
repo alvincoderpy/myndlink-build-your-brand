@@ -1,113 +1,81 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Store, Package, ShoppingCart, Settings, Tag } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import logoLight from "@/assets/logo-light.png";
 import logoDark from "@/assets/logo-dark.png";
-interface DashboardSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-export function DashboardSidebar({
-  isOpen,
-  onClose
-}: DashboardSidebarProps) {
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { to: "/dashboard", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
+  { to: "/dashboard/store", icon: Store, labelKey: "nav.myStore" },
+  { to: "/dashboard/products", icon: Package, labelKey: "nav.products" },
+  { to: "/dashboard/orders", icon: ShoppingCart, labelKey: "nav.orders" },
+  { to: "/dashboard/coupons", icon: Tag, labelKey: "nav.coupons" },
+  { to: "/dashboard/settings", icon: Settings, labelKey: "nav.settings" },
+];
+
+export function DashboardSidebar() {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
-  const [dragStartY, setDragStartY] = useState(0);
-  const [dragCurrentY, setDragCurrentY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isMobile) return;
-    setDragStartY(e.touches[0].clientY);
-    setIsDragging(true);
-  };
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMobile || !isDragging) return;
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
-    // Prevenir scroll da página e pull-to-refresh
-    e.preventDefault();
-    setDragCurrentY(e.touches[0].clientY);
-  };
-  const handleTouchEnd = () => {
-    if (!isMobile || !isDragging) return;
-    const dragDistance = dragCurrentY - dragStartY;
+  return (
+    <Sidebar collapsible="icon" className="border-r">
+      <SidebarHeader className="border-b px-4 py-3">
+        <div className="flex items-center gap-2">
+          {!isCollapsed && (
+            <>
+              <img src={logoLight} alt="MyndLink" className="h-7 dark:hidden" />
+              <img src={logoDark} alt="MyndLink" className="h-7 hidden dark:block" />
+              <span className="font-semibold text-lg">MyndLink</span>
+            </>
+          )}
+          {isCollapsed && (
+            <img src={logoLight} alt="MyndLink" className="h-7 dark:hidden mx-auto" />
+          )}
+        </div>
+      </SidebarHeader>
 
-    // Se arrastou mais de 100px para baixo, fecha
-    if (dragDistance > 100) {
-      onClose();
-    }
-
-    // Reset
-    setIsDragging(false);
-    setDragStartY(0);
-    setDragCurrentY(0);
-  };
-  const navLinkClass = ({
-    isActive
-  }: {
-    isActive: boolean;
-  }) => `flex items-center gap-2.5 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent hover:text-accent-foreground"}`;
-  return <>
-      {/* Overlay escuro (apenas mobile) */}
-      {isMobile && isOpen && <div className="fixed inset-0 bg-black/50 z-40 animate-fade-in" onClick={onClose} style={{
-      touchAction: 'none'
-    }} />}
-
-      <aside className={`
-          fixed z-50 transition-all duration-300 ease-in-out
-          ${isMobile 
-            ? `left-0 right-0 h-auto rounded-t-2xl border-t shadow-2xl bg-card border-border
-               ${isOpen ? 'bottom-0' : '-bottom-full'}` 
-            : 'left-4 top-4 h-[calc(100vh-2rem)] w-56 bg-background rounded-2xl shadow-lg border border-border'}
-        `} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{
-      touchAction: isMobile ? 'none' : 'auto',
-      ...(isMobile && isDragging ? {
-        transform: `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)`
-      } : {})
-    }}>
-        {/* Indicador visual de drag (apenas mobile) */}
-        {isMobile && <div className="w-12 h-1 bg-muted rounded-full mx-auto my-3" />}
-
-        {/* Logo (apenas desktop) */}
-        {!isMobile && <div className="p-4 flex items-center gap-2">
-            <img src={logoLight} alt="MyndLink" className="h-8 dark:hidden" />
-            <img src={logoDark} alt="MyndLink" className="h-8 hidden dark:block" />
-            <span className="text-xl font-bold">MyndLink</span>
-          </div>}
-
-        <nav className="p-3">
-          <NavLink to="/dashboard" end className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <LayoutDashboard className="w-4 h-4" />
-            <span>{t('nav.dashboard')}</span>
-          </NavLink>
-
-          <NavLink to="/dashboard/store" className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <Store className="w-4 h-4" />
-            <span>{t('nav.myStore')}</span>
-          </NavLink>
-
-          <NavLink to="/dashboard/products" className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <Package className="w-4 h-4" />
-            <span>{t('nav.products')}</span>
-          </NavLink>
-
-          <NavLink to="/dashboard/orders" className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <ShoppingCart className="w-4 h-4" />
-            <span>{t('nav.orders')}</span>
-          </NavLink>
-
-          <NavLink to="/dashboard/coupons" className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <Tag className="w-4 h-4" />
-            <span>{t('nav.coupons')}</span>
-          </NavLink>
-
-          <NavLink to="/dashboard/settings" className={navLinkClass} onClick={() => isMobile && onClose()}>
-            <Settings className="w-4 h-4" />
-            <span>{t('nav.settings')}</span>
-          </NavLink>
-        </nav>
-      </aside>
-    </>;
+      <SidebarContent className="px-2 py-2">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.to}>
+                  <SidebarMenuButton asChild tooltip={t(item.labelKey)}>
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        )
+                      }
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span>{t(item.labelKey)}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
 }
