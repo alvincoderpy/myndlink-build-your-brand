@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -192,29 +192,28 @@ export default function Coupons() {
   if (!currentStore) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Card className="max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Store className="w-8 h-8" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">{t('orders.noStore')}</h2>
-          <p className="text-muted-foreground mb-6">
-            {t('coupons.createStore')}
-          </p>
-          <Link to="/dashboard/store/edit">
-            <Button>{t('products.createStoreBtn')}</Button>
-          </Link>
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6 text-center">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Store className="w-6 h-6 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold mb-2">{t('orders.noStore')}</h2>
+            <p className="text-sm text-muted-foreground mb-6">{t('coupons.createStore')}</p>
+            <Link to="/dashboard/store/edit">
+              <Button>{t('products.createStoreBtn')}</Button>
+            </Link>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
   return (
-    <>
-      {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{t('coupons.title')}</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-semibold tracking-tight">{t('coupons.title')}</h1>
+          <p className="text-sm text-muted-foreground">
             {t('coupons.subtitle')} · {coupons.length} {t('coupons.count')}
           </p>
         </div>
@@ -223,11 +222,7 @@ export default function Coupons() {
             <Button
               onClick={() => {
                 setEditingCoupon(null);
-                setFormData({
-                  code: '',
-                  discount_percent: '',
-                  expires_at: '',
-                });
+                setFormData({ code: '', discount_percent: '', expires_at: '' });
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -241,27 +236,20 @@ export default function Coupons() {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="code">{t('coupons.code')} *</Label>
                 <Input
                   id="code"
                   value={formData.code}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      code: e.target.value.toUpperCase(),
-                    })
-                  }
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                   placeholder={t('coupons.codePlaceholder')}
                   maxLength={20}
                   required
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t('coupons.codeNote')}
-                </p>
+                <p className="text-xs text-muted-foreground">{t('coupons.codeNote')}</p>
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="discount">{t('coupons.discount')} *</Label>
                 <Input
                   id="discount"
@@ -269,33 +257,25 @@ export default function Coupons() {
                   min="1"
                   max="100"
                   value={formData.discount_percent}
-                  onChange={(e) =>
-                    setFormData({ ...formData, discount_percent: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, discount_percent: e.target.value })}
                   placeholder={t('coupons.discountPlaceholder')}
                   required
                 />
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="expires_at">{t('coupons.expiresAt')}</Label>
                 <Input
                   id="expires_at"
                   type="date"
                   value={formData.expires_at}
-                  onChange={(e) =>
-                    setFormData({ ...formData, expires_at: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, expires_at: e.target.value })}
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
 
-              <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
+              <div className="flex justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit">
@@ -307,40 +287,32 @@ export default function Coupons() {
         </Dialog>
       </div>
 
-      {/* Coupons Grid */}
-      <div>
-        {coupons.length === 0 ? (
-          <Card className="p-12 text-center">
+      {coupons.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <p className="text-muted-foreground mb-4">{t('coupons.noCoupons')}</p>
             <Button onClick={() => setIsDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('coupons.addFirst')}
             </Button>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coupons.map((coupon) => {
-              const isExpired =
-                coupon.expires_at && new Date(coupon.expires_at) < new Date();
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {coupons.map((coupon) => {
+            const isExpired = coupon.expires_at && new Date(coupon.expires_at) < new Date();
 
-              return (
-                <Card
-                  key={coupon.id}
-                  className="p-6 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-4">
+            return (
+              <Card key={coupon.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <Tag className="w-5 h-5 text-primary" />
-                      <h3 className="text-xl font-bold">{coupon.code}</h3>
+                      <Tag className="w-4 h-4 text-primary" />
+                      <CardTitle className="text-base font-semibold">{coupon.code}</CardTitle>
                     </div>
                     <Badge
-                      variant={
-                        isExpired
-                          ? 'outline'
-                          : coupon.is_active
-                          ? 'default'
-                          : 'secondary'
-                      }
+                      variant={isExpired ? 'outline' : coupon.is_active ? 'default' : 'secondary'}
                     >
                       {isExpired
                         ? t('coupons.expired')
@@ -349,15 +321,13 @@ export default function Coupons() {
                         : t('coupons.inactive')}
                     </Badge>
                   </div>
-
-                  <div className="space-y-2 mb-4">
-                    <p className="text-3xl font-bold text-primary">
-                      {coupon.discount_percent}%
-                    </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <p className="text-3xl font-bold text-primary">{coupon.discount_percent}%</p>
                     {coupon.expires_at && (
-                      <p className="text-sm text-muted-foreground">
-                        {t('coupons.expires')}:{' '}
-                        {new Date(coupon.expires_at).toLocaleDateString('pt-PT')}
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t('coupons.expires')}: {new Date(coupon.expires_at).toLocaleDateString('pt-PT')}
                       </p>
                     )}
                   </div>
@@ -369,33 +339,25 @@ export default function Coupons() {
                         onCheckedChange={() => handleToggleActive(coupon)}
                         disabled={isExpired || false}
                       />
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {coupon.is_active ? t('coupons.active') : t('coupons.inactive')}
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(coupon)}
-                      >
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(coupon)}>
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(coupon.id)}
-                      >
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(coupon.id)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

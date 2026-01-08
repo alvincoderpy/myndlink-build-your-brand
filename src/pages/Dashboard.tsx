@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -28,11 +28,13 @@ interface Stats {
   totalOrders: number;
   chartData: ChartDataPoint[];
 }
+
 const Dashboard = () => {
   const { user } = useAuth();
   const { currentStore } = useStore();
   const { t } = useTranslation();
-const [stats, setStats] = useState<Stats>({
+
+  const [stats, setStats] = useState<Stats>({
     totalSales: 0,
     pendingOrders: 0,
     productsSold: 0,
@@ -45,27 +47,33 @@ const [stats, setStats] = useState<Stats>({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
     to: new Date(),
   });
+
   useEffect(() => {
     loadStats();
   }, [user, currentStore]);
+
   const loadStats = async (selectedDateRange?: DateRange) => {
     if (!user || !currentStore) return;
     const range = selectedDateRange || dateRange;
     if (!range?.from) return;
+
     try {
       const startDate = new Date(range.from);
       startDate.setHours(0, 0, 0, 0);
       const endDate = range.to ? new Date(range.to) : new Date(range.from);
       endDate.setHours(23, 59, 59, 999);
+
       const { data: orders } = await supabase
         .from("orders")
         .select("id, total, created_at, status")
         .eq("store_id", currentStore.id)
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString());
+
       const totalSales = orders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
       const totalOrders = orders?.length || 0;
       const pendingCount = orders?.filter((o) => o.status === "pending").length || 0;
+
       const orderIds = orders?.map((o) => o.id) || [];
       let productsSold = 0;
       if (orderIds.length > 0) {
@@ -73,17 +81,20 @@ const [stats, setStats] = useState<Stats>({
         const uniqueProductIds = new Set(orderItems?.map((item) => item.product_id) || []);
         productsSold = uniqueProductIds.size;
       }
+
       const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
       const previousStartDate = new Date(startDate);
       previousStartDate.setDate(previousStartDate.getDate() - daysDiff);
       const previousEndDate = new Date(startDate);
       previousEndDate.setMilliseconds(-1);
+
       const { data: previousOrders } = await supabase
         .from("orders")
         .select("total")
         .eq("store_id", currentStore.id)
         .gte("created_at", previousStartDate.toISOString())
         .lte("created_at", previousEndDate.toISOString());
+
       const previousSales = previousOrders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
       const growth = previousSales > 0 ? ((totalSales - previousSales) / previousSales) * 100 : 0;
 
@@ -112,40 +123,56 @@ const [stats, setStats] = useState<Stats>({
       setLoading(false);
     }
   };
+
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="p-4 animate-pulse">
-              <div className="h-10 bg-muted rounded"></div>
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="h-10 bg-muted rounded animate-pulse"></div>
+              </CardContent>
             </Card>
           ))}
         </div>
       </div>
     );
   }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <OnboardingChecklist />
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("dashboard.subtitle")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
         </div>
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="icon">
-              <CalendarIcon className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="h-8">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "dd LLL", { locale: ptBR })} -{" "}
+                    {format(dateRange.to, "dd LLL", { locale: ptBR })}
+                  </>
+                ) : (
+                  format(dateRange.from, "dd LLL y", { locale: ptBR })
+                )
+              ) : (
+                <span>Selecionar período</span>
+              )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
+          <PopoverContent className="w-auto p-0" align="end">
             <Calendar
               initialFocus
               mode="range"
@@ -159,7 +186,6 @@ const [stats, setStats] = useState<Stats>({
               }}
               numberOfMonths={1}
               locale={ptBR}
-              className="pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
@@ -167,95 +193,108 @@ const [stats, setStats] = useState<Stats>({
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalSales")}</p>
-            <DollarSign className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <p className="text-2xl font-bold text-foreground">{stats.totalSales.toFixed(2)} MT</p>
-          {stats.salesGrowth !== 0 && (
-            <p
-              className={`text-xs mt-1.5 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-red-600"}`}
-            >
-              <TrendingUp className="w-3 h-3" />
-              {stats.salesGrowth > 0 ? "+" : ""}
-              {stats.salesGrowth.toFixed(1)}% {t("dashboard.vsPreviousPeriod")}
-            </p>
-          )}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t("dashboard.totalSales")}</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalSales.toFixed(2)} MT</div>
+            {stats.salesGrowth !== 0 && (
+              <p className={`text-xs mt-1 flex items-center gap-1 ${stats.salesGrowth > 0 ? "text-green-600" : "text-destructive"}`}>
+                <TrendingUp className="h-3 w-3" />
+                {stats.salesGrowth > 0 ? "+" : ""}
+                {stats.salesGrowth.toFixed(1)}% {t("dashboard.vsPreviousPeriod")}
+              </p>
+            )}
+          </CardContent>
         </Card>
 
-        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("dashboard.pendingOrders")}</p>
-            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <p className="text-2xl font-bold text-foreground">{stats.pendingOrders}</p>
-          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.inSelectedPeriod")}</p>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t("dashboard.pendingOrders")}</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.pendingOrders}</div>
+            <p className="text-xs text-muted-foreground">{t("dashboard.inSelectedPeriod")}</p>
+          </CardContent>
         </Card>
 
-        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("dashboard.productsSold")}</p>
-            <Package className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <p className="text-2xl font-bold text-foreground">{stats.productsSold}</p>
-          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.withSales")}</p>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t("dashboard.productsSold")}</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.productsSold}</div>
+            <p className="text-xs text-muted-foreground">{t("dashboard.withSales")}</p>
+          </CardContent>
         </Card>
 
-        <Card className="p-4 bg-card border border-border hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("dashboard.totalOrders")}</p>
-            <ShoppingCart className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <p className="text-2xl font-bold text-foreground">{stats.totalOrders}</p>
-          <p className="text-xs text-muted-foreground mt-1.5">{t("dashboard.inSelectedPeriod")}</p>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t("dashboard.totalOrders")}</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <p className="text-xs text-muted-foreground">{t("dashboard.inSelectedPeriod")}</p>
+          </CardContent>
         </Card>
       </div>
 
       {/* Sales Chart */}
-      <Card className="p-4">
-        <h3 className="font-semibold mb-3 text-sm">{t("dashboard.salesChart")}</h3>
-        {stats.chartData.length > 0 ? (
-          <ChartContainer
-            config={{
-              sales: {
-                label: t("dashboard.totalSales"),
-                color: "hsl(var(--primary))",
-              },
-            }}
-            className="h-[200px] w-full"
-          >
-            <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-              <XAxis 
-                dataKey="date" 
-                tick={{ fontSize: 12 }} 
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                tick={{ fontSize: 12 }} 
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value} MT`}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Area
-                type="monotone"
-                dataKey="sales"
-                stroke="hsl(var(--primary))"
-                fill="hsl(var(--primary)/0.2)"
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ChartContainer>
-        ) : (
-          <div className="h-[200px] flex items-center justify-center text-muted-foreground text-sm">
-            {t("dashboard.noSalesData")}
-          </div>
-        )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold">{t("dashboard.salesChart")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {stats.chartData.length > 0 ? (
+            <ChartContainer
+              config={{
+                sales: {
+                  label: t("dashboard.totalSales"),
+                  color: "hsl(var(--primary))",
+                },
+              }}
+              className="h-[250px] w-full"
+            >
+              <AreaChart data={stats.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-muted-foreground"
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `${value}`}
+                  className="text-muted-foreground"
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area
+                  type="monotone"
+                  dataKey="sales"
+                  stroke="hsl(var(--primary))"
+                  fill="hsl(var(--primary)/0.1)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ChartContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-muted-foreground text-sm">
+              {t("dashboard.noSalesData")}
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );
 };
+
 export default Dashboard;
