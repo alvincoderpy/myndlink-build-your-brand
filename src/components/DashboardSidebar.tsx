@@ -1,19 +1,24 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Store, Package, ShoppingCart, Settings, Tag } from "lucide-react";
+import { Home, LayoutDashboard, Store, Package, ShoppingCart, Settings, Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logoLight from "@/assets/logo-light.png";
 import logoDark from "@/assets/logo-dark.png";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+
 const navItems = [{
   to: "/dashboard",
-  icon: LayoutDashboard,
-  labelKey: "nav.dashboard",
+  icon: Home,
+  labelKey: "nav.home",
   end: true
 }, {
   to: "/dashboard/store",
   icon: Store,
   labelKey: "nav.myStore"
+}, {
+  to: "/dashboard/analytics",
+  icon: LayoutDashboard,
+  labelKey: "nav.dashboard"
 }, {
   to: "/dashboard/products",
   icon: Package,
