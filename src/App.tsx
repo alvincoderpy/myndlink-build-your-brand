@@ -9,6 +9,7 @@ import { StoreProvider } from "./contexts/StoreContext";
 import { DashboardLayout } from "./components/DashboardLayout";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
+import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import StoreEditor from "./pages/StoreEditor";
 import MyStore from "./pages/MyStore";
@@ -40,7 +41,8 @@ const App = () => (
                 <Route path="/update-password" element={<UpdatePassword />} />
                 
                 {/* Dashboard Routes with Layout */}
-                <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+                <Route path="/dashboard" element={<DashboardLayout><Home /></DashboardLayout>} />
+                <Route path="/dashboard/analytics" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
           <Route path="/dashboard/store" element={<DashboardLayout><MyStore /></DashboardLayout>} />
           <Route path="/dashboard/store/edit" element={<StoreEditor />} />
                 <Route path="/dashboard/products" element={<DashboardLayout><Products /></DashboardLayout>} />
