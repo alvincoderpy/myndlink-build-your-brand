@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/contexts/StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import TailwindTest from "@/components/TailwindTest";
+
 
 export default function Home() {
   const { t } = useTranslation();
@@ -57,8 +57,7 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      {/* Tailwind Test - REMOVER APÓS VERIFICAÇÃO */}
-      <TailwindTest />
+      {/* Store Name Header */}
       <div className="flex items-center gap-3">
         {isEditingName ? (
           <div className="flex items-center gap-2">
