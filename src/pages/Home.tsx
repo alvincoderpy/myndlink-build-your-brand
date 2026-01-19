@@ -103,16 +103,6 @@ export default function Home() {
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="p-4 rounded-lg bg-destructive text-destructive-foreground">
-          Solid: bg-destructive
-        </div>
-
-        <div className="p-4 rounded-lg bg-destructive/20 border border-destructive/30 text-foreground">
-          Alpha: bg-destructive/20 + border-destructive/30
-        </div>
-      </div>
-
       {/* Main Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Add First Product */}
