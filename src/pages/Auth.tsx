@@ -1,22 +1,38 @@
-import { useState, useMemo } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import logoLight from "@/assets/logo-light.png";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 import { useForceTheme } from "@/hooks/useForceTheme";
+import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
-import logoLight from "@/assets/logo-light.png";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const passwordRequirements = [
-  { key: "length", test: (p: string) => p.length >= 8, label: "Mínimo 8 caracteres" },
-  { key: "uppercase", test: (p: string) => /[A-Z]/.test(p), label: "Uma letra maiúscula" },
-  { key: "lowercase", test: (p: string) => /[a-z]/.test(p), label: "Uma letra minúscula" },
+  {
+    key: "length",
+    test: (p: string) => p.length >= 8,
+    label: "Mínimo 8 caracteres",
+  },
+  {
+    key: "uppercase",
+    test: (p: string) => /[A-Z]/.test(p),
+    label: "Uma letra maiúscula",
+  },
+  {
+    key: "lowercase",
+    test: (p: string) => /[a-z]/.test(p),
+    label: "Uma letra minúscula",
+  },
   { key: "number", test: (p: string) => /[0-9]/.test(p), label: "Um número" },
-  { key: "special", test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p), label: "Um caractere especial" },
+  {
+    key: "special",
+    test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p),
+    label: "Um caractere especial",
+  },
 ];
 const Auth = () => {
   const { t } = useTranslation();
@@ -39,12 +55,12 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isLogin && !isPasswordValid) {
       toast.error("A senha não atende aos requisitos mínimos de segurança");
       return;
     }
-    
+
     setLoading(true);
     try {
       if (isLogin) {
@@ -93,7 +109,9 @@ const Auth = () => {
 
         <Card className="p-8 shadow-glow">
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">{isLogin ? t("auth.login") : t("auth.signup")}</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {isLogin ? t("auth.login") : t("auth.signup")}
+            </h2>
             <p className="text-sm text-muted-foreground">
               {isLogin ? t("auth.loginWelcome") : t("auth.signupWelcome")}
             </p>
@@ -173,26 +191,39 @@ const Auth = () => {
 
             {isLogin && (
               <div className="text-right">
-                <Link to="/password-reset" className="text-sm text-muted-foreground hover:underline">
+                <Link
+                  to="/password-reset"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
                   {t("auth.forgotPassword")}
                 </Link>
               </div>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t("auth.pleaseWait") : isLogin ? t("auth.login") : t("auth.signup")}
+              {loading
+                ? t("auth.pleaseWait")
+                : isLogin
+                  ? t("auth.login")
+                  : t("auth.signup")}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-muted-foreground hover:underline">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-muted-foreground hover:underline"
+            >
               {isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
             </button>
           </div>
         </Card>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             {t("auth.backToHome")}
           </Link>
         </div>

@@ -1,23 +1,36 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Package, Palette, CreditCard, Truck, Globe, Pencil, Upload, Sparkles } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useStore } from "@/contexts/StoreContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-
+import { supabase } from "@/integrations/supabase/client";
+import {
+  CreditCard,
+  Globe,
+  Package,
+  Palette,
+  Pencil,
+  Sparkles,
+  Truck,
+  Upload,
+} from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentStore, refreshStores } = useStore();
   const { toast } = useToast();
-  
+
   const [isEditingName, setIsEditingName] = useState(false);
   const [storeName, setStoreName] = useState(currentStore?.name || "");
   const [storeDescription, setStoreDescription] = useState("");
@@ -25,16 +38,16 @@ export default function Home() {
 
   const handleSaveName = async () => {
     if (!currentStore || !storeName.trim()) return;
-    
+
     setIsSaving(true);
     try {
       const { error } = await supabase
         .from("stores")
         .update({ name: storeName.trim() })
         .eq("id", currentStore.id);
-      
+
       if (error) throw error;
-      
+
       await refreshStores();
       setIsEditingName(false);
       toast({
@@ -52,8 +65,8 @@ export default function Home() {
     }
   };
 
-  const storeUrl = currentStore?.subdomain 
-    ? `${currentStore.subdomain}.myndlink.com` 
+  const storeUrl = currentStore?.subdomain
+    ? `${currentStore.subdomain}.myndlink.com`
     : "minhaloja.myndlink.com";
 
   return (
@@ -90,6 +103,16 @@ export default function Home() {
         )}
       </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="p-4 rounded-lg bg-destructive text-destructive-foreground">
+          Solid: bg-destructive
+        </div>
+
+        <div className="p-4 rounded-lg bg-destructive/20 border border-destructive/30 text-foreground">
+          Alpha: bg-destructive/20 + border-destructive/30
+        </div>
+      </div>
+
       {/* Main Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Add First Product */}
@@ -100,7 +123,9 @@ export default function Home() {
                 <Package className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1">
-                <CardTitle className="text-base">{t("home.addFirstProduct")}</CardTitle>
+                <CardTitle className="text-base">
+                  {t("home.addFirstProduct")}
+                </CardTitle>
                 <CardDescription className="mt-1">
                   {t("home.addFirstProductDesc")}
                 </CardDescription>
@@ -108,7 +133,10 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <Button onClick={() => navigate("/dashboard/products")} className="flex-1">
+            <Button
+              onClick={() => navigate("/dashboard/products")}
+              className="flex-1"
+            >
               {t("home.addProduct")}
             </Button>
             <Button variant="outline" className="flex items-center gap-2">
@@ -126,10 +154,12 @@ export default function Home() {
                 <Palette className="h-6 w-6 text-accent-foreground" />
               </div>
               <div className="flex-1">
-                <CardTitle className="text-base">{t("home.designStore")}</CardTitle>
+                <CardTitle className="text-base">
+                  {t("home.designStore")}
+                </CardTitle>
                 <CardDescription className="mt-1">
                   {t("home.designStoreDesc")}{" "}
-                  <button 
+                  <button
                     onClick={() => navigate("/dashboard/store/edit")}
                     className="text-primary hover:underline"
                   >
@@ -147,8 +177,8 @@ export default function Home() {
                 onChange={(e) => setStoreDescription(e.target.value)}
                 className="flex-1"
               />
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => navigate("/dashboard/store/edit")}
               >
@@ -167,7 +197,9 @@ export default function Home() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
               <CreditCard className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">{t("home.setupPayments")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("home.setupPayments")}
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -191,7 +223,9 @@ export default function Home() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
               <Truck className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">{t("home.reviewShipping")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("home.reviewShipping")}
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -211,7 +245,9 @@ export default function Home() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
               <Globe className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">{t("home.customDomain")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("home.customDomain")}
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -219,8 +255,8 @@ export default function Home() {
               <span className="text-xs text-muted-foreground truncate max-w-[120px]">
                 {storeUrl}
               </span>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={() => navigate("/dashboard/settings")}
               >
