@@ -8,8 +8,8 @@
 @layer base {
   :root {
     /* App background / text */
-    --background: 210 20% 98%;        /* soft gray (Shopify-like) */
-    --foreground: 222 47% 11%;        /* near-black text */
+    --background: 210 20% 98%; /* soft gray (Shopify-like) */
+    --foreground: 222 47% 11%; /* near-black text */
 
     /* Surfaces */
     --card: 0 0% 100%;
@@ -18,8 +18,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary = action color (calm blue) */
-    --primary: 221 83% 53%;
+    /* Primary = neutral (Shopify-like) */
+    --primary: 222 47% 11%;
     --primary-foreground: 210 40% 98%;
 
     /* Secondary / muted */
@@ -62,7 +62,9 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans:
+      Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+      Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 
   .dark {
@@ -75,7 +77,7 @@
     --popover: 222 47% 13%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 210 40% 98%;
     --primary-foreground: 222 47% 11%;
 
     --secondary: 217 19% 18%;
@@ -131,7 +133,10 @@
     @apply text-xl font-semibold tracking-tight;
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 

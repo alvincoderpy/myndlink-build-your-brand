@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
 
 export default function PasswordReset() {
   const [email, setEmail] = useState("");
@@ -26,8 +27,8 @@ export default function PasswordReset() {
 
       setSent(true);
       toast.success("Email de recuperação enviado! Verifica a tua caixa de entrada.");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao enviar email de recuperação");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Erro ao enviar email de recuperacao"));
     } finally {
       setLoading(false);
     }
@@ -90,3 +91,5 @@ export default function PasswordReset() {
     </div>
   );
 }
+
+

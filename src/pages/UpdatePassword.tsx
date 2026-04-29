@@ -1,15 +1,10 @@
-// Centralized Supabase error handler
-function handleSupabaseError(error: any, fallbackMessage: string) {
-  if (!error) return;
-  console.error(fallbackMessage, error);
-  toast.error(error.message || fallbackMessage);
-}
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { handleSupabaseError } from "@/lib/handleSupabaseError";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -20,19 +15,20 @@ export default function UpdatePassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user came from password reset link
-    supabase.auth.onAuthStateChange(async (event) => {
+    const { data } = supabase.auth.onAuthStateChange(async (event) => {
       if (event === "PASSWORD_RECOVERY") {
         // User is in password recovery mode
       }
     });
+
+    return () => data.subscription.unsubscribe();
   }, []);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
+      toast.error("As senhas nao coincidem");
       return;
     }
 
@@ -52,7 +48,7 @@ export default function UpdatePassword() {
 
       toast.success("Senha atualizada com sucesso!");
       navigate("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleSupabaseError(error, "Erro ao atualizar senha");
     } finally {
       setLoading(false);
@@ -77,7 +73,7 @@ export default function UpdatePassword() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="********"
               required
               minLength={6}
             />
@@ -90,7 +86,7 @@ export default function UpdatePassword() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="********"
               required
               minLength={6}
             />
@@ -104,3 +100,4 @@ export default function UpdatePassword() {
     </div>
   );
 }
+

@@ -1,27 +1,11 @@
-import { Badge } from "@/components/ui/badge";
+﻿import { ActionCard } from "@/components/app/ActionCard";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useStore } from "@/contexts/StoreContext";
+import { useStore } from "@/contexts/useStore";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  CreditCard,
-  Globe,
-  Package,
-  Palette,
-  Pencil,
-  Sparkles,
-  Truck,
-  Upload,
-} from "lucide-react";
-import { useState } from "react";
+import { Globe, Package, Palette, Pencil, ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -33,8 +17,12 @@ export default function Home() {
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [storeName, setStoreName] = useState(currentStore?.name || "");
-  const [storeDescription, setStoreDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setStoreName(currentStore?.name ?? "");
+    setIsEditingName(false);
+  }, [currentStore?.id, currentStore?.name]);
 
   const handleSaveName = async () => {
     if (!currentStore || !storeName.trim()) return;
@@ -65,19 +53,17 @@ export default function Home() {
     }
   };
 
-  const storeUrl = currentStore?.subdomain
-    ? `${currentStore.subdomain}.myndlink.com`
-    : "minhaloja.myndlink.com";
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Início</h1>
+
         {isEditingName ? (
           <div className="flex items-center gap-2">
             <Input
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
-              className="text-2xl font-semibold h-12 w-80"
+              className="h-10 w-72 text-sm font-medium"
               autoFocus
             />
             <Button onClick={handleSaveName} disabled={isSaving}>
@@ -87,175 +73,71 @@ export default function Home() {
               {t("common.cancel")}
             </Button>
           </div>
-        ) : (
-          <button
+        ) : !currentStore?.name ? (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!currentStore}
+            className="gap-2"
             onClick={() => {
-              setStoreName(currentStore?.name || "");
+              setStoreName("");
               setIsEditingName(true);
             }}
-            className="flex items-center gap-2 group"
           >
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {currentStore?.name || t("home.addStoreName")}
-            </h1>
-            <Pencil className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-        )}
+            <Pencil className="h-4 w-4" />
+            Definir nome da loja
+          </Button>
+        ) : null}
       </div>
 
-      {/* Main Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Add First Product */}
-        <Card className="md:row-span-1">
-          <CardHeader className="pb-3">
-            <div className="flex items-start gap-4">
-              <div className="rounded-lg bg-primary/10 p-3">
-                <Package className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <CardTitle className="text-base">
-                  {t("home.addFirstProduct")}
-                </CardTitle>
-                <CardDescription className="mt-1">
-                  {t("home.addFirstProductDesc")}
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="flex gap-2">
-            <Button
-              onClick={() => navigate("/dashboard/products")}
-              className="flex-1"
-            >
-              {t("home.addProduct")}
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              {t("home.import")}
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="space-y-4">
+        <ActionCard
+          icon={<Globe className="h-4 w-4" />}
+          title="Domínio"
+          description="Conecte ou personalize o seu domínio."
+          href="/dashboard/settings"
+          primaryAction={{
+            label: "Configurar domínio",
+            onClick: () => navigate("/dashboard/settings"),
+          }}
+        />
 
-        {/* Design Store */}
-        <Card className="md:row-span-1">
-          <CardHeader className="pb-3">
-            <div className="flex items-start gap-4">
-              <div className="rounded-lg bg-accent p-3">
-                <Palette className="h-6 w-6 text-accent-foreground" />
-              </div>
-              <div className="flex-1">
-                <CardTitle className="text-base">
-                  {t("home.designStore")}
-                </CardTitle>
-                <CardDescription className="mt-1">
-                  {t("home.designStoreDesc")}{" "}
-                  <button
-                    onClick={() => navigate("/dashboard/store/edit")}
-                    className="text-primary hover:underline"
-                  >
-                    {t("home.browseThemes")}
-                  </button>
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-2">
-              <Input
-                placeholder={t("home.descriptionPlaceholder")}
-                value={storeDescription}
-                onChange={(e) => setStoreDescription(e.target.value)}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => navigate("/dashboard/store/edit")}
-              >
-                <Sparkles className="h-4 w-4" />
-                {t("home.generate")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <ActionCard
+          icon={<Package className="h-4 w-4" />}
+          title="Adicionar produtos"
+          description="Crie e gerencie o seu catálogo de produtos."
+          href="/dashboard/products"
+          primaryAction={{
+            label: "Abrir produtos",
+            onClick: () => navigate("/dashboard/products"),
+          }}
+        />
 
-      {/* Secondary Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Setup Payments */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">
-                {t("home.setupPayments")}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <span>M-Pesa</span>
-                <span>•</span>
-                <span>e-Mola</span>
-                <span>•</span>
-                <span>Cash</span>
-              </div>
-              <Button size="sm" variant="outline">
-                {t("home.activate")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ActionCard
+          icon={<Palette className="h-4 w-4" />}
+          title="Personalizar loja"
+          description="Ajuste tema, branding e configurações da loja."
+          href="/dashboard/store/edit"
+          primaryAction={{
+            label: "Personalizar",
+            onClick: () => navigate("/dashboard/store/edit"),
+          }}
+        />
 
-        {/* Shipping Rates */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <Truck className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">
-                {t("home.reviewShipping")}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <Badge variant="secondary" className="text-xs">
-                {t("home.national")}
-              </Badge>
-              <Button size="sm" variant="outline">
-                {t("home.review")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Custom Domain */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <Globe className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">
-                {t("home.customDomain")}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground truncate max-w-[120px]">
-                {storeUrl}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => navigate("/dashboard/settings")}
-              >
-                {t("home.customize")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ActionCard
+          icon={<ShoppingCart className="h-4 w-4" />}
+          title="Pedidos"
+          description="Acompanhe e processe pedidos dos seus clientes."
+          href="/dashboard/orders"
+          primaryAction={{
+            label: "Ver pedidos",
+            onClick: () => navigate("/dashboard/orders"),
+          }}
+        />
       </div>
     </div>
   );
 }
+
+
+

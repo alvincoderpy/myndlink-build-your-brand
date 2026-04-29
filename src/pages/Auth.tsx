@@ -1,4 +1,4 @@
-import logoLight from "@/assets/logo-light.png";
+﻿import logoLight from "@/assets/logo-light.png";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -89,8 +90,8 @@ const Auth = () => {
         toast.success(t("auth.accountCreated"));
         navigate("/dashboard");
       }
-    } catch (error: any) {
-      toast.error(error.message || t("auth.error"));
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, t("auth.error")));
     } finally {
       setLoading(false);
     }
@@ -232,3 +233,4 @@ const Auth = () => {
   );
 };
 export default Auth;
+

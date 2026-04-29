@@ -1,16 +1,17 @@
-import { Label } from "@/components/ui/label";
+﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import type { TemplateConfig } from "@/types/template";
 
 interface TopBarConfigProps {
-  config: any;
-  onChange: (config: any) => void;
+  config: TemplateConfig;
+  onChange: (config: TemplateConfig) => void;
 }
 
 export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
   const topBarConfig = config.topBar || {};
 
-  const updateTopBar = (updates: any) => {
+  const updateTopBar = (updates: Partial<NonNullable<TemplateConfig["topBar"]>>) => {
     onChange({
       ...config,
       topBar: {
@@ -93,3 +94,4 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
     </div>
   );
 }
+

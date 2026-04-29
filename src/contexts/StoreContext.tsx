@@ -1,22 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './AuthContext';
+import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import type { Store } from '@/types/store';
 
-interface Store {
-  id: string;
-  name: string;
-  subdomain: string;
-  plan: string;
-  is_published: boolean;
-  template: string;
-  template_config: any;
-  created_at: string;
-  updated_at: string;
-}
-
-interface StoreContextType {
+export interface StoreContextType {
   currentStore: Store | null;
   stores: Store[];
   switchStore: (storeId: string) => void;
@@ -25,7 +14,9 @@ interface StoreContextType {
   loading: boolean;
 }
 
-const StoreContext = createContext<StoreContextType | undefined>(undefined);
+export const StoreContext = createContext<StoreContextType | undefined>(
+  undefined,
+);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -34,17 +25,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadStores();
-    } else {
-      setStores([]);
-      setCurrentStore(null);
-      setLoading(false);
-    }
-  }, [user]);
-
-  const loadStores = async () => {
+  const loadStores = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -57,24 +38,35 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      setStores(data || []);
+      const typedData = (data || []) as Store[];
+      setStores(typedData);
 
       // Load saved store ID or use first store
       const savedStoreId = localStorage.getItem('currentStoreId');
       const storeToSet = savedStoreId
-        ? data?.find((s) => s.id === savedStoreId) || data?.[0]
-        : data?.[0];
+        ? typedData.find((s) => s.id === savedStoreId) || typedData[0]
+        : typedData[0];
 
       if (storeToSet) {
         setCurrentStore(storeToSet);
         localStorage.setItem('currentStoreId', storeToSet.id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading stores:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadStores();
+    } else {
+      setStores([]);
+      setCurrentStore(null);
+      setLoading(false);
+    }
+  }, [loadStores, user]);
 
   const switchStore = (storeId: string) => {
     const store = stores.find((s) => s.id === storeId);
@@ -110,10 +102,4 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useStore() {
-  const context = useContext(StoreContext);
-  if (context === undefined) {
-    throw new Error('useStore must be used within a StoreProvider');
-  }
-  return context;
-}
+

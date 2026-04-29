@@ -1,69 +1,48 @@
-// Centralized Supabase error handler
-function handleSupabaseError(error: any, fallbackMessage: string) {
-  if (!error) return;
-  console.error(fallbackMessage, error);
-  toast.error(error.message || fallbackMessage);
-}
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { templates } from "@/config/templates";
-import { AnimatePresence } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card } from "@/components/ui/card";
-import { TopBar } from "@/components/storefront/TopBar";
-import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
-import { HeroSection } from "@/components/storefront/HeroSection";
+import { CartSidebar } from "@/components/storefront/CartSidebar";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
+import { HeroSection } from "@/components/storefront/HeroSection";
 import { ProductTabs } from "@/components/storefront/ProductTabs";
 import { StorefrontFooter } from "@/components/storefront/StorefrontFooter";
-import { CartSidebar } from "@/components/storefront/CartSidebar";
-
-interface Product {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  image_url: string | null;
-  stock: number;
-  is_active?: boolean;
-  discount_percentage: number;
-  is_new?: boolean;
-  is_featured?: boolean;
-}
-
-interface CartItem extends Product {
-  quantity: number;
-}
+import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
+import { TopBar } from "@/components/storefront/TopBar";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getTemplateDefaults } from "@/config/templates";
+import { supabase } from "@/integrations/supabase/client";
+import { handleSupabaseError } from "@/lib/handleSupabaseError";
+import type { CartItem, Product } from "@/types/product";
+import type { PublicStore } from "@/types/store";
+import { AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Storefront() {
   const { subdomain } = useParams();
   const navigate = useNavigate();
-  const [store, setStore] = useState<any>(null);
+  const [store, setStore] = useState<PublicStore | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCart, setShowCart] = useState(false);
 
-  useEffect(() => {
-    loadStore();
-  }, [subdomain]);
-
-  const loadStore = async () => {
+  const loadStore = useCallback(async () => {
     setLoading(true);
-    
-    // Use secure RPC function that doesn't expose user_id
-    const { data: storeData, error } = await supabase
-      .rpc("get_public_store", { p_subdomain: subdomain || "" });
+
+    const { data: storeData, error } = await supabase.rpc("get_public_store", {
+      p_subdomain: subdomain || "",
+    });
 
     if (error || !storeData || storeData.length === 0) {
-      handleSupabaseError(error || new Error("Loja não encontrada"), "Loja não encontrada");
+      handleSupabaseError(
+        error || new Error("Loja nao encontrada"),
+        "Loja nao encontrada",
+      );
       setLoading(false);
       return;
     }
-    
-    const storeRecord = storeData[0];
+
+    const storeRecord = storeData[0] as PublicStore;
     setStore(storeRecord);
 
     const { data: productsData } = await supabase
@@ -73,38 +52,35 @@ export default function Storefront() {
       .eq("is_active", true)
       .gt("stock", 0);
 
-    // Map products to ensure correct types
-    const mappedProducts: Product[] = (productsData || []).map(p => ({
-      id: p.id,
-      name: p.name,
-      description: p.description || "",
-      price: p.price,
-      image_url: p.image_url,
-      stock: p.stock,
-      is_active: p.is_active,
+    const mappedProducts: Product[] = (productsData || []).map((p) => ({
+      ...p,
       discount_percentage: p.discount_percentage || 0,
       is_new: p.is_new || false,
-      is_featured: p.is_featured || false
+      is_featured: p.is_featured || false,
     }));
-    
+
     setProducts(mappedProducts);
     setLoading(false);
-  };
+  }, [subdomain]);
+
+  useEffect(() => {
+    loadStore();
+  }, [loadStore]);
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find((item) => item.id === product.id);
-    
+
     if (existingItem) {
       if (existingItem.quantity >= product.stock) {
-        toast.error("Quantidade máxima atingida");
+        toast.error("Quantidade maxima atingida");
         return;
       }
       setCart(
         cart.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
+            : item,
+        ),
       );
     } else {
       setCart([...cart, { ...product, quantity: 1 }]);
@@ -119,14 +95,14 @@ export default function Storefront() {
           if (item.id === productId) {
             if (newQuantity <= 0) return null;
             if (newQuantity > item.stock) {
-              toast.error("Quantidade máxima atingida");
+              toast.error("Quantidade maxima atingida");
               return item;
             }
             return { ...item, quantity: newQuantity };
           }
           return item;
         })
-        .filter(Boolean) as CartItem[]
+        .filter(Boolean) as CartItem[],
     );
   };
 
@@ -174,63 +150,49 @@ export default function Storefront() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="p-8 text-center">
-          <h1 className="text-2xl font-bold mb-2">Loja não encontrada</h1>
-          <p className="text-muted-foreground">Esta loja não existe ou não está publicada</p>
+          <h1 className="text-2xl font-bold mb-2">Loja nao encontrada</h1>
+          <p className="text-muted-foreground">
+            Esta loja nao existe ou nao esta publicada
+          </p>
         </Card>
       </div>
     );
   }
 
-  const config = store?.template_config || templates.minimog;
-  const featuredProducts = products.filter(p => p.is_featured).slice(0, 3);
+  const config =
+    store.template_config || getTemplateDefaults(store.template || "minimog");
+  const featuredProducts = products.filter((p) => p.is_featured).slice(0, 3);
 
   return (
     <div className="min-h-screen">
-      {/* Top Bar */}
-      {config.topBar?.enabled && (
-        <TopBar config={config.topBar} />
-      )}
-      
-      {/* Header */}
+      {config.topBar?.enabled && <TopBar config={config.topBar} />}
+
       <StorefrontHeader
-        storeName={store?.name || ""}
-        logoUrl={store?.logo_url}
+        storeName={store.name || ""}
+        logoUrl={store.logo_url}
         cartCount={cart.length}
         onCartClick={() => setShowCart(true)}
       />
-      
-      {/* Hero Section */}
+
       {config.hero?.enabled && (
-        <HeroSection 
-          config={config.hero}
-          featuredProducts={featuredProducts}
-        />
+        <HeroSection config={config.hero} featuredProducts={featuredProducts} />
       )}
-      
-      {/* Category Grid */}
-      {config.categories?.enabled && (
-        <CategoryGrid config={config.categories} />
-      )}
-      
-      {/* Product Tabs */}
+
+      {config.categories?.enabled && <CategoryGrid config={config.categories} />}
+
       {config.productTabs?.enabled && (
-        <ProductTabs 
+        <ProductTabs
           config={config.productTabs}
           products={products}
           onAddToCart={addToCart}
         />
       )}
-      
-      {/* Footer */}
-      <StorefrontFooter 
-        storeName={store?.name}
-        socialLinks={store?.social_links}
-      />
-      
-      {/* Cart Sidebar */}
+
+      <StorefrontFooter storeName={store.name} socialLinks={store.social_links} />
+
       <AnimatePresence>
         {showCart && (
-          <CartSidebar 
+          <CartSidebar
             cart={cart}
             onClose={() => setShowCart(false)}
             onUpdateQuantity={updateQuantity}

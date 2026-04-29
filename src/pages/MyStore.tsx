@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { templatesById } from "@/config/templates";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { useStore } from "@/contexts/StoreContext";
+import { useAuth } from "@/contexts/useAuth";
+import { useStore } from "@/contexts/useStore";
 import { Store, Edit, ExternalLink, Package, ShoppingCart, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,11 +16,7 @@ export default function MyStore() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ products: 0, orders: 0 });
 
-  useEffect(() => {
-    loadStoreData();
-  }, [currentStore]);
-
-  const loadStoreData = async () => {
+  const loadStoreData = useCallback(async () => {
     if (!currentStore) {
       setLoading(false);
       return;
@@ -38,7 +35,11 @@ export default function MyStore() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentStore]);
+
+  useEffect(() => {
+    loadStoreData();
+  }, [loadStoreData]);
 
   const handlePublishToggle = async () => {
     if (!currentStore) return;
@@ -71,6 +72,9 @@ export default function MyStore() {
   };
 
   const storeUrl = currentStore?.subdomain ? `https://${currentStore.subdomain}.myndlink.com` : null;
+  const currentTemplateName = currentStore?.template
+    ? templatesById[currentStore.template]?.name ?? currentStore.template
+    : "Minimog Fashion";
 
   if (loading) {
     return (
@@ -127,7 +131,7 @@ export default function MyStore() {
                   href={storeUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm text-primary hover:underline font-mono truncate"
+                  className="text-sm text-blue-600 hover:text-blue-700 hover:underline font-mono truncate"
                 >
                   {storeUrl}
                 </a>
@@ -178,6 +182,20 @@ export default function MyStore() {
         </Card>
       </div>
 
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base font-semibold">Template atual</CardTitle>
+          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/templates")}>
+            Explorar templates
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Tema em uso: <span className="font-medium text-foreground">{currentTemplateName}</span>
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Preview */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -208,3 +226,6 @@ export default function MyStore() {
     </div>
   );
 }
+
+
+

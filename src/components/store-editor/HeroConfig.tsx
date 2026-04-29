@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label";
+﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -6,10 +6,12 @@ import { Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { TemplateConfig } from "@/types/template";
 
 interface HeroConfigProps {
-  config: any;
-  onChange: (config: any) => void;
+  config: TemplateConfig;
+  onChange: (config: TemplateConfig) => void;
   storeId?: string;
 }
 
@@ -18,7 +20,7 @@ export function HeroConfig({ config, onChange, storeId }: HeroConfigProps) {
   const [uploading, setUploading] = useState(false);
   const heroConfig = config.hero || {};
 
-  const updateHero = (updates: any) => {
+  const updateHero = (updates: Partial<NonNullable<TemplateConfig["hero"]>>) => {
     onChange({
       ...config,
       hero: {
@@ -53,10 +55,10 @@ export function HeroConfig({ config, onChange, storeId }: HeroConfigProps) {
         title: "Imagem carregada!",
         description: "A imagem do hero foi atualizada.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar imagem"),
         variant: "destructive",
       });
     } finally {
@@ -199,3 +201,4 @@ export function HeroConfig({ config, onChange, storeId }: HeroConfigProps) {
     </div>
   );
 }
+

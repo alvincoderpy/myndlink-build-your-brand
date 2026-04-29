@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter } from "lucide-react";
+﻿import { Facebook, Instagram, Twitter } from "lucide-react";
 
 interface StorefrontFooterProps {
   storeName: string;
@@ -90,3 +90,4 @@ export function StorefrontFooter({ storeName, socialLinks }: StorefrontFooterPro
     </footer>
   );
 }
+

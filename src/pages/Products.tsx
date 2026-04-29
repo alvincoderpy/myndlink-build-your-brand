@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,9 @@ import { Switch } from "@/components/ui/switch";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { Product } from "@/types/product";
+import type { Store } from "@/types/store";
 const productSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome muito longo"),
   description: z.string().max(500, "Descrição muito longa").optional(),
@@ -33,11 +36,13 @@ const productSchema = z.object({
   discount_percentage: z.number().min(0).max(100).optional()
 });
 interface SortableProductCardProps {
-  product: any;
+  product: ProductWithSales;
   index: number;
-  onEdit: (product: any) => void;
+  onEdit: (product: ProductWithSales) => void;
   onDelete: (id: string) => void;
 }
+
+type ProductWithSales = Product & { sold?: number };
 function SortableProductCard({
   product,
   index,
@@ -124,9 +129,9 @@ function SortableProductCard({
 }
 const Products = () => {
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<any[]>([]);
-  const [store, setStore] = useState<any>(null);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [products, setProducts] = useState<ProductWithSales[]>([]);
+  const [store, setStore] = useState<Store | null>(null);
+  const [editingProduct, setEditingProduct] = useState<ProductWithSales | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("custom");
@@ -152,10 +157,7 @@ const Products = () => {
       discount_percentage: 0
     }
   });
-  useEffect(() => {
-    loadData();
-  }, []);
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const {
         data: {
@@ -171,7 +173,7 @@ const Products = () => {
         error: storeError
       } = await supabase.from("stores").select("*").eq("user_id", user.id).single();
       if (storeError) throw storeError;
-      setStore(storeData);
+      setStore(storeData as Store);
       if (storeData) {
         const {
           data: productsData,
@@ -183,19 +185,22 @@ const Products = () => {
           ascending: false
         });
         if (productsError) throw productsError;
-        setProducts(productsData || []);
+        setProducts((productsData || []) as ProductWithSales[]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error loading data:", error);
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar dados"),
         variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, toast]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -232,11 +237,11 @@ const Products = () => {
       toast({
         title: "Imagem carregada com sucesso!"
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading image:", error);
       toast({
         title: "Erro ao carregar imagem",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar imagem"),
         variant: "destructive"
       });
     } finally {
@@ -296,15 +301,15 @@ const Products = () => {
       setEditingProduct(null);
       form.reset();
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao guardar produto"),
         variant: "destructive"
       });
     }
   };
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: ProductWithSales) => {
     setEditingProduct(product);
     form.reset({
       name: product.name,
@@ -333,10 +338,10 @@ const Products = () => {
         title: "Produto eliminado!"
       });
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao eliminar produto"),
         variant: "destructive"
       });
     } finally {
@@ -365,11 +370,11 @@ const Products = () => {
           display_order: update.display_order
         }).eq("id", update.id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating order:", error);
       toast({
         title: "Erro ao reordenar",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao reordenar"),
         variant: "destructive"
       });
       loadData();
@@ -425,7 +430,7 @@ const Products = () => {
             form.reset();
           }} className="text-accent bg-blue-600 hover:bg-blue-500 text-center pr-[4px] pl-[18px] border-none border-0">
               <Plus className="w-4 h-4 mr-2" />
-              ​ 
+              Adicionar
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -627,3 +632,4 @@ const Products = () => {
     </>;
 };
 export default Products;
+

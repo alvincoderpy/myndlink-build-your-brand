@@ -1,65 +1,4 @@
-export interface TemplateConfig {
-  name: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-    muted: string;
-  };
-  fonts: {
-    heading: string;
-    body: string;
-  };
-  topBar?: {
-    enabled: boolean;
-    backgroundColor: string;
-    textColor: string;
-    socialProof: string;
-    announcement: string;
-    showLanguage: boolean;
-    showCurrency: boolean;
-  };
-  hero?: {
-    enabled: boolean;
-    title: string;
-    subtitle?: string;
-    ctaText: string;
-    ctaLink: string;
-    promoText?: string;
-    backgroundColor: string;
-  };
-  categories?: {
-    enabled: boolean;
-    title: string;
-    items: Array<{
-      name: string;
-      image: string;
-      link: string;
-    }>;
-  };
-  productTabs?: {
-    enabled: boolean;
-    title: string;
-    tabs: Array<{
-      label: string;
-      filter: string;
-    }>;
-  };
-  layout: "grid";
-  cardStyle: "minimal" | "classic";
-  mockProducts?: Array<{
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    category: string;
-    image_url: string;
-    is_featured: boolean;
-    is_new: boolean;
-    discount_percentage: number;
-  }>;
-}
+import type { TemplateConfig, TemplateMeta } from "@/types/template";
 
 export const templates: Record<string, TemplateConfig> = {
   minimog: {
@@ -359,3 +298,85 @@ export const templates: Record<string, TemplateConfig> = {
     ]
   }
 };
+
+export const templateList: TemplateMeta[] = [
+  {
+    id: "minimog",
+    name: "Minimog Fashion",
+    description: "Visual clean para moda e lifestyle com foco em conversao.",
+    tags: ["Fashion", "Hero", "Clean"],
+    previewImage:
+      "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&auto=format&fit=crop",
+    defaults: templates.minimog,
+    capabilities: {
+      sections: [
+        { id: "topbar", label: "Top bar", supportsBlocks: false },
+        { id: "branding", label: "Branding", supportsBlocks: false },
+        { id: "hero", label: "Hero", supportsBlocks: false },
+        { id: "categories", label: "Categorias", supportsBlocks: true },
+        { id: "products", label: "Produtos", supportsBlocks: true },
+      ],
+    },
+  },
+  {
+    id: "modern",
+    name: "Modern Business",
+    description: "Tema moderno para lojas generalistas com layout direto.",
+    tags: ["Business", "Modern", "Fast"],
+    previewImage:
+      "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1200&auto=format&fit=crop",
+    defaults: templates.modern,
+    capabilities: {
+      sections: [
+        { id: "topbar", label: "Top bar", supportsBlocks: false },
+        { id: "branding", label: "Branding", supportsBlocks: false },
+        { id: "hero", label: "Hero", supportsBlocks: false },
+        { id: "categories", label: "Categorias", supportsBlocks: true },
+        { id: "products", label: "Produtos", supportsBlocks: true },
+      ],
+    },
+  },
+  {
+    id: "elegant",
+    name: "Elegant Store",
+    description: "Template premium com estetica editorial e foco em branding.",
+    tags: ["Premium", "Elegant", "Editorial"],
+    previewImage:
+      "https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&auto=format&fit=crop",
+    defaults: templates.elegant,
+    capabilities: {
+      sections: [
+        { id: "topbar", label: "Top bar", supportsBlocks: false },
+        { id: "branding", label: "Branding", supportsBlocks: false },
+        { id: "hero", label: "Hero", supportsBlocks: false },
+        { id: "categories", label: "Categorias", supportsBlocks: true },
+        { id: "products", label: "Produtos", supportsBlocks: true },
+      ],
+    },
+  },
+];
+
+export const templatesById: Record<string, TemplateMeta> = Object.fromEntries(
+  templateList.map((template) => [template.id, template]),
+);
+
+const fallbackTemplateId = "minimog";
+
+function cloneTemplateConfig(config: TemplateConfig): TemplateConfig {
+  if (typeof structuredClone === "function") {
+    return structuredClone(config);
+  }
+
+  return JSON.parse(JSON.stringify(config)) as TemplateConfig;
+}
+
+export function getTemplateDefaults(templateId?: string | null): TemplateConfig {
+  const normalizedId =
+    templateId && templatesById[templateId] ? templateId : fallbackTemplateId;
+
+  const selected = templatesById[normalizedId];
+  return cloneTemplateConfig(selected.defaults);
+}
+
+
+

@@ -1,23 +1,25 @@
-import { Label } from "@/components/ui/label";
+﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { TemplateCategory, TemplateConfig } from "@/types/template";
 
 interface CategoriesConfigProps {
-  config: any;
-  onChange: (config: any) => void;
+  config: TemplateConfig;
+  onChange: (config: TemplateConfig) => void;
   storeId?: string;
 }
 
 export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfigProps) {
   const { toast } = useToast();
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const categories = config.categories || [];
+  const categories = Array.isArray(config.categories) ? config.categories : [];
 
-  const updateCategories = (newCategories: any[]) => {
+  const updateCategories = (newCategories: TemplateCategory[]) => {
     onChange({
       ...config,
       categories: newCategories,
@@ -32,7 +34,7 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
   };
 
   const removeCategory = (index: number) => {
-    updateCategories(categories.filter((_: any, i: number) => i !== index));
+    updateCategories(categories.filter((_, i) => i !== index));
   };
 
   const updateCategory = (index: number, field: string, value: string) => {
@@ -80,10 +82,10 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
         title: "Imagem carregada!",
         description: "A imagem da categoria foi atualizada.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar imagem"),
         variant: "destructive",
       });
     } finally {
@@ -126,7 +128,7 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
       </div>
 
       <div className="space-y-4">
-        {categories.map((category: any, index: number) => (
+        {categories.map((category, index) => (
           <div key={index} className="border border-border rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between">
               <Label className="font-semibold">Categoria {index + 1}</Label>
@@ -197,3 +199,4 @@ export function CategoriesConfig({ config, onChange, storeId }: CategoriesConfig
     </div>
   );
 }
+

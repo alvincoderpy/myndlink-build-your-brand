@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,19 +8,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Check, Store, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { Tables } from "@/integrations/supabase/types";
+import type { Store } from "@/types/store";
 
 const Orders = () => {
   const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [store, setStore] = useState<any>(null);
+  const [orders, setOrders] = useState<Tables<"orders">[]>([]);
+  const [store, setStore] = useState<Store | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -35,7 +34,7 @@ const Orders = () => {
         .single();
 
       if (storeError) throw storeError;
-      setStore(storeData);
+      setStore(storeData as Store);
 
       if (storeData) {
         const { data: ordersData, error: ordersError } = await supabase
@@ -47,17 +46,21 @@ const Orders = () => {
         if (ordersError) throw ordersError;
         setOrders(ordersData || []);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error loading data:", error);
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar dados"),
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, toast]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleComplete = async (orderId: string) => {
     try {
@@ -72,16 +75,16 @@ const Orders = () => {
         title: "Pedido marcado como concluído",
       });
       loadData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao atualizar pedido"),
         variant: "destructive",
       });
     }
   };
 
-  const handleDownloadPDF = async (order: any) => {
+  const handleDownloadPDF = async (order: Tables<"orders">) => {
     try {
       const { data: orderItems } = await supabase
         .from("order_items")
@@ -120,8 +123,9 @@ const Orders = () => {
       doc.setFont("helvetica", "normal");
       let yPos = tableStartY + 8;
       
-      orderItems?.forEach((item: any) => {
-        doc.text(item.products.name, 20, yPos);
+      orderItems?.forEach((item) => {
+        const productName = (item.products as { name?: string } | null)?.name || "Produto";
+        doc.text(productName, 20, yPos);
         doc.text(`${item.quantity} x ${item.price.toFixed(2)} MT`, 120, yPos, { align: "left" });
         doc.text(`${(item.quantity * item.price).toFixed(2)} MT`, 180, yPos, { align: "right" });
         yPos += 6;
@@ -167,11 +171,11 @@ const Orders = () => {
       doc.save(`fatura-${order.id.slice(0, 8)}.pdf`);
       
       toast({ title: "PDF gerado com sucesso!" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error generating PDF:", error);
       toast({
         title: "Erro ao gerar PDF",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao gerar PDF"),
         variant: "destructive",
       });
     }
@@ -335,3 +339,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

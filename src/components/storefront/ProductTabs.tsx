@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatePresence } from "framer-motion";
 import { ProductCard } from "./ProductCard";
@@ -30,17 +30,26 @@ interface ProductTabsProps {
 }
 
 export function ProductTabs({ config, products, onAddToCart }: ProductTabsProps) {
-  if (!config.enabled || !config.tabs || config.tabs.length === 0) return null;
+  const tabs = config.tabs ?? [];
+  const enabled = Boolean(config.enabled && tabs.length > 0);
+  const initialFilter = tabs[0]?.filter || "all";
 
-  const [activeTab, setActiveTab] = useState(config.tabs[0]?.filter || "all");
+  const [activeTab, setActiveTab] = useState(initialFilter);
+
+  useEffect(() => {
+    setActiveTab(initialFilter);
+  }, [initialFilter]);
   
   const filteredProducts = useMemo(() => {
+    if (!enabled) return [];
     if (activeTab === "all") return products;
     if (activeTab === "on_sale") return products.filter(p => p.discount_percentage > 0);
     if (activeTab === "new") return products.filter(p => p.is_new === true);
     if (activeTab === "best_sellers" || activeTab === "featured") return products.filter(p => p.is_featured === true);
     return products;
-  }, [activeTab, products]);
+  }, [enabled, activeTab, products]);
+
+  if (!enabled) return null;
   
   return (
     <section id="produtos" className="py-12 md:py-16 bg-background">
@@ -51,8 +60,8 @@ export function ProductTabs({ config, products, onAddToCart }: ProductTabsProps)
         
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto mb-12" style={{ gridTemplateColumns: `repeat(${config.tabs.length}, 1fr)` }}>
-            {config.tabs.map((tab) => (
+          <TabsList className="grid w-full max-w-md mx-auto mb-12" style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}>
+            {tabs.map((tab) => (
               <TabsTrigger key={tab.filter} value={tab.filter}>
                 {tab.label}
               </TabsTrigger>

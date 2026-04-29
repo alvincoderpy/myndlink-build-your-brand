@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+﻿import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/contexts/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Key, Bell, Languages, Trash2, Moon, Sun, LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
-
-function handleSupabaseError(error: any, fallbackMessage: string) {
-  if (!error) return;
-  console.error(fallbackMessage, error);
-  toast.error(error.message || fallbackMessage);
-}
+import { handleSupabaseError } from "@/lib/handleSupabaseError";
 
 export default function Settings() {
   const { user, signOut } = useAuth();
@@ -45,13 +40,7 @@ export default function Settings() {
     window.location.reload();
   };
 
-  useEffect(() => {
-    if (user) {
-      loadProfile();
-    }
-  }, [user]);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user?.id) return;
     const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
     if (data) {
@@ -62,7 +51,13 @@ export default function Settings() {
         email: data.email || ""
       });
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [loadProfile, user]);
 
   const handleUpdateProfile = async () => {
     if (!user?.id) return;
@@ -268,3 +263,5 @@ export default function Settings() {
     </div>
   );
 }
+
+

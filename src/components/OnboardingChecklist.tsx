@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle, ChevronDown, ChevronUp, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 interface ChecklistItem {
   id: string;
   title: string;
@@ -12,6 +12,12 @@ interface ChecklistItem {
   link: string;
   completed: boolean;
 }
+
+type TemplateConfig = {
+  primaryColor?: string;
+  secondaryColor?: string;
+  accentColor?: string;
+};
 export const OnboardingChecklist = () => {
   const {
     user
@@ -43,14 +49,7 @@ export const OnboardingChecklist = () => {
   }]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  useEffect(() => {
-    const dismissed = localStorage.getItem("onboarding_dismissed");
-    if (dismissed === "true") {
-      setIsDismissed(true);
-    }
-    checkProgress();
-  }, [user]);
-  const checkProgress = async () => {
+  const checkProgress = useCallback(async () => {
     if (!user) return;
     try {
       // Check if store exists
@@ -73,12 +72,13 @@ export const OnboardingChecklist = () => {
           };
         }
         if (item.id === "edit_store") {
-          const templateConfig = store?.template_config as any;
-          const hasCustomColors = store && templateConfig && (
-            templateConfig.primaryColor || 
-            templateConfig.secondaryColor || 
-            templateConfig.accentColor
-          );
+          const templateConfig =
+            (store?.template_config as unknown as TemplateConfig | null) ?? null;
+          const hasCustomColors = Boolean(store && (
+            templateConfig?.primaryColor || 
+            templateConfig?.secondaryColor || 
+            templateConfig?.accentColor
+          ));
           return {
             ...item,
             completed: !!hasCustomColors
@@ -101,7 +101,15 @@ export const OnboardingChecklist = () => {
     } catch (error) {
       console.error("Error checking progress:", error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem("onboarding_dismissed");
+    if (dismissed === "true") {
+      setIsDismissed(true);
+    }
+    checkProgress();
+  }, [checkProgress]);
   const completedCount = items.filter(item => item.completed).length;
   const progress = Math.round(completedCount / items.length * 100);
   const handleDismiss = () => {
@@ -116,7 +124,7 @@ export const OnboardingChecklist = () => {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-lg">Começar </h3>
+              <h3 className="font-bold text-lg">Começar</h3>
               <span className="text-sm text-muted-foreground">
                 {completedCount}/{items.length} completo
               </span>
@@ -155,3 +163,5 @@ export const OnboardingChecklist = () => {
         </div>}
     </Card>;
 };
+
+

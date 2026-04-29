@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { useStore } from "@/contexts/StoreContext";
+import { useAuth } from "@/contexts/useAuth";
+import { useStore } from "@/contexts/useStore";
 import { TrendingUp, ShoppingCart, Package, DollarSign, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { pt as ptBR } from "date-fns/locale";
@@ -48,11 +48,7 @@ const Dashboard = () => {
     to: new Date(),
   });
 
-  useEffect(() => {
-    loadStats();
-  }, [user, currentStore]);
-
-  const loadStats = async (selectedDateRange?: DateRange) => {
+  const loadStats = useCallback(async (selectedDateRange?: DateRange) => {
     if (!user || !currentStore) return;
     const range = selectedDateRange || dateRange;
     if (!range?.from) return;
@@ -122,7 +118,11 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentStore, dateRange, user]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   if (loading) {
     return (
@@ -298,3 +298,6 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+

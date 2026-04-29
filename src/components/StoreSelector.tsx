@@ -3,7 +3,7 @@ import { Check, ChevronDown, Plus, Store as StoreIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { useStore } from '@/contexts/StoreContext';
+import { useStore } from '@/contexts/useStore';
 import { cn } from '@/lib/utils';
 export function StoreSelector() {
   const {

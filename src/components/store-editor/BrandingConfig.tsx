@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label";
+﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
@@ -6,10 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { hslToHex, hexToHsl } from "@/lib/colorUtils";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { TemplateConfig } from "@/types/template";
 
 interface BrandingConfigProps {
-  config: any;
-  onChange: (config: any) => void;
+  config: TemplateConfig;
+  onChange: (config: TemplateConfig) => void;
   storeId?: string;
 }
 
@@ -18,7 +20,7 @@ export function BrandingConfig({ config, onChange, storeId }: BrandingConfigProp
   const [uploading, setUploading] = useState(false);
   const brandingConfig = config.branding || {};
 
-  const updateBranding = (updates: any) => {
+  const updateBranding = (updates: Partial<NonNullable<TemplateConfig["branding"]>>) => {
     onChange({
       ...config,
       branding: {
@@ -53,10 +55,10 @@ export function BrandingConfig({ config, onChange, storeId }: BrandingConfigProp
         title: "Logo carregado!",
         description: "O logo da loja foi atualizado.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: getErrorMessage(error, "Erro ao carregar logo"),
         variant: "destructive",
       });
     } finally {
@@ -171,3 +173,4 @@ export function BrandingConfig({ config, onChange, storeId }: BrandingConfigProp
     </div>
   );
 }
+

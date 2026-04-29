@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -12,18 +12,27 @@ import { toast } from "sonner";
 import { ArrowLeft, Check, Tag } from "lucide-react";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/handleSupabaseError";
+import type { Tables } from "@/integrations/supabase/types";
+import type { CartItem } from "@/types/product";
+import type { PublicStore } from "@/types/store";
+
+type CheckoutState = {
+  cart: CartItem[];
+  store: PublicStore;
+};
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { cart, store } = location.state || {};
+  const { cart, store } = (location.state || {}) as CheckoutState;
   const { t } = useTranslation();
   
   const [loading, setLoading] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<Tables<"coupons"> | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -57,7 +66,7 @@ export default function Checkout() {
   }
 
   const getSubtotal = () => {
-    return cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+    return cart.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
   };
 
   const getDiscount = () => {
@@ -101,7 +110,7 @@ export default function Checkout() {
 
       setAppliedCoupon(data);
       toast.success(t('checkout.couponApplied', { percent: data.discount_percent }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error applying coupon:", error);
       toast.error(t('checkout.errorVerifyCoupon'));
     } finally {
@@ -130,7 +139,7 @@ export default function Checkout() {
 
     try {
       // Prepare cart items for atomic function
-      const cartItems = cart.map((item: any) => ({
+      const cartItems = cart.map((item: CartItem) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity,
@@ -164,9 +173,10 @@ export default function Checkout() {
       setOrderNumber(result.order_id!.substring(0, 8).toUpperCase());
       setOrderCreated(true);
       toast.success(t('checkout.orderCreated'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating order:", error);
-      if (error.message?.includes('Insufficient stock')) {
+      const message = getErrorMessage(error, t('checkout.errorOrder'));
+      if (message.includes('Insufficient stock')) {
         toast.error(t('checkout.insufficientStock'));
       } else {
         toast.error(t('checkout.errorOrder'));
@@ -350,7 +360,7 @@ export default function Checkout() {
             <Card className="p-6 sticky top-4">
               <h2 className="text-2xl font-bold mb-4">Resumo do Pedido</h2>
               <div className="space-y-3 mb-6">
-                {cart.map((item: any) => (
+                {cart.map((item: CartItem) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span>
                       {item.name} x {item.quantity}
@@ -424,3 +434,4 @@ export default function Checkout() {
     </div>
   );
 }
+

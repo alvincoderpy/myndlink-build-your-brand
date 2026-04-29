@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,8 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, Tag, Store } from 'lucide-react';
-import { useStore } from '@/contexts/StoreContext';
+import { useStore } from '@/contexts/useStore';
+import { getErrorMessage } from '@/lib/handleSupabaseError';
 
 interface Coupon {
   id: string;
@@ -41,15 +42,7 @@ export default function Coupons() {
     expires_at: '',
   });
 
-  useEffect(() => {
-    if (!storeLoading && currentStore) {
-      loadCoupons();
-    } else if (!storeLoading && !currentStore) {
-      setLoading(false);
-    }
-  }, [currentStore, storeLoading]);
-
-  const loadCoupons = async () => {
+  const loadCoupons = useCallback(async () => {
     if (!currentStore) return;
 
     setLoading(true);
@@ -62,13 +55,23 @@ export default function Coupons() {
 
       if (error) throw error;
       setCoupons(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading coupons:', error);
-      toast.error(t('common.error'), { description: error.message });
+      toast.error(t('common.error'), {
+        description: getErrorMessage(error, t('common.error')),
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentStore, t]);
+
+  useEffect(() => {
+    if (!storeLoading && currentStore) {
+      loadCoupons();
+    } else if (!storeLoading && !currentStore) {
+      setLoading(false);
+    }
+  }, [currentStore, loadCoupons, storeLoading]);
 
   const validateForm = () => {
     const code = formData.code.trim().toUpperCase();
@@ -129,8 +132,10 @@ export default function Coupons() {
       setEditingCoupon(null);
       setFormData({ code: '', discount_percent: '', expires_at: '' });
       loadCoupons();
-    } catch (error: any) {
-      toast.error(t('common.error'), { description: error.message });
+    } catch (error: unknown) {
+      toast.error(t('common.error'), {
+        description: getErrorMessage(error, t('common.error')),
+      });
     }
   };
 
@@ -155,8 +160,10 @@ export default function Coupons() {
 
       toast.success(t('coupons.deleted'));
       loadCoupons();
-    } catch (error: any) {
-      toast.error(t('common.error'), { description: error.message });
+    } catch (error: unknown) {
+      toast.error(t('common.error'), {
+        description: getErrorMessage(error, t('common.error')),
+      });
     }
   };
 
@@ -173,8 +180,10 @@ export default function Coupons() {
         coupon.is_active ? t('coupons.deactivated') : t('coupons.activated')
       );
       loadCoupons();
-    } catch (error: any) {
-      toast.error(t('common.error'), { description: error.message });
+    } catch (error: unknown) {
+      toast.error(t('common.error'), {
+        description: getErrorMessage(error, t('common.error')),
+      });
     }
   };
 
@@ -361,3 +370,5 @@ export default function Coupons() {
     </div>
   );
 }
+
+
