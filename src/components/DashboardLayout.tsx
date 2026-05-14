@@ -167,6 +167,3 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     </div>
   );
 };
-
-
-

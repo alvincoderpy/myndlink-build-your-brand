@@ -1,13 +1,13 @@
-﻿import { Menu, Store, LogOut, Check, ChevronRight } from "lucide-react";
-import { Button } from "./ui/button";
+﻿import logoDark from "@/assets/logo-dark.png";
+import logoLight from "@/assets/logo-light.png";
+import { useAuth } from "@/contexts/useAuth";
+import { useStore } from "@/contexts/useStore";
+import { Check, ChevronRight, LogOut, Menu, Store } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
-import { useStore } from "@/contexts/useStore";
-import { useAuth } from "@/contexts/useAuth";
-import { useNavigate } from "react-router-dom";
-import logoDark from "@/assets/logo-dark.png";
-import logoLight from "@/assets/logo-light.png";
 
 interface MobileHeaderProps {
   onMenuClick: () => void;
@@ -57,11 +57,7 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
             {currentStore.name}
           </span>
         ) : (
-          <img
-            src={logoDark}
-            alt="MyndLink"
-            className="h-6 dark:hidden"
-          />
+          <img src={logoDark} alt="MyndLink" className="h-6 dark:hidden" />
         )}
         {!currentStore && (
           <img
@@ -78,12 +74,19 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
           <Button variant="ghost" size="icon" className="rounded-full p-0">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
-                {currentStore ? getInitials(currentStore.name) : <Store className="h-4 w-4" />}
+                {currentStore ? (
+                  getInitials(currentStore.name)
+                ) : (
+                  <Store className="h-4 w-4" />
+                )}
               </AvatarFallback>
             </Avatar>
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-72 p-0 bg-popover border border-border shadow-lg">
+        <PopoverContent
+          align="end"
+          className="w-72 p-0 bg-popover border border-border shadow-lg"
+        >
           {/* Current Store */}
           {currentStore && (
             <>
@@ -94,8 +97,12 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground truncate">{currentStore.name}</p>
-                  <p className="text-xs text-muted-foreground">{currentStore.subdomain}.myndlink.com</p>
+                  <p className="font-medium text-foreground truncate">
+                    {currentStore.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {currentStore.subdomain}.myndlink.com
+                  </p>
                 </div>
                 <Check className="h-5 w-5 text-green-500 shrink-0" />
               </div>
@@ -104,26 +111,32 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
           )}
 
           {/* Other Stores */}
-          {stores.filter(s => s.id !== currentStore?.id).length > 0 && (
+          {stores.filter((s) => s.id !== currentStore?.id).length > 0 && (
             <>
               <div className="py-1">
-                {stores.filter(s => s.id !== currentStore?.id).map(store => (
-                  <button
-                    key={store.id}
-                    onClick={() => switchStore(store.id)}
-                    className="w-full p-3 flex items-center gap-3 hover:bg-muted/50 transition-colors"
-                  >
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-gray-500 text-white text-sm font-semibold">
-                        {getInitials(store.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="font-medium text-foreground truncate">{store.name}</p>
-                      <p className="text-xs text-muted-foreground">{store.subdomain}.myndlink.com</p>
-                    </div>
-                  </button>
-                ))}
+                {stores
+                  .filter((s) => s.id !== currentStore?.id)
+                  .map((store) => (
+                    <button
+                      key={store.id}
+                      onClick={() => switchStore(store.id)}
+                      className="w-full p-3 flex items-center gap-3 hover:bg-muted/50 transition-colors"
+                    >
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback className="bg-gray-500 text-white text-sm font-semibold">
+                          {getInitials(store.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className="font-medium text-foreground truncate">
+                          {store.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {store.subdomain}.myndlink.com
+                        </p>
+                      </div>
+                    </button>
+                  ))}
               </div>
               <Separator />
             </>
@@ -137,7 +150,9 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
             <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
               <Store className="h-5 w-5 text-muted-foreground" />
             </div>
-            <span className="flex-1 text-left font-medium text-foreground">Todas as lojas</span>
+            <span className="flex-1 text-left font-medium text-foreground">
+              Todas as lojas
+            </span>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
 
@@ -153,7 +168,9 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground truncate">{user.email}</p>
+                  <p className="text-sm text-foreground truncate">
+                    {user.email}
+                  </p>
                 </div>
               </div>
               <Separator />
@@ -175,7 +192,3 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
     </header>
   );
 };
-
-
-
-

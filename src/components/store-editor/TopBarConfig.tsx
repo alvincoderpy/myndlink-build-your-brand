@@ -1,7 +1,7 @@
-﻿import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+﻿import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { hslToHex, hexToHsl } from "@/lib/colorUtils";
+import { hexToHsl, hslToHex } from "@/lib/colorUtils";
 import type { TemplateConfig } from "@/types/template";
 
 interface TopBarConfigProps {
@@ -12,7 +12,9 @@ interface TopBarConfigProps {
 export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
   const topBarConfig = config.topBar || {};
 
-  const updateTopBar = (updates: Partial<NonNullable<TemplateConfig["topBar"]>>) => {
+  const updateTopBar = (
+    updates: Partial<NonNullable<TemplateConfig["topBar"]>>,
+  ) => {
     onChange({
       ...config,
       topBar: {
@@ -29,14 +31,18 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-base font-semibold">Mostrar Barra Superior</Label>
+          <Label className="text-base font-semibold">
+            Mostrar Barra Superior
+          </Label>
           <p className="text-sm text-muted-foreground mt-1">
             Exibe uma barra com anúncios no topo da loja
           </p>
         </div>
         <Switch
           checked={topBarConfig.showAnnouncement !== false}
-          onCheckedChange={(checked) => updateTopBar({ showAnnouncement: checked })}
+          onCheckedChange={(checked) =>
+            updateTopBar({ showAnnouncement: checked })
+          }
         />
       </div>
 
@@ -106,4 +112,3 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
     </div>
   );
 }
-
