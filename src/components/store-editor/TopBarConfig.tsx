@@ -1,6 +1,7 @@
 ﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { hslToHex, hexToHsl } from "@/lib/colorUtils";
 import type { TemplateConfig } from "@/types/template";
 
 interface TopBarConfigProps {
@@ -20,6 +21,9 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
       },
     });
   };
+
+  const bgHex = hslToHex(topBarConfig.backgroundColor ?? "0 0% 0%");
+  const textHex = hslToHex(topBarConfig.textColor ?? "0 0% 100%");
 
   return (
     <div className="space-y-6">
@@ -58,13 +62,17 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
               <Input
                 id="topbar-bg"
                 type="color"
-                value={topBarConfig.backgroundColor || "#000000"}
-                onChange={(e) => updateTopBar({ backgroundColor: e.target.value })}
+                value={bgHex}
+                onChange={(e) =>
+                  updateTopBar({ backgroundColor: hexToHsl(e.target.value) })
+                }
                 className="w-20 h-10 cursor-pointer"
               />
               <Input
-                value={topBarConfig.backgroundColor || "#000000"}
-                onChange={(e) => updateTopBar({ backgroundColor: e.target.value })}
+                value={bgHex}
+                onChange={(e) =>
+                  updateTopBar({ backgroundColor: hexToHsl(e.target.value) })
+                }
                 placeholder="#000000"
                 className="flex-1"
               />
@@ -77,13 +85,17 @@ export function TopBarConfig({ config, onChange }: TopBarConfigProps) {
               <Input
                 id="topbar-text"
                 type="color"
-                value={topBarConfig.textColor || "#ffffff"}
-                onChange={(e) => updateTopBar({ textColor: e.target.value })}
+                value={textHex}
+                onChange={(e) =>
+                  updateTopBar({ textColor: hexToHsl(e.target.value) })
+                }
                 className="w-20 h-10 cursor-pointer"
               />
               <Input
-                value={topBarConfig.textColor || "#ffffff"}
-                onChange={(e) => updateTopBar({ textColor: e.target.value })}
+                value={textHex}
+                onChange={(e) =>
+                  updateTopBar({ textColor: hexToHsl(e.target.value) })
+                }
                 placeholder="#ffffff"
                 className="flex-1"
               />

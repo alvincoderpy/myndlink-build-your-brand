@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/useAuth";
 import { useStore } from "@/contexts/useStore";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 
 import {
   DropdownMenu,
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { cn } from "@/lib/utils";
-import { Bell, Check, ChevronDown, ChevronUp, Plus, X } from "lucide-react";
+import { Bell, Check, ChevronDown, Plus } from "lucide-react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,10 +27,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, loading } = useAuth();
   const { currentStore, stores, switchStore, createStore } = useStore();
   const navigate = useNavigate();
-
-  // ✅ Guia (bottom-right)
-  const [guideVisible, setGuideVisible] = useState(true);
-  const [guideOpen, setGuideOpen] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
@@ -51,36 +48,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const storeLabel = currentStore?.name?.trim()
     ? currentStore.name
     : "Minha loja";
-
-  const GUIDE_ITEMS = [
-    {
-      label: "Fale sobre sua empresa",
-      done: false,
-      onClick: () => navigate("/dashboard/settings"),
-    },
-    {
-      label: "Configurar pagamentos",
-      done: false,
-      onClick: () => navigate("/dashboard/settings"),
-    },
-    {
-      label: "Configurar as faturas",
-      done: false,
-      onClick: () => navigate("/dashboard/invoices"),
-    },
-    {
-      label: "Configurar subdomínio",
-      done: false,
-      onClick: () => navigate("/dashboard/settings"),
-    },
-    {
-      label: "Verifique sua empresa",
-      done: false,
-      onClick: () => navigate("/dashboard/settings"),
-    },
-  ];
-
-  const completed = GUIDE_ITEMS.filter((i) => i.done).length;
 
   return (
     <div className="min-h-screen w-full bg-muted/30">
@@ -186,95 +153,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         <main className="relative flex-1 p-4 lg:p-6">
           <div className="mx-auto w-full max-w-5xl rounded-2xl bg-background p-6 shadow-sm overflow-hidden border border-border/60">
+            {/*
+              ✅ CORRIGIDO: Substituído o guia hardcoded (GUIDE_ITEMS com done: false estático)
+                 pelo OnboardingChecklist real que lê progresso do Supabase.
+                 O checklist só aparece enquanto o utilizador não completou o onboarding
+                 e pode ser dispensado com localStorage.
+            */}
+            <OnboardingChecklist />
             {children}
           </div>
-
-          {/* ✅ Guia de configuração (BOTTOM RIGHT) */}
-          {guideVisible ? (
-            <div className="fixed bottom-6 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)]">
-              <div className="rounded-2xl border border-border bg-background shadow-xl overflow-hidden">
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3">
-                  <div className="text-sm font-semibold text-foreground">
-                    Guia de configuração
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setGuideOpen((v) => !v)}
-                      className="rounded-md p-1 text-muted-foreground hover:text-foreground"
-                      aria-label={guideOpen ? "Minimizar" : "Expandir"}
-                    >
-                      {guideOpen ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronUp className="h-4 w-4" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setGuideVisible(false)}
-                      className="rounded-md p-1 text-muted-foreground hover:text-foreground"
-                      aria-label="Fechar"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Body */}
-                {guideOpen ? (
-                  <div className="px-4 pb-4">
-                    <div className="mb-3 h-1.5 w-full rounded-full bg-muted">
-                      <div
-                        className="h-1.5 rounded-full bg-primary transition-all"
-                        style={{
-                          width: `${Math.round((completed / GUIDE_ITEMS.length) * 100)}%`,
-                        }}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      {GUIDE_ITEMS.map((item) => (
-                        <button
-                          key={item.label}
-                          type="button"
-                          onClick={item.onClick}
-                          className={cn(
-                            "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors text-left",
-                            "hover:bg-muted",
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              "h-4 w-4 rounded-full border flex items-center justify-center",
-                              item.done
-                                ? "bg-primary border-primary text-primary-foreground"
-                                : "border-muted-foreground/40",
-                            )}
-                          >
-                            {item.done ? <Check className="h-3 w-3" /> : null}
-                          </span>
-                          <span
-                            className={cn(
-                              "flex-1",
-                              item.done && "line-through text-muted-foreground",
-                            )}
-                          >
-                            {item.label}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="mt-3 text-xs text-muted-foreground">
-                      {completed}/{GUIDE_ITEMS.length} concluídos
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
         </main>
       </div>
     </div>

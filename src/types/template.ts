@@ -59,7 +59,13 @@ export interface TemplateConfig {
   };
   topBar?: TemplateTopBar;
   hero?: TemplateHero;
-  categories?: TemplateCategory[] | { enabled?: boolean; title?: string; items?: Array<{ name: string; image: string; link: string }> };
+  categories?:
+    | TemplateCategory[]
+    | {
+        enabled?: boolean;
+        title?: string;
+        items?: Array<{ name: string; image: string; link: string }>;
+      };
   productTabs?: {
     enabled?: boolean;
     title?: string;
@@ -67,6 +73,11 @@ export interface TemplateConfig {
   };
   layout?: "grid";
   cardStyle?: "minimal" | "classic";
+
+  // ✅ ADICIONADO: antes só estava coberto pelo index signature genérico,
+  //    o que tornava o tipo invisível para TypeScript e causava aviso em strict mode.
+  categoryBackgroundColor?: string;
+
   mockProducts?: Array<{
     name: string;
     description: string;

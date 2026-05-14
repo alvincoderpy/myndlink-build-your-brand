@@ -38,8 +38,9 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
     navigate("/auth");
   };
 
+  // ✅ CORRIGIDO: rota era "/my-store" (inexistente), agora aponta para "/dashboard/store"
   const handleViewAllStores = () => {
-    navigate("/my-store");
+    navigate("/dashboard/store");
   };
 
   return (
@@ -56,17 +57,17 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
             {currentStore.name}
           </span>
         ) : (
-          <img 
-            src={logoDark} 
-            alt="MyndLink" 
-            className="h-6 dark:hidden" 
+          <img
+            src={logoDark}
+            alt="MyndLink"
+            className="h-6 dark:hidden"
           />
         )}
         {!currentStore && (
-          <img 
-            src={logoLight} 
-            alt="MyndLink" 
-            className="h-6 hidden dark:block" 
+          <img
+            src={logoLight}
+            alt="MyndLink"
+            className="h-6 hidden dark:block"
           />
         )}
       </div>
@@ -139,7 +140,7 @@ export const MobileHeader = ({ onMenuClick }: MobileHeaderProps) => {
             <span className="flex-1 text-left font-medium text-foreground">Todas as lojas</span>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
-          
+
           <Separator />
 
           {/* User Profile */}
